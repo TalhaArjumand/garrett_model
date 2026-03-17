@@ -12,6 +12,14 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence,
     validate_sequence_inputs,
 )
+from .real_ohlc import (
+    RealSampleReport,
+    build_real_sample_report,
+    count_valid_sequences,
+    find_timestamp_gaps,
+    iter_triples,
+    load_candles_from_csv,
+)
 
 __all__ = [
     "Candle",
@@ -28,4 +36,10 @@ __all__ = [
     "is_valid_bullish_c2_sequence",
     "is_valid_bearish_c2_sequence",
     "validate_sequence_inputs",
+    "RealSampleReport",
+    "load_candles_from_csv",
+    "find_timestamp_gaps",
+    "iter_triples",
+    "count_valid_sequences",
+    "build_real_sample_report",
 ]
