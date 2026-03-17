@@ -1,0 +1,192 @@
+from __future__ import annotations
+
+import unittest
+
+from gxt.candles import Candle, utc_datetime
+from gxt.sequence_primitives import (
+    closes_inside_range,
+    equilibrium,
+    has_bearish_c3_support,
+    has_bullish_c3_support,
+    is_bearish_c2_closure,
+    is_bearish_c3_expansion_confirmation,
+    is_bullish_c2_closure,
+    is_bullish_c3_expansion_confirmation,
+    is_valid_bearish_c2_sequence,
+    is_valid_bullish_c2_sequence,
+    validate_sequence_inputs,
+)
+
+
+class SequencePrimitiveTests(unittest.TestCase):
+    def make_candle(
+        self,
+        *,
+        symbol: str = "XAUUSD",
+        timestamp_hour: int,
+        timeframe: str = "1H",
+        open: float,
+        high: float,
+        low: float,
+        close: float,
+        is_closed: bool = True,
+    ) -> Candle:
+        return Candle(
+            symbol=symbol,
+            timestamp=utc_datetime(2026, 3, 17, timestamp_hour, 0),
+            timeframe=timeframe,
+            open=open,
+            high=high,
+            low=low,
+            close=close,
+            is_closed=is_closed,
+        )
+
+    def test_equilibrium_of_c2_range(self) -> None:
+        c2 = self.make_candle(timestamp_hour=11, open=103, high=107, low=95, close=101)
+        self.assertEqual(equilibrium(c2), 101.0)
+
+    def test_close_inside_range_uses_strict_boundaries(self) -> None:
+        reference = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        inside = self.make_candle(timestamp_hour=11, open=96, high=106, low=94, close=105)
+        on_low = self.make_candle(timestamp_hour=11, open=96, high=104, low=94, close=98)
+        on_high = self.make_candle(timestamp_hour=11, open=96, high=111, low=94, close=110)
+
+        self.assertTrue(closes_inside_range(reference, inside))
+        self.assertFalse(closes_inside_range(reference, on_low))
+        self.assertFalse(closes_inside_range(reference, on_high))
+
+    def test_valid_bullish_c2_sequence(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+
+        self.assertTrue(is_bullish_c2_closure(c1, c2))
+        self.assertTrue(has_bullish_c3_support(c2, c3))
+        self.assertTrue(is_bullish_c3_expansion_confirmation(c2, c3))
+        self.assertTrue(is_valid_bullish_c2_sequence(c1, c2, c3))
+
+    def test_bullish_c2_closure_requires_sweep_below_c1_low(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=99, high=106, low=98, close=105)
+
+        self.assertFalse(is_bullish_c2_closure(c1, c2))
+
+    def test_bullish_c2_closure_rejects_close_on_boundary(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=104, low=94, close=98)
+
+        self.assertFalse(is_bullish_c2_closure(c1, c2))
+
+    def test_bullish_c3_support_requires_low_above_eq_of_c2(self) -> None:
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=100.0, close=111)
+
+        self.assertFalse(has_bullish_c3_support(c2, c3))
+
+    def test_bullish_c3_expansion_requires_close_above_high_of_c2(self) -> None:
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=106.0)
+
+        self.assertFalse(is_bullish_c3_expansion_confirmation(c2, c3))
+
+    def test_valid_bearish_c2_sequence(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=101)
+
+        self.assertTrue(is_bearish_c2_closure(c1, c2))
+        self.assertTrue(has_bearish_c3_support(c2, c3))
+        self.assertTrue(is_bearish_c3_expansion_confirmation(c2, c3))
+        self.assertTrue(is_valid_bearish_c2_sequence(c1, c2, c3))
+
+    def test_bearish_c2_closure_requires_sweep_above_c1_high(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=117, high=118, low=109, close=112)
+
+        self.assertFalse(is_bearish_c2_closure(c1, c2))
+
+    def test_bearish_c2_closure_rejects_close_on_boundary(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=118)
+
+        self.assertFalse(is_bearish_c2_closure(c1, c2))
+
+    def test_bearish_c3_support_requires_high_below_eq_of_c2(self) -> None:
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=115, low=99, close=101)
+
+        self.assertFalse(has_bearish_c3_support(c2, c3))
+
+    def test_bearish_c3_expansion_requires_close_below_low_of_c2(self) -> None:
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=109.0)
+
+        self.assertFalse(is_bearish_c3_expansion_confirmation(c2, c3))
+
+    def test_mixed_symbol_rejection(self) -> None:
+        c1 = self.make_candle(symbol="XAUUSD", timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(symbol="XAUUSD", timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(symbol="NQ", timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+
+        with self.assertRaisesRegex(ValueError, "same symbol"):
+            validate_sequence_inputs(c1, c2, c3)
+
+    def test_mixed_timeframe_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, timeframe="1H", open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, timeframe="1H", open=97, high=106, low=94, close=105)
+        c3 = Candle(
+            symbol="XAUUSD",
+            timestamp=utc_datetime(2026, 3, 17, 12, 0),
+            timeframe="30m",
+            open=105,
+            high=112,
+            low=101.5,
+            close=111,
+        )
+
+        with self.assertRaisesRegex(ValueError, "same timeframe"):
+            validate_sequence_inputs(c1, c2, c3)
+
+    def test_non_consecutive_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=13, open=105, high=112, low=101.5, close=111)
+
+        with self.assertRaisesRegex(ValueError, "must be consecutive"):
+            validate_sequence_inputs(c1, c2, c3)
+
+    def test_unclosed_c3_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(
+            timestamp_hour=12,
+            open=105,
+            high=112,
+            low=101.5,
+            close=111,
+            is_closed=False,
+        )
+
+        with self.assertRaisesRegex(ValueError, "must be closed"):
+            validate_sequence_inputs(c1, c2, c3)
+
+    def test_wrong_timestamp_order_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=12, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=10, open=105, high=112, low=101.5, close=111)
+
+        with self.assertRaisesRegex(ValueError, "strict timestamp order"):
+            validate_sequence_inputs(c1, c2, c3)
+
+    def test_malformed_candle_object_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = {"not": "a candle"}
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+
+        with self.assertRaisesRegex(TypeError, "must be a Candle"):
+            validate_sequence_inputs(c1, c2, c3)
+
+
+if __name__ == "__main__":
+    unittest.main()
