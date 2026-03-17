@@ -1,0 +1,76 @@
+{
+  "valid_examples": [
+    {
+      "id": "valid_5m_bullish_body_close",
+      "reason": "Standard closed 5m candle with internally consistent OHLC values.",
+      "candle": {
+        "symbol": "XAUUSD",
+        "timestamp": "2026-03-17T10:00:00Z",
+        "timeframe": "5m",
+        "open": 3000.0,
+        "high": 3005.0,
+        "low": 2998.0,
+        "close": 3003.0,
+        "is_closed": true
+      }
+    },
+    {
+      "id": "valid_1h_bearish_close",
+      "reason": "Standard closed 1H candle with a bearish close but valid range.",
+      "candle": {
+        "symbol": "NQ",
+        "timestamp": "2026-03-17T14:00:00Z",
+        "timeframe": "1H",
+        "open": 20350.0,
+        "high": 20390.0,
+        "low": 20290.0,
+        "close": 20305.0,
+        "is_closed": true
+      }
+    }
+  ],
+  "invalid_examples": [
+    {
+      "id": "invalid_open_below_low",
+      "reason": "Open is below the candle low, which breaks OHLC consistency.",
+      "candle": {
+        "symbol": "XAUUSD",
+        "timestamp": "2026-03-17T10:05:00Z",
+        "timeframe": "5m",
+        "open": 2997.0,
+        "high": 3004.0,
+        "low": 2998.0,
+        "close": 3001.0,
+        "is_closed": true
+      }
+    },
+    {
+      "id": "invalid_unknown_timeframe",
+      "reason": "Timeframe is not part of the accepted candle contract.",
+      "candle": {
+        "symbol": "XAUUSD",
+        "timestamp": "2026-03-17T10:10:00Z",
+        "timeframe": "7m",
+        "open": 3001.0,
+        "high": 3006.0,
+        "low": 2999.0,
+        "close": 3002.0,
+        "is_closed": true
+      }
+    },
+    {
+      "id": "invalid_naive_timestamp",
+      "reason": "Timestamp lacks timezone information and should be rejected.",
+      "candle": {
+        "symbol": "XAUUSD",
+        "timestamp": "2026-03-17T10:15:00",
+        "timeframe": "5m",
+        "open": 3001.0,
+        "high": 3007.0,
+        "low": 3000.0,
+        "close": 3006.0,
+        "is_closed": true
+      }
+    }
+  ]
+}
