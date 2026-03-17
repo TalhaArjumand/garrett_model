@@ -69,10 +69,15 @@ def count_valid_sequences(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
     for c1, c2, c3 in iter_triples(candles):
-        if is_valid_bullish_c2_sequence(c1, c2, c3):
-            bullish += 1
-        if is_valid_bearish_c2_sequence(c1, c2, c3):
-            bearish += 1
+        try:
+            if is_valid_bullish_c2_sequence(c1, c2, c3):
+                bullish += 1
+            if is_valid_bearish_c2_sequence(c1, c2, c3):
+                bearish += 1
+        except ValueError:
+            # Real OHLC samples can contain weekend gaps or vendor-specific
+            # timestamp shifts; those windows are not valid sequence candidates.
+            continue
     return bullish, bearish
 
 

@@ -58,6 +58,13 @@ Use this exact schema:
 Timestamps should be exported in UTC when possible. If the source exports
 another timezone, normalize it before relying on the results.
 
+Current sample note:
+
+- the first `XAUUSD 4H` sample was normalized from a timezone-naive Myfxbook export
+- it currently uses an explicit `Asia/Karachi` offset as a provisional source-time assumption
+- this is acceptable for structural verification, but session-sensitive doctrine
+  should later be checked against a confirmed vendor timezone
+
 ## Verification Steps
 
 ### 1. Parsing

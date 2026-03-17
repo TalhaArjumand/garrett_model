@@ -19,5 +19,12 @@ Rules:
 - one symbol only for the first verification pass
 - one timeframe only for the first verification pass
 
+Current sample note:
+
+- `xauusd_4h.csv` was normalized from a Myfxbook export
+- the source timestamps were timezone-naive
+- the current file preserves them with an explicit `Asia/Karachi` offset
+- revisit this timezone assumption before using session-sensitive doctrine
+
 Do not commit large raw exports by default. Start with a small, reviewable
 sample of 20 to 100 rows.
