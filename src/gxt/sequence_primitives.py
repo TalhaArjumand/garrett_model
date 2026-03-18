@@ -109,3 +109,8 @@ def is_valid_bearish_c2_sequence(c1: Any, c2: Any, c3: Any) -> bool:
 def has_bullish_c4_continuation_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
     c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
     return is_valid_bullish_c2_sequence(c1, c2, c3) and c4.low > equilibrium(c3)
+
+
+def has_bearish_c4_continuation_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
+    c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
+    return is_valid_bearish_c2_sequence(c1, c2, c3) and c4.high < equilibrium(c3)

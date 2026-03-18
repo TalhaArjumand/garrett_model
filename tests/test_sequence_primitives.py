@@ -4,6 +4,7 @@ import unittest
 
 from gxt.candles import Candle, utc_datetime
 from gxt.sequence_primitives import (
+    has_bearish_c4_continuation_candidate,
     closes_inside_range,
     equilibrium,
     has_bearish_c3_support,
@@ -91,6 +92,30 @@ class SequencePrimitiveTests(unittest.TestCase):
         c4 = self.make_candle(timestamp_hour=13, open=111, high=117, low=106.75, close=115)
 
         self.assertFalse(has_bullish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_valid_bearish_c4_continuation_candidate(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=101)
+        c4 = self.make_candle(timestamp_hour=13, open=101, high=105, low=96, close=97)
+
+        self.assertTrue(has_bearish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_bearish_c4_candidate_requires_valid_bearish_predecessor(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=115, low=99, close=101)
+        c4 = self.make_candle(timestamp_hour=13, open=101, high=105, low=96, close=97)
+
+        self.assertFalse(has_bearish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_bearish_c4_candidate_requires_high_below_eq_of_c3(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=101)
+        c4 = self.make_candle(timestamp_hour=13, open=101, high=106.75, low=96, close=97)
+
+        self.assertFalse(has_bearish_c4_continuation_candidate(c1, c2, c3, c4))
 
     def test_bullish_c2_closure_requires_sweep_below_c1_low(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)

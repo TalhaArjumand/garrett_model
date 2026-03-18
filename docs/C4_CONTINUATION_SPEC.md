@@ -40,6 +40,12 @@ This directly supports:
 - bullish continuation is judged by whether `C4` forms its low in the upper
   half of `C3`
 
+Additional doctrine clarification:
+
+- Garrett states a generalized symmetry rule, so conditions that are locked for
+  bullish continuation can be mirrored into bearish continuation unless a later
+  doctrine unit explicitly overrides them
+
 ## Inputs
 
 This doctrine unit uses:
@@ -78,15 +84,12 @@ This is a strong doctrinal candidate supported by the transcript.
 
 ## Bearish Mirror
 
-The bearish mirror is structurally reasonable:
+Under the locked generalized symmetry rule, the bearish mirror is also locked:
 
 - after valid bearish `C3` expansion
 - mark `EQ(C3)`
 - seek `C4` with:
   - `high(C4) < EQ(C3)`
-
-However, this remains inferred from symmetry and is not yet locked from a
-direct bearish quote in the current evidence set.
 
 ## What This Unit Is Measuring
 
@@ -112,11 +115,10 @@ The following remain unresolved and are not yet locked:
 2. Does `C4` require its own close-based expansion rule?
    - for example: `close(C4) > high(C3)` in the bullish case
 3. Are there invalidation rules beyond midpoint violation?
-4. Is there direct bearish transcript wording for the mirror rule?
 
 ## Implementation Status
 
-Implementation status: not started.
+Implementation status: in progress.
 
 This spec exists to preserve the doctrinal boundary before code is written.
 

@@ -2,6 +2,7 @@ from .candles import Candle, require_closed, utc_datetime
 from .sequence_primitives import (
     closes_inside_range,
     equilibrium,
+    has_bearish_c4_continuation_candidate,
     has_bearish_c3_support,
     has_bullish_c4_continuation_candidate,
     has_bullish_c3_support,
@@ -34,6 +35,7 @@ __all__ = [
     "has_bullish_c3_support",
     "has_bearish_c3_support",
     "has_bullish_c4_continuation_candidate",
+    "has_bearish_c4_continuation_candidate",
     "is_bullish_c3_expansion_confirmation",
     "is_bearish_c3_expansion_confirmation",
     "is_valid_bullish_c2_sequence",
