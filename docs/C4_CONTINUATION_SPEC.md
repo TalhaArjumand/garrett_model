@@ -116,6 +116,13 @@ The following remain unresolved and are not yet locked:
    - for example: `close(C4) > high(C3)` in the bullish case
 3. Are there invalidation rules beyond midpoint violation?
 
+Current doctrinal status:
+
+- `C4` close behavior is not locked yet
+- no `C4` close-confirmation rule is currently implemented
+- any future `C4` close rule must be added only after direct doctrinal
+  evidence or be labeled explicitly as a separate research hypothesis
+
 ## Implementation Status
 
 Implementation status: in progress.
