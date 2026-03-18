@@ -183,6 +183,103 @@ Interpretation:
 - current real-data review supports using the standard bullish/bearish
   three-candle imbalance geometry as the working Garrett-compatible baseline
 
+## Confirmed ERL Liquidity-State Matches
+
+### Resting Old High Match 1
+
+- `A = 2026-03-10 12:00`
+- `B = 2026-03-10 16:00`
+- `C = 2026-03-10 20:00`
+- candidate = `old_high`
+- result: `match`
+
+Why it matches:
+
+- `high(B) > high(A)`
+- `high(B) > high(C)`
+- so `B` is a confirmed swing high
+- no later candle in the reviewed sample traded above `high(B) = 5238.55`
+
+Interpretation:
+
+- this is a valid `old_high` candidate
+- the buy-side liquidity above that swing high is still resting in the current
+  reviewed sample
+
+### Taken Old High Match 1
+
+- `A = 2026-02-25 00:00`
+- `B = 2026-02-25 04:00`
+- `C = 2026-02-25 08:00`
+- candidate = `old_high`
+- result: `match`
+
+Why it matches:
+
+- `high(B) > high(A)`
+- `high(B) > high(C)`
+- so `B` is a confirmed swing high
+- later price traded above `high(B) = 5210.76`
+- reviewed take candle:
+  - `2026-02-25 16:00 high = 5217.80`
+
+Interpretation:
+
+- this is a valid historical `old_high` candidate
+- but that buy-side liquidity has already been taken
+- it should not be treated as still-resting liquidity
+
+### Equal Lows Rejection Match 1
+
+- first swing low:
+  - `A = 2026-03-06 08:00`
+  - `B = 2026-03-06 12:00`
+  - `C = 2026-03-06 16:00`
+- second swing low:
+  - `A = 2026-03-09 12:00`
+  - `B = 2026-03-09 16:00`
+  - `C = 2026-03-09 20:00`
+- result: `rejected as active equal_lows`
+
+Why it was rejected:
+
+- both middle candles are valid swing lows
+- their lows are close in price:
+  - `5062.82`
+  - `5061.04`
+- but the earlier low was already taken before the later low formed
+- reviewed sweep candle:
+  - `2026-03-09 00:00 low = 5014.71`
+- and `5014.71 < 5062.82`
+
+Interpretation:
+
+- geometry alone made this look like `equal_lows`
+- liquidity-state review shows it is not still-resting equal-lows liquidity
+- this confirms the corrected rule:
+  - equal highs / lows must also respect taken / untaken state
+
+### Resting Old Low Match 1
+
+- `A = 2026-03-16 08:00`
+- `B = 2026-03-16 12:00`
+- `C = 2026-03-16 16:00`
+- candidate = `old_low`
+- result: `match`
+
+Why it matches:
+
+- `low(B) < low(A)`
+- `low(B) < low(C)`
+- so `B` is a confirmed swing low
+- no later candle in the reviewed sample traded below `low(B) = 4970.11`
+
+Interpretation:
+
+- this is a valid `old_low` candidate
+- the sell-side liquidity below that swing low is still resting in the current
+  reviewed sample
+
 ## Current Assessment
 
 The current doctrine implementation state is:
@@ -202,6 +299,10 @@ Current reviewed result set:
 - bearish `C4` candidate matches: `1`
 - bullish `FVG` matches: `1`
 - bearish `FVG` matches: `1`
+- resting `old_high` ERL matches: `1`
+- taken `old_high` ERL matches: `1`
+- rejected `equal_lows` grouping matches: `1`
+- resting `old_low` ERL matches: `1`
 
 This is sufficient evidence to:
 
@@ -209,5 +310,8 @@ This is sufficient evidence to:
 - keep the narrow bullish `C4` candidate primitive
 - keep the narrow bearish `C4` candidate primitive
 - keep the baseline bullish/bearish `FVG` primitive
+- keep the corrected ERL liquidity-state boundary between:
+  - historical swing-derived liquidity
+  - and still-resting liquidity
 - proceed to the next doctrine clarification or review step without widening
   scope prematurely
