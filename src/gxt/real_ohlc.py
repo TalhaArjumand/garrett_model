@@ -7,6 +7,8 @@ from typing import Iterable
 
 from .candles import Candle
 from .sequence_primitives import (
+    has_bearish_c4_continuation_candidate,
+    has_bullish_c4_continuation_candidate,
     is_valid_bearish_c2_sequence,
     is_valid_bullish_c2_sequence,
 )
@@ -20,6 +22,8 @@ class RealSampleReport:
     gap_count: int
     bullish_sequence_count: int
     bearish_sequence_count: int
+    bullish_c4_candidate_count: int
+    bearish_c4_candidate_count: int
 
 
 def load_candles_from_csv(csv_path: Path) -> list[Candle]:
@@ -65,6 +69,12 @@ def iter_triples(candles: Iterable[Candle]) -> Iterable[tuple[Candle, Candle, Ca
         yield candles[idx], candles[idx + 1], candles[idx + 2]
 
 
+def iter_quads(candles: Iterable[Candle]) -> Iterable[tuple[Candle, Candle, Candle, Candle]]:
+    candles = list(candles)
+    for idx in range(len(candles) - 3):
+        yield candles[idx], candles[idx + 1], candles[idx + 2], candles[idx + 3]
+
+
 def count_valid_sequences(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
@@ -77,6 +87,20 @@ def count_valid_sequences(candles: list[Candle]) -> tuple[int, int]:
         except ValueError:
             # Real OHLC samples can contain weekend gaps or vendor-specific
             # timestamp shifts; those windows are not valid sequence candidates.
+            continue
+    return bullish, bearish
+
+
+def count_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3, c4 in iter_quads(candles):
+        try:
+            if has_bullish_c4_continuation_candidate(c1, c2, c3, c4):
+                bullish += 1
+            if has_bearish_c4_continuation_candidate(c1, c2, c3, c4):
+                bearish += 1
+        except ValueError:
             continue
     return bullish, bearish
 
@@ -96,6 +120,7 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
 
     gaps = find_timestamp_gaps(candles)
     bullish, bearish = count_valid_sequences(candles)
+    bullish_c4, bearish_c4 = count_c4_candidates(candles)
     first = candles[0]
     return RealSampleReport(
         symbol=first.symbol,
@@ -104,4 +129,6 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
         gap_count=len(gaps),
         bullish_sequence_count=bullish,
         bearish_sequence_count=bearish,
+        bullish_c4_candidate_count=bullish_c4,
+        bearish_c4_candidate_count=bearish_c4,
     )

@@ -18,8 +18,10 @@ from .sequence_primitives import (
 from .real_ohlc import (
     RealSampleReport,
     build_real_sample_report,
+    count_c4_candidates,
     count_valid_sequences,
     find_timestamp_gaps,
+    iter_quads,
     iter_triples,
     load_candles_from_csv,
 )
@@ -46,6 +48,8 @@ __all__ = [
     "load_candles_from_csv",
     "find_timestamp_gaps",
     "iter_triples",
+    "iter_quads",
     "count_valid_sequences",
+    "count_c4_candidates",
     "build_real_sample_report",
 ]
