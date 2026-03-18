@@ -3,6 +3,7 @@ from .sequence_primitives import (
     closes_inside_range,
     equilibrium,
     has_bearish_c3_support,
+    has_bullish_c4_continuation_candidate,
     has_bullish_c3_support,
     is_bearish_c2_closure,
     is_bearish_c3_expansion_confirmation,
@@ -10,6 +11,7 @@ from .sequence_primitives import (
     is_bullish_c3_expansion_confirmation,
     is_valid_bearish_c2_sequence,
     is_valid_bullish_c2_sequence,
+    validate_continuation_inputs,
     validate_sequence_inputs,
 )
 from .real_ohlc import (
@@ -31,10 +33,12 @@ __all__ = [
     "is_bearish_c2_closure",
     "has_bullish_c3_support",
     "has_bearish_c3_support",
+    "has_bullish_c4_continuation_candidate",
     "is_bullish_c3_expansion_confirmation",
     "is_bearish_c3_expansion_confirmation",
     "is_valid_bullish_c2_sequence",
     "is_valid_bearish_c2_sequence",
+    "validate_continuation_inputs",
     "validate_sequence_inputs",
     "RealSampleReport",
     "load_candles_from_csv",

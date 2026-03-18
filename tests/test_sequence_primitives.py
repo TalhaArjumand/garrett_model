@@ -7,6 +7,7 @@ from gxt.sequence_primitives import (
     closes_inside_range,
     equilibrium,
     has_bearish_c3_support,
+    has_bullish_c4_continuation_candidate,
     has_bullish_c3_support,
     is_bearish_c2_closure,
     is_bearish_c3_expansion_confirmation,
@@ -14,6 +15,7 @@ from gxt.sequence_primitives import (
     is_bullish_c3_expansion_confirmation,
     is_valid_bearish_c2_sequence,
     is_valid_bullish_c2_sequence,
+    validate_continuation_inputs,
     validate_sequence_inputs,
 )
 
@@ -65,6 +67,30 @@ class SequencePrimitiveTests(unittest.TestCase):
         self.assertTrue(has_bullish_c3_support(c2, c3))
         self.assertTrue(is_bullish_c3_expansion_confirmation(c2, c3))
         self.assertTrue(is_valid_bullish_c2_sequence(c1, c2, c3))
+
+    def test_valid_bullish_c4_continuation_candidate(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+        c4 = self.make_candle(timestamp_hour=13, open=111, high=117, low=107, close=115)
+
+        self.assertTrue(has_bullish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_bullish_c4_candidate_requires_valid_bullish_predecessor(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=100.0, close=111)
+        c4 = self.make_candle(timestamp_hour=13, open=111, high=117, low=107, close=115)
+
+        self.assertFalse(has_bullish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_bullish_c4_candidate_requires_low_above_eq_of_c3(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+        c4 = self.make_candle(timestamp_hour=13, open=111, high=117, low=106.75, close=115)
+
+        self.assertFalse(has_bullish_c4_continuation_candidate(c1, c2, c3, c4))
 
     def test_bullish_c2_closure_requires_sweep_below_c1_low(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
@@ -186,6 +212,31 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         with self.assertRaisesRegex(TypeError, "must be a Candle"):
             validate_sequence_inputs(c1, c2, c3)
+
+    def test_c4_non_consecutive_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+        c4 = self.make_candle(timestamp_hour=14, open=111, high=117, low=107, close=115)
+
+        with self.assertRaisesRegex(ValueError, "must be consecutive"):
+            validate_continuation_inputs(c1, c2, c3, c4)
+
+    def test_unclosed_c4_rejection(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+        c4 = self.make_candle(
+            timestamp_hour=13,
+            open=111,
+            high=117,
+            low=107,
+            close=115,
+            is_closed=False,
+        )
+
+        with self.assertRaisesRegex(ValueError, "must be closed"):
+            validate_continuation_inputs(c1, c2, c3, c4)
 
 
 if __name__ == "__main__":
