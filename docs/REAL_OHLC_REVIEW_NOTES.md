@@ -140,6 +140,49 @@ Interpretation:
 - the generalized bullish/bearish symmetry rule is now supported by reviewed
   real-data behavior at the `C4` candidate layer too
 
+## Confirmed FVG Matches
+
+### Bullish FVG Match 1
+
+- `C1 = 2026-02-27 08:00`
+- `C2 = 2026-02-27 12:00`
+- `C3 = 2026-02-27 16:00`
+- result: `match`
+
+Why it matches:
+
+- `low(C3) > high(C1)`
+- the zone is the wick-to-wick interval between:
+  - `high(C1)`
+  - `low(C3)`
+
+Interpretation:
+
+- the baseline bullish `FVG` detector matches the reviewed MT5 chart example
+- no contradiction is currently observed between the locked baseline `FVG`
+  geometry and Garrett's reviewed usage
+
+### Bearish FVG Match 1
+
+- `C1 = 2026-02-23 20:00`
+- `C2 = 2026-02-24 00:00`
+- `C3 = 2026-02-24 04:00`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+- the zone is the wick-to-wick interval between:
+  - `high(C3)`
+  - `low(C1)`
+
+Interpretation:
+
+- the baseline bearish `FVG` detector also matches the reviewed MT5 chart
+  example
+- current real-data review supports using the standard bullish/bearish
+  three-candle imbalance geometry as the working Garrett-compatible baseline
+
 ## Current Assessment
 
 The current doctrine implementation state is:
@@ -157,11 +200,14 @@ Current reviewed result set:
 - reviewed near-miss rejection: `1`
 - bullish `C4` candidate matches: `1`
 - bearish `C4` candidate matches: `1`
+- bullish `FVG` matches: `1`
+- bearish `FVG` matches: `1`
 
 This is sufficient evidence to:
 
 - keep the current `C1 -> C2 -> C3` primitive
 - keep the narrow bullish `C4` candidate primitive
 - keep the narrow bearish `C4` candidate primitive
+- keep the baseline bullish/bearish `FVG` primitive
 - proceed to the next doctrine clarification or review step without widening
   scope prematurely
