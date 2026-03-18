@@ -1,4 +1,13 @@
 from .candles import Candle, require_closed, utc_datetime
+from .fvg import (
+    FairValueGap,
+    build_bearish_fvg,
+    build_bullish_fvg,
+    detect_fvg,
+    is_bearish_fvg,
+    is_bullish_fvg,
+    validate_fvg_inputs,
+)
 from .sequence_primitives import (
     closes_inside_range,
     equilibrium,
@@ -30,6 +39,13 @@ __all__ = [
     "Candle",
     "require_closed",
     "utc_datetime",
+    "FairValueGap",
+    "validate_fvg_inputs",
+    "is_bullish_fvg",
+    "is_bearish_fvg",
+    "build_bullish_fvg",
+    "build_bearish_fvg",
+    "detect_fvg",
     "equilibrium",
     "closes_inside_range",
     "is_bullish_c2_closure",

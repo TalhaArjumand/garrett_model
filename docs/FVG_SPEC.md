@@ -23,9 +23,10 @@ does converge on a common core definition:
 - bullish and bearish forms both exist
 - the imbalance is defined between the first and third candles
 
-This common vendor definition is useful as a baseline reference, but it is not
-automatically identical to Garrett-specific doctrine unless Garrett's own
-material confirms it directly.
+For this project, Garrett-specific use is now locked to this same baseline by:
+
+- source-consistent reviewed diagrams
+- user confirmation from prior Garrett study
 
 The current baseline in this spec was verified against:
 
@@ -112,31 +113,36 @@ Locked in the current repo doctrine:
   - `IRL`
   - `ERL`
   - candle execution primitives
+- Garrett's current `FVG` usage for this project follows the standard
+  three-candle baseline definition
+- current boundaries are wick-based:
+  - bullish zone = `high(c1)` to `low(c3)`
+  - bearish zone = `high(c3)` to `low(c1)`
+- equality does not count as a valid gap:
+  - bullish requires `low(c3) > high(c1)`
+  - bearish requires `high(c3) < low(c1)`
 
 ## What Is Not Yet Locked
 
 Not yet locked:
 
-1. whether Garrett uses the common three-candle vendor definition exactly
-2. whether Garrett requires wick-based boundaries, body-based boundaries, or
-   another refinement
-3. whether Garrett applies a directional filter to the middle candle
-4. whether Garrett defines mitigation / fill in a specific way
-5. whether Garrett uses additional filters such as minimum size or context
-6. exact machine-ready Garrett-specific `FVG` detection logic
+1. whether Garrett applies a directional filter to the middle candle
+2. whether Garrett defines mitigation / fill in a specific way
+3. whether Garrett uses additional filters such as minimum size or context
+4. how `FVG` should later be ranked or filtered inside the broader universal
+   model context
 
 ## Implementation Status
 
-Implementation status: not started.
+Implementation status: locked and ready for baseline detection code.
 
-No code should assume a final Garrett-specific `FVG` detector until more
-direct doctrinal evidence is extracted.
+Code may implement the locked baseline `FVG` detector now, but must not add
+extra filters unless they are explicitly labeled as research hypotheses.
 
 ## Non-goals
 
 This spec does not yet define:
 
-- final Garrett-specific `FVG` code
 - mitigation logic
 - fill logic
 - entry logic by itself
