@@ -28,6 +28,7 @@ from .real_ohlc import (
     RealSampleReport,
     build_real_sample_report,
     count_c4_candidates,
+    count_fvgs,
     count_valid_sequences,
     find_timestamp_gaps,
     iter_quads,
@@ -67,5 +68,6 @@ __all__ = [
     "iter_quads",
     "count_valid_sequences",
     "count_c4_candidates",
+    "count_fvgs",
     "build_real_sample_report",
 ]

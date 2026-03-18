@@ -7,6 +7,7 @@ from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
     count_c4_candidates,
+    count_fvgs,
     count_valid_sequences,
     iter_quads,
     load_candles_from_csv,
@@ -38,6 +39,8 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_sequence_count, 0)
         self.assertGreaterEqual(report.bullish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
+        self.assertGreaterEqual(report.bullish_fvg_count, 0)
+        self.assertGreaterEqual(report.bearish_fvg_count, 0)
 
     def test_count_valid_sequences_skips_non_consecutive_windows(self) -> None:
         candles = [
@@ -75,6 +78,28 @@ class RealOhlcVerificationTests(unittest.TestCase):
         ]
 
         bullish, bearish = count_c4_candidates(candles)
+        self.assertEqual((bullish, bearish), (0, 0))
+
+    def test_count_fvgs_counts_bullish_and_bearish_baseline_gaps(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 95, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 120, 107, 119),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 118, 125, 112, 123),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 123, 124, 109, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 111, 111.5, 95, 97),
+        ]
+
+        bullish, bearish = count_fvgs(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
+
+    def test_count_fvgs_skips_non_consecutive_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 95, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 120, 107, 119),
+            Candle("XAUUSD", utc_datetime(2026, 3, 17, 0), "4H", 118, 125, 112, 123),
+        ]
+
+        bullish, bearish = count_fvgs(candles)
         self.assertEqual((bullish, bearish), (0, 0))
 
 

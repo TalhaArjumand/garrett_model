@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Iterable
 
 from .candles import Candle
+from .fvg import is_bearish_fvg, is_bullish_fvg
 from .sequence_primitives import (
     has_bearish_c4_continuation_candidate,
     has_bullish_c4_continuation_candidate,
@@ -24,6 +25,8 @@ class RealSampleReport:
     bearish_sequence_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
+    bullish_fvg_count: int
+    bearish_fvg_count: int
 
 
 def load_candles_from_csv(csv_path: Path) -> list[Candle]:
@@ -105,6 +108,20 @@ def count_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
     return bullish, bearish
 
 
+def count_fvgs(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3 in iter_triples(candles):
+        try:
+            if is_bullish_fvg(c1, c2, c3):
+                bullish += 1
+            if is_bearish_fvg(c1, c2, c3):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
 def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
     if not candles:
         raise ValueError("real sample cannot be empty")
@@ -121,6 +138,7 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
     gaps = find_timestamp_gaps(candles)
     bullish, bearish = count_valid_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
+    bullish_fvg, bearish_fvg = count_fvgs(candles)
     first = candles[0]
     return RealSampleReport(
         symbol=first.symbol,
@@ -131,4 +149,6 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
         bearish_sequence_count=bearish,
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
+        bullish_fvg_count=bullish_fvg,
+        bearish_fvg_count=bearish_fvg,
     )
