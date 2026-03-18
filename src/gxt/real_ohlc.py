@@ -29,10 +29,15 @@ class RealSampleReport:
     bullish_fvg_count: int
     bearish_fvg_count: int
     erl_candidate_count: int
+    erl_resting_candidate_count: int
     erl_old_high_count: int
     erl_old_low_count: int
     erl_equal_highs_count: int
     erl_equal_lows_count: int
+    erl_resting_old_high_count: int
+    erl_resting_old_low_count: int
+    erl_resting_equal_highs_count: int
+    erl_resting_equal_lows_count: int
 
 
 def load_candles_from_csv(csv_path: Path) -> list[Candle]:
@@ -136,21 +141,36 @@ def count_erl_candidates(
     candidates = detect_erl_candidates(candles, equal_tolerance=equal_tolerance)
     counts = {
         "erl_candidate_count": len(candidates),
+        "erl_resting_candidate_count": 0,
         "erl_old_high_count": 0,
         "erl_old_low_count": 0,
         "erl_equal_highs_count": 0,
         "erl_equal_lows_count": 0,
+        "erl_resting_old_high_count": 0,
+        "erl_resting_old_low_count": 0,
+        "erl_resting_equal_highs_count": 0,
+        "erl_resting_equal_lows_count": 0,
     }
 
     for candidate in candidates:
         if candidate.kind == "old_high":
             counts["erl_old_high_count"] += 1
+            if candidate.is_resting:
+                counts["erl_resting_old_high_count"] += 1
         elif candidate.kind == "old_low":
             counts["erl_old_low_count"] += 1
+            if candidate.is_resting:
+                counts["erl_resting_old_low_count"] += 1
         elif candidate.kind == "equal_highs":
             counts["erl_equal_highs_count"] += 1
+            if candidate.is_resting:
+                counts["erl_resting_equal_highs_count"] += 1
         elif candidate.kind == "equal_lows":
             counts["erl_equal_lows_count"] += 1
+            if candidate.is_resting:
+                counts["erl_resting_equal_lows_count"] += 1
+        if candidate.is_resting:
+            counts["erl_resting_candidate_count"] += 1
 
     return counts
 
@@ -190,8 +210,13 @@ def build_real_sample_report(
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
         erl_candidate_count=erl_counts["erl_candidate_count"],
+        erl_resting_candidate_count=erl_counts["erl_resting_candidate_count"],
         erl_old_high_count=erl_counts["erl_old_high_count"],
         erl_old_low_count=erl_counts["erl_old_low_count"],
         erl_equal_highs_count=erl_counts["erl_equal_highs_count"],
         erl_equal_lows_count=erl_counts["erl_equal_lows_count"],
+        erl_resting_old_high_count=erl_counts["erl_resting_old_high_count"],
+        erl_resting_old_low_count=erl_counts["erl_resting_old_low_count"],
+        erl_resting_equal_highs_count=erl_counts["erl_resting_equal_highs_count"],
+        erl_resting_equal_lows_count=erl_counts["erl_resting_equal_lows_count"],
     )

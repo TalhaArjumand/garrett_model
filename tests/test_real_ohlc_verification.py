@@ -43,10 +43,15 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_fvg_count, 0)
         self.assertGreaterEqual(report.erl_candidate_count, 0)
+        self.assertGreaterEqual(report.erl_resting_candidate_count, 0)
         self.assertGreaterEqual(report.erl_old_high_count, 0)
         self.assertGreaterEqual(report.erl_old_low_count, 0)
         self.assertGreaterEqual(report.erl_equal_highs_count, 0)
         self.assertGreaterEqual(report.erl_equal_lows_count, 0)
+        self.assertGreaterEqual(report.erl_resting_old_high_count, 0)
+        self.assertGreaterEqual(report.erl_resting_old_low_count, 0)
+        self.assertGreaterEqual(report.erl_resting_equal_highs_count, 0)
+        self.assertGreaterEqual(report.erl_resting_equal_lows_count, 0)
 
     def test_count_valid_sequences_skips_non_consecutive_windows(self) -> None:
         candles = [
@@ -123,10 +128,15 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         counts = count_erl_candidates(candles, equal_tolerance=0.5)
         self.assertEqual(counts["erl_candidate_count"], 6)
+        self.assertEqual(counts["erl_resting_candidate_count"], 5)
         self.assertEqual(counts["erl_old_high_count"], 2)
         self.assertEqual(counts["erl_old_low_count"], 2)
         self.assertEqual(counts["erl_equal_highs_count"], 1)
         self.assertEqual(counts["erl_equal_lows_count"], 1)
+        self.assertEqual(counts["erl_resting_old_high_count"], 1)
+        self.assertEqual(counts["erl_resting_old_low_count"], 2)
+        self.assertEqual(counts["erl_resting_equal_highs_count"], 1)
+        self.assertEqual(counts["erl_resting_equal_lows_count"], 1)
 
 
 if __name__ == "__main__":

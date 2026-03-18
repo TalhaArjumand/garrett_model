@@ -44,6 +44,8 @@ class ERLCandidate:
     upper_bound: float
     anchor_timestamps: tuple[datetime, ...]
     confirmed_at: datetime
+    is_taken: bool
+    taken_at: datetime | None
     source_kind: str
     decision_time_safe: bool
     reason: str
@@ -51,6 +53,10 @@ class ERLCandidate:
     @property
     def is_zone(self) -> bool:
         return self.lower_bound != self.upper_bound
+
+    @property
+    def is_resting(self) -> bool:
+        return not self.is_taken
 
 
 def _validate_erl_candidate_series(candles: Iterable[Any]) -> list[Candle]:
@@ -100,6 +106,8 @@ def _build_old_high_candidate(swing: LocalSwingPoint) -> ERLCandidate:
         upper_bound=swing.price_level,
         anchor_timestamps=(swing.left_timestamp, swing.pivot_timestamp, swing.right_timestamp),
         confirmed_at=swing.confirmed_at,
+        is_taken=False,
+        taken_at=None,
         source_kind="confirmed_swing_high",
         decision_time_safe=True,
         reason="Old high candidate derived from a confirmed local swing high.",
@@ -116,9 +124,50 @@ def _build_old_low_candidate(swing: LocalSwingPoint) -> ERLCandidate:
         upper_bound=swing.price_level,
         anchor_timestamps=(swing.left_timestamp, swing.pivot_timestamp, swing.right_timestamp),
         confirmed_at=swing.confirmed_at,
+        is_taken=False,
+        taken_at=None,
         source_kind="confirmed_swing_low",
         decision_time_safe=True,
         reason="Old low candidate derived from a confirmed local swing low.",
+    )
+
+
+def _find_take_timestamp(
+    candles: list[Candle],
+    *,
+    side: ERLCandidateSide,
+    threshold: float,
+    confirmed_at: datetime,
+) -> datetime | None:
+    for candle in candles:
+        if candle.timestamp <= confirmed_at:
+            continue
+        if side == "buy_side" and candle.high > threshold:
+            return candle.timestamp
+        if side == "sell_side" and candle.low < threshold:
+            return candle.timestamp
+    return None
+
+
+def _with_take_state(
+    candidate: ERLCandidate,
+    *,
+    taken_at: datetime | None,
+) -> ERLCandidate:
+    return ERLCandidate(
+        symbol=candidate.symbol,
+        timeframe=candidate.timeframe,
+        kind=candidate.kind,
+        side=candidate.side,
+        lower_bound=candidate.lower_bound,
+        upper_bound=candidate.upper_bound,
+        anchor_timestamps=candidate.anchor_timestamps,
+        confirmed_at=candidate.confirmed_at,
+        is_taken=taken_at is not None,
+        taken_at=taken_at,
+        source_kind=candidate.source_kind,
+        decision_time_safe=candidate.decision_time_safe,
+        reason=candidate.reason,
     )
 
 
@@ -126,6 +175,7 @@ def _group_equal_swings(
     swings: list[LocalSwingPoint],
     *,
     equal_tolerance: float,
+    taken_at_by_pivot: dict[datetime, datetime | None],
 ) -> list[list[LocalSwingPoint]]:
     if len(swings) < 2:
         return []
@@ -136,6 +186,15 @@ def _group_equal_swings(
     for swing in swings[1:]:
         proposed_levels = [point.price_level for point in current_group] + [swing.price_level]
         if max(proposed_levels) - min(proposed_levels) <= equal_tolerance:
+            if any(
+                taken_at_by_pivot.get(point.pivot_timestamp) is not None
+                and taken_at_by_pivot[point.pivot_timestamp] <= swing.pivot_timestamp
+                for point in current_group
+            ):
+                if len(current_group) >= 2:
+                    groups.append(current_group)
+                current_group = [swing]
+                continue
             current_group.append(swing)
             continue
 
@@ -159,6 +218,8 @@ def _build_equal_highs_candidate(group: list[LocalSwingPoint]) -> ERLCandidate:
         upper_bound=max(point.price_level for point in group),
         anchor_timestamps=tuple(point.pivot_timestamp for point in group),
         confirmed_at=max(point.confirmed_at for point in group),
+        is_taken=False,
+        taken_at=None,
         source_kind="grouped_swing_highs",
         decision_time_safe=True,
         reason="Equal-highs candidate grouped from confirmed local swing highs within explicit tolerance.",
@@ -175,6 +236,8 @@ def _build_equal_lows_candidate(group: list[LocalSwingPoint]) -> ERLCandidate:
         upper_bound=max(point.price_level for point in group),
         anchor_timestamps=tuple(point.pivot_timestamp for point in group),
         confirmed_at=max(point.confirmed_at for point in group),
+        is_taken=False,
+        taken_at=None,
         source_kind="grouped_swing_lows",
         decision_time_safe=True,
         reason="Equal-lows candidate grouped from confirmed local swing lows within explicit tolerance.",
@@ -245,13 +308,73 @@ def detect_erl_candidates(
 
     swing_highs = list(iter_local_swing_highs(validated))
     swing_lows = list(iter_local_swing_lows(validated))
+    swing_high_taken_at = {
+        swing.pivot_timestamp: _find_take_timestamp(
+            validated,
+            side="buy_side",
+            threshold=swing.price_level,
+            confirmed_at=swing.confirmed_at,
+        )
+        for swing in swing_highs
+    }
+    swing_low_taken_at = {
+        swing.pivot_timestamp: _find_take_timestamp(
+            validated,
+            side="sell_side",
+            threshold=swing.price_level,
+            confirmed_at=swing.confirmed_at,
+        )
+        for swing in swing_lows
+    }
 
     candidates: list[ERLCandidate] = []
-    candidates.extend(_build_old_high_candidate(swing) for swing in swing_highs)
-    candidates.extend(_build_old_low_candidate(swing) for swing in swing_lows)
+    candidates.extend(
+        _with_take_state(
+            _build_old_high_candidate(swing),
+            taken_at=swing_high_taken_at[swing.pivot_timestamp],
+        )
+        for swing in swing_highs
+    )
+    candidates.extend(
+        _with_take_state(
+            _build_old_low_candidate(swing),
+            taken_at=swing_low_taken_at[swing.pivot_timestamp],
+        )
+        for swing in swing_lows
+    )
 
     if tolerance is not None:
-        candidates.extend(_build_equal_highs_candidate(group) for group in _group_equal_swings(swing_highs, equal_tolerance=tolerance))
-        candidates.extend(_build_equal_lows_candidate(group) for group in _group_equal_swings(swing_lows, equal_tolerance=tolerance))
+        candidates.extend(
+            _with_take_state(
+                _build_equal_highs_candidate(group),
+                taken_at=_find_take_timestamp(
+                    validated,
+                    side="buy_side",
+                    threshold=max(point.price_level for point in group),
+                    confirmed_at=max(point.confirmed_at for point in group),
+                ),
+            )
+            for group in _group_equal_swings(
+                swing_highs,
+                equal_tolerance=tolerance,
+                taken_at_by_pivot=swing_high_taken_at,
+            )
+        )
+        candidates.extend(
+            _with_take_state(
+                _build_equal_lows_candidate(group),
+                taken_at=_find_take_timestamp(
+                    validated,
+                    side="sell_side",
+                    threshold=min(point.price_level for point in group),
+                    confirmed_at=max(point.confirmed_at for point in group),
+                ),
+            )
+            for group in _group_equal_swings(
+                swing_lows,
+                equal_tolerance=tolerance,
+                taken_at_by_pivot=swing_low_taken_at,
+            )
+        )
 
     return sorted(candidates, key=lambda candidate: (candidate.confirmed_at, candidate.kind, candidate.lower_bound, candidate.upper_bound))

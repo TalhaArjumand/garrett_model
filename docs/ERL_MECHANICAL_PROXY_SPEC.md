@@ -117,6 +117,15 @@ Implemented / implementable first:
 - equal highs from grouped confirmed swing highs
 - equal lows from grouped confirmed swing lows
 
+Liquidity-state refinement for v1:
+
+- each extracted candidate must track whether that liquidity is still resting
+  or has already been taken
+- equal-high / equal-low grouping is not purely geometric
+- if an earlier swing-derived liquidity pool is taken before a later comparable
+  high / low forms, that later structure should not be grouped as still-resting
+  equal liquidity
+
 Explicitly excluded from v1:
 
 - manipulation-range candidates
@@ -195,9 +204,19 @@ Not yet locked:
 
 ## Implementation Status
 
-Implementation status: not started.
+Implementation status: partially implemented.
 
-If implemented later, it must live in the repo as:
+Current implementation includes:
+
+- confirmed local swing-point helpers
+- ERL candidate extraction for:
+  - old highs
+  - old lows
+  - equal highs
+  - equal lows
+- explicit taken / resting state tracking
+
+It still lives in the repo as:
 
 - research layer
 - clearly separate from locked doctrine detectors

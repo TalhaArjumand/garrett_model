@@ -44,6 +44,15 @@ This means liquidity mapping is dynamic:
 - once sell-side liquidity is taken, that specific sell-side pool is no longer
   the active focus
 
+So the helper layer must distinguish between:
+
+- a historical swing-derived liquidity object that existed
+- a liquidity pool that is still resting now
+
+A later breach above a swing high takes that buy-side pool.
+
+A later breach below a swing low takes that sell-side pool.
+
 ## Relative Equal Highs And Lows
 
 The reviewed teaching material also states:
@@ -66,6 +75,12 @@ Relatively equal highs or lows can appear as:
 - whose lows are very close together
 
 This still forms one grouped liquidity area.
+
+Important boundary:
+
+- if one of the earlier highs / lows is already taken before the later clustered
+  level forms, that grouped liquidity area should not be treated as still
+  resting equal-high / equal-low liquidity
 
 ### Form 2: Clustered Highs Or Lows
 
@@ -124,10 +139,16 @@ Not yet locked:
 
 ## Implementation Status
 
-Implementation status: not started.
+Implementation status: partially implemented in helper / research code.
 
-If implemented later, this should remain a neutral swing-liquidity helper layer
-unless Garrett directly promotes specific pieces into core doctrine.
+Current implementation includes:
+
+- confirmed local swing-point detection
+- swing-derived liquidity candidate extraction
+- explicit taken / resting state tracking
+
+This still remains a neutral swing-liquidity helper layer unless Garrett
+directly promotes specific pieces into core doctrine.
 
 ## Non-goals
 
