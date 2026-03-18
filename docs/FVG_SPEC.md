@@ -143,6 +143,16 @@ Implementation status: locked and ready for baseline detection code.
 Code may implement the locked baseline `FVG` detector now, but must not add
 extra filters unless they are explicitly labeled as research hypotheses.
 
+Helper-layer candidate/state tracking beyond baseline geometry should remain
+separate. The current repo uses:
+
+- `IRL_MECHANICAL_PROXY_SPEC.md`
+
+for research/helper classification such as:
+
+- whether a detected `FVG` is still resting
+- whether price has already reached that gap
+
 ## Non-goals
 
 This spec does not yet define:

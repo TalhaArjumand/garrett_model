@@ -7,7 +7,7 @@ from typing import Iterable
 
 from .candles import Candle
 from .erl_proxy import detect_erl_candidates
-from .fvg import is_bearish_fvg, is_bullish_fvg
+from .fvg import detect_fvg_candidates, is_bearish_fvg, is_bullish_fvg
 from .sequence_primitives import (
     has_bearish_c4_continuation_candidate,
     has_bullish_c4_continuation_candidate,
@@ -28,6 +28,13 @@ class RealSampleReport:
     bearish_c4_candidate_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
+    fvg_candidate_count: int
+    fvg_resting_candidate_count: int
+    fvg_reached_candidate_count: int
+    bullish_resting_fvg_count: int
+    bearish_resting_fvg_count: int
+    bullish_reached_fvg_count: int
+    bearish_reached_fvg_count: int
     erl_candidate_count: int
     erl_resting_candidate_count: int
     erl_old_high_count: int
@@ -133,6 +140,35 @@ def count_fvgs(candles: list[Candle]) -> tuple[int, int]:
     return bullish, bearish
 
 
+def count_fvg_candidates(candles: list[Candle]) -> dict[str, int]:
+    candidates = detect_fvg_candidates(candles)
+    counts = {
+        "fvg_candidate_count": len(candidates),
+        "fvg_resting_candidate_count": 0,
+        "fvg_reached_candidate_count": 0,
+        "bullish_resting_fvg_count": 0,
+        "bearish_resting_fvg_count": 0,
+        "bullish_reached_fvg_count": 0,
+        "bearish_reached_fvg_count": 0,
+    }
+
+    for candidate in candidates:
+        if candidate.is_resting:
+            counts["fvg_resting_candidate_count"] += 1
+            if candidate.direction == "bullish":
+                counts["bullish_resting_fvg_count"] += 1
+            elif candidate.direction == "bearish":
+                counts["bearish_resting_fvg_count"] += 1
+        else:
+            counts["fvg_reached_candidate_count"] += 1
+            if candidate.direction == "bullish":
+                counts["bullish_reached_fvg_count"] += 1
+            elif candidate.direction == "bearish":
+                counts["bearish_reached_fvg_count"] += 1
+
+    return counts
+
+
 def count_erl_candidates(
     candles: list[Candle],
     *,
@@ -196,6 +232,7 @@ def build_real_sample_report(
     bullish, bearish = count_valid_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_fvg, bearish_fvg = count_fvgs(candles)
+    fvg_candidate_counts = count_fvg_candidates(candles)
     erl_counts = count_erl_candidates(candles, equal_tolerance=erl_equal_tolerance)
     first = candles[0]
     return RealSampleReport(
@@ -209,6 +246,13 @@ def build_real_sample_report(
         bearish_c4_candidate_count=bearish_c4,
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
+        fvg_candidate_count=fvg_candidate_counts["fvg_candidate_count"],
+        fvg_resting_candidate_count=fvg_candidate_counts["fvg_resting_candidate_count"],
+        fvg_reached_candidate_count=fvg_candidate_counts["fvg_reached_candidate_count"],
+        bullish_resting_fvg_count=fvg_candidate_counts["bullish_resting_fvg_count"],
+        bearish_resting_fvg_count=fvg_candidate_counts["bearish_resting_fvg_count"],
+        bullish_reached_fvg_count=fvg_candidate_counts["bullish_reached_fvg_count"],
+        bearish_reached_fvg_count=fvg_candidate_counts["bearish_reached_fvg_count"],
         erl_candidate_count=erl_counts["erl_candidate_count"],
         erl_resting_candidate_count=erl_counts["erl_resting_candidate_count"],
         erl_old_high_count=erl_counts["erl_old_high_count"],

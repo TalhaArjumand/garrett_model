@@ -8,9 +8,11 @@ from .erl_proxy import (
     validate_erl_proxy_inputs,
 )
 from .fvg import (
+    FVGCandidate,
     FairValueGap,
     build_bearish_fvg,
     build_bullish_fvg,
+    detect_fvg_candidates,
     detect_fvg,
     is_bearish_fvg,
     is_bullish_fvg,
@@ -47,6 +49,7 @@ from .real_ohlc import (
     RealSampleReport,
     build_real_sample_report,
     count_c4_candidates,
+    count_fvg_candidates,
     count_fvgs,
     count_valid_sequences,
     find_timestamp_gaps,
@@ -74,6 +77,7 @@ __all__ = [
     "build_bullish_swing_high_erl_proxy",
     "build_bearish_swing_low_erl_proxy",
     "detect_erl_candidates",
+    "FVGCandidate",
     "FairValueGap",
     "validate_fvg_inputs",
     "is_bullish_fvg",
@@ -81,6 +85,7 @@ __all__ = [
     "build_bullish_fvg",
     "build_bearish_fvg",
     "detect_fvg",
+    "detect_fvg_candidates",
     "equilibrium",
     "closes_inside_range",
     "is_bullish_c2_closure",
@@ -103,5 +108,6 @@ __all__ = [
     "count_valid_sequences",
     "count_c4_candidates",
     "count_fvgs",
+    "count_fvg_candidates",
     "build_real_sample_report",
 ]

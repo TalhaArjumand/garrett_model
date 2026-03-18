@@ -7,6 +7,7 @@ from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
     count_c4_candidates,
+    count_fvg_candidates,
     count_erl_candidates,
     count_fvgs,
     count_valid_sequences,
@@ -42,6 +43,13 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_fvg_count, 0)
+        self.assertGreaterEqual(report.fvg_candidate_count, 0)
+        self.assertGreaterEqual(report.fvg_resting_candidate_count, 0)
+        self.assertGreaterEqual(report.fvg_reached_candidate_count, 0)
+        self.assertGreaterEqual(report.bullish_resting_fvg_count, 0)
+        self.assertGreaterEqual(report.bearish_resting_fvg_count, 0)
+        self.assertGreaterEqual(report.bullish_reached_fvg_count, 0)
+        self.assertGreaterEqual(report.bearish_reached_fvg_count, 0)
         self.assertGreaterEqual(report.erl_candidate_count, 0)
         self.assertGreaterEqual(report.erl_resting_candidate_count, 0)
         self.assertGreaterEqual(report.erl_old_high_count, 0)
@@ -112,6 +120,26 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_fvgs(candles)
         self.assertEqual((bullish, bearish), (0, 0))
+
+    def test_count_fvg_candidates_tracks_resting_and_reached_states(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 95, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 120, 107, 119),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 118, 125, 112, 123),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 123, 124, 111, 112),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 112, 113, 100, 101),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 101, 102, 94, 95),
+            Candle("XAUUSD", utc_datetime(2026, 3, 15, 0), "4H", 95, 100, 90, 91),
+        ]
+
+        counts = count_fvg_candidates(candles)
+        self.assertEqual(counts["fvg_candidate_count"], 2)
+        self.assertEqual(counts["fvg_resting_candidate_count"], 1)
+        self.assertEqual(counts["fvg_reached_candidate_count"], 1)
+        self.assertEqual(counts["bullish_resting_fvg_count"], 0)
+        self.assertEqual(counts["bearish_resting_fvg_count"], 1)
+        self.assertEqual(counts["bullish_reached_fvg_count"], 1)
+        self.assertEqual(counts["bearish_reached_fvg_count"], 0)
 
     def test_count_erl_candidates_counts_old_and_equal_structures(self) -> None:
         candles = [
