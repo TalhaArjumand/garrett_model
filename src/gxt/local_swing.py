@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Iterable, Iterator, Literal
 
 from .candles import Candle
 from .sequence_primitives import validate_sequence_inputs
@@ -68,3 +68,39 @@ def build_local_swing_low(a: Any, b: Any, c: Any) -> LocalSwingPoint | None:
         right_timestamp=c.timestamp,
         confirmed_at=c.timestamp,
     )
+
+
+def iter_local_swing_highs(candles: Iterable[Candle]) -> Iterator[LocalSwingPoint]:
+    candles = list(candles)
+    for idx in range(len(candles) - 2):
+        try:
+            swing = build_local_swing_high(candles[idx], candles[idx + 1], candles[idx + 2])
+        except ValueError:
+            continue
+        if swing is not None:
+            yield swing
+
+
+def iter_local_swing_lows(candles: Iterable[Candle]) -> Iterator[LocalSwingPoint]:
+    candles = list(candles)
+    for idx in range(len(candles) - 2):
+        try:
+            swing = build_local_swing_low(candles[idx], candles[idx + 1], candles[idx + 2])
+        except ValueError:
+            continue
+        if swing is not None:
+            yield swing
+
+
+def iter_local_swing_points(candles: Iterable[Candle]) -> Iterator[LocalSwingPoint]:
+    candles = list(candles)
+    for idx in range(len(candles) - 2):
+        try:
+            high = build_local_swing_high(candles[idx], candles[idx + 1], candles[idx + 2])
+            low = build_local_swing_low(candles[idx], candles[idx + 1], candles[idx + 2])
+        except ValueError:
+            continue
+        if high is not None:
+            yield high
+        if low is not None:
+            yield low

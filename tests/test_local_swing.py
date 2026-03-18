@@ -7,6 +7,9 @@ from gxt.local_swing import (
     LocalSwingPoint,
     build_local_swing_high,
     build_local_swing_low,
+    iter_local_swing_highs,
+    iter_local_swing_lows,
+    iter_local_swing_points,
     is_local_swing_high,
     is_local_swing_low,
     validate_local_swing_inputs,
@@ -103,6 +106,25 @@ class LocalSwingPointTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "must be closed"):
             validate_local_swing_inputs(a, b, c)
+
+    def test_iter_local_swing_points_collects_confirmed_swings(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=11, open=108, high=118, low=101, close=113),
+            self.make_candle(timestamp_hour=12, open=109, high=114, low=104, close=112),
+            self.make_candle(timestamp_hour=13, open=112, high=116, low=99, close=101),
+            self.make_candle(timestamp_hour=14, open=101, high=117, low=100, close=112),
+        ]
+
+        highs = list(iter_local_swing_highs(candles))
+        lows = list(iter_local_swing_lows(candles))
+        all_swings = list(iter_local_swing_points(candles))
+
+        self.assertEqual(len(highs), 1)
+        self.assertEqual(highs[0].pivot_timestamp, candles[1].timestamp)
+        self.assertEqual(len(lows), 1)
+        self.assertEqual(lows[0].pivot_timestamp, candles[3].timestamp)
+        self.assertEqual(len(all_swings), 2)
 
 
 if __name__ == "__main__":

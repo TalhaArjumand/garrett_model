@@ -105,6 +105,27 @@ For the current range, `ERL` candidates are:
 - manipulation-range boundary, if the current chart model explicitly marks that
   boundary as external to the range
 
+### V1 Candidate Extraction Boundary
+
+For implementation v1, the candidate extractor is intentionally narrower than
+the full proxy spec.
+
+Implemented / implementable first:
+
+- old highs from confirmed swing highs
+- old lows from confirmed swing lows
+- equal highs from grouped confirmed swing highs
+- equal lows from grouped confirmed swing lows
+
+Explicitly excluded from v1:
+
+- manipulation-range candidates
+- final active `ERL` selection
+- dealing-range-based selection logic
+
+Equal-high / equal-low grouping must use an explicit tolerance parameter.
+That tolerance is a research assumption, not doctrine.
+
 ### Step 3: Choose direction side
 
 For `IRL -> ERL`:

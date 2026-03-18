@@ -4,9 +4,11 @@ import unittest
 
 from gxt.candles import Candle, utc_datetime
 from gxt.erl_proxy import (
+    ERLCandidate,
     ERLProxy,
     build_bearish_swing_low_erl_proxy,
     build_bullish_swing_high_erl_proxy,
+    detect_erl_candidates,
     validate_erl_proxy_inputs,
 )
 
@@ -86,6 +88,70 @@ class ErlProxyTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "same symbol"):
             validate_erl_proxy_inputs(b, c, d)
+
+    def test_detect_erl_candidates_returns_old_high_and_old_low(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=11, open=108, high=118, low=101, close=113),
+            self.make_candle(timestamp_hour=12, open=109, high=114, low=104, close=112),
+            self.make_candle(timestamp_hour=13, open=112, high=116, low=99, close=101),
+            self.make_candle(timestamp_hour=14, open=101, high=117, low=100, close=112),
+        ]
+
+        candidates = detect_erl_candidates(candles)
+
+        self.assertEqual([candidate.kind for candidate in candidates], ["old_high", "old_low"])
+        self.assertTrue(all(isinstance(candidate, ERLCandidate) for candidate in candidates))
+        self.assertEqual(candidates[0].side, "buy_side")
+        self.assertEqual(candidates[0].lower_bound, 118)
+        self.assertEqual(candidates[1].side, "sell_side")
+        self.assertEqual(candidates[1].lower_bound, 99)
+
+    def test_detect_erl_candidates_groups_equal_highs_with_explicit_tolerance(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=11, open=108, high=120.0, low=101, close=113),
+            self.make_candle(timestamp_hour=12, open=109, high=114, low=104, close=112),
+            self.make_candle(timestamp_hour=13, open=112, high=119.6, low=105, close=111),
+            self.make_candle(timestamp_hour=14, open=111, high=113, low=103, close=104),
+        ]
+
+        candidates = detect_erl_candidates(candles, equal_tolerance=0.5)
+
+        equal_highs = [candidate for candidate in candidates if candidate.kind == "equal_highs"]
+        self.assertEqual(len(equal_highs), 1)
+        self.assertEqual(equal_highs[0].side, "buy_side")
+        self.assertEqual(equal_highs[0].lower_bound, 119.6)
+        self.assertEqual(equal_highs[0].upper_bound, 120.0)
+        self.assertEqual(len(equal_highs[0].anchor_timestamps), 2)
+
+    def test_detect_erl_candidates_groups_equal_lows_with_explicit_tolerance(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=120, high=125, low=111, close=114),
+            self.make_candle(timestamp_hour=11, open=114, high=116, low=100.0, close=105),
+            self.make_candle(timestamp_hour=12, open=109, high=118, low=104, close=112),
+            self.make_candle(timestamp_hour=13, open=112, high=119, low=100.3, close=111),
+            self.make_candle(timestamp_hour=14, open=111, high=120, low=104, close=115),
+        ]
+
+        candidates = detect_erl_candidates(candles, equal_tolerance=0.5)
+
+        equal_lows = [candidate for candidate in candidates if candidate.kind == "equal_lows"]
+        self.assertEqual(len(equal_lows), 1)
+        self.assertEqual(equal_lows[0].side, "sell_side")
+        self.assertEqual(equal_lows[0].lower_bound, 100.0)
+        self.assertEqual(equal_lows[0].upper_bound, 100.3)
+        self.assertEqual(len(equal_lows[0].anchor_timestamps), 2)
+
+    def test_detect_erl_candidates_requires_non_negative_equal_tolerance(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=11, open=108, high=120, low=101, close=113),
+            self.make_candle(timestamp_hour=12, open=109, high=114, low=104, close=112),
+        ]
+
+        with self.assertRaisesRegex(ValueError, "equal_tolerance must be >= 0"):
+            detect_erl_candidates(candles, equal_tolerance=-0.1)
 
 
 if __name__ == "__main__":
