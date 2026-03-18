@@ -119,6 +119,27 @@ Interpretation:
   - `EQ(C2)` qualifies `C3`
   - `EQ(C3)` qualifies `C4`
 
+### Bearish C4 Candidate Match 1
+
+- `C1 = 2026-03-12 08:00`
+- `C2 = 2026-03-12 12:00`
+- `C3 = 2026-03-12 16:00`
+- `C4 = 2026-03-12 20:00`
+- result: `match`
+
+Why it matches:
+
+- predecessor `C1 -> C2 -> C3` was already a valid bearish sequence
+- `EQ(C3)` was the active continuation boundary
+- `high(C4) < EQ(C3)`
+
+Interpretation:
+
+- the narrow bearish `C4` candidate primitive also survived same-source MT5
+  chart review
+- the generalized bullish/bearish symmetry rule is now supported by reviewed
+  real-data behavior at the `C4` candidate layer too
+
 ## Current Assessment
 
 The current doctrine implementation state is:
@@ -127,6 +148,7 @@ The current doctrine implementation state is:
 - real-data tested
 - manually confirmed on same-source MT5 chart examples
 - extended through the first reviewed bullish `C4` candidate
+- extended through the first reviewed bearish `C4` candidate
 
 Current reviewed result set:
 
@@ -134,10 +156,12 @@ Current reviewed result set:
 - bearish matches: `2`
 - reviewed near-miss rejection: `1`
 - bullish `C4` candidate matches: `1`
+- bearish `C4` candidate matches: `1`
 
 This is sufficient evidence to:
 
 - keep the current `C1 -> C2 -> C3` primitive
 - keep the narrow bullish `C4` candidate primitive
+- keep the narrow bearish `C4` candidate primitive
 - proceed to the next doctrine clarification or review step without widening
   scope prematurely
