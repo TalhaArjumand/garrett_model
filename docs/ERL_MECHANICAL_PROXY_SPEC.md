@@ -53,6 +53,34 @@ At the current project stage, that means:
 - then define its external boundaries
 - then choose the side implied by the active universal-model direction
 
+### H2 — Local swing-point ERL proxy
+
+In bullish universal-model examples, a candidate mechanical `ERL` proxy may be
+the high of a confirmed local swing-high candle `C`, where for consecutive
+candles `B, C, D`:
+
+- `high(C) > high(B)`
+- `high(C) > high(D)`
+
+In bearish universal-model examples, a candidate mechanical `ERL` proxy may be
+the low of a confirmed local swing-low candle `C`, where for consecutive
+candles `B, C, D`:
+
+- `low(C) < low(B)`
+- `low(C) < low(D)`
+
+Status:
+
+- research hypothesis only
+- not locked Garrett doctrine
+
+Important timing note:
+
+- this proxy is only confirmed after the right-neighbor candle `D` closes
+- so it is suitable for structural annotation, proxy targeting, and later
+  testing
+- it is not yet suitable as a locked real-time doctrinal selector
+
 ## Mechanical Proxy
 
 ### Step 1: Define the dealing range
