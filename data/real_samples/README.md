@@ -3,6 +3,7 @@
 Drop the first real verification sample here:
 
 - `xauusd_4h.csv`
+- `xauusd_4h_mt5_raw.csv`
 
 Use the schema:
 
@@ -21,9 +22,10 @@ Rules:
 
 Current sample note:
 
-- `xauusd_4h.csv` was normalized from a Myfxbook export
-- the source timestamps were timezone-naive
-- the current file preserves them with an explicit `Asia/Karachi` offset
+- `xauusd_4h.csv` is currently normalized from the MT5 export
+- `xauusd_4h_mt5_raw.csv` is the untouched MT5 source file
+- the source timestamps are timezone-naive MT5 chart/broker time
+- the normalized file preserves them with an explicit `Asia/Karachi` offset
 - revisit this timezone assumption before using session-sensitive doctrine
 
 Do not commit large raw exports by default. Start with a small, reviewable

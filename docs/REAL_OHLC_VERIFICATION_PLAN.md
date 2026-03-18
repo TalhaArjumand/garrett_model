@@ -60,10 +60,11 @@ another timezone, normalize it before relying on the results.
 
 Current sample note:
 
-- the first `XAUUSD 4H` sample was normalized from a timezone-naive Myfxbook export
-- it currently uses an explicit `Asia/Karachi` offset as a provisional source-time assumption
+- the current `XAUUSD 4H` sample is normalized from a timezone-naive MT5 export
+- the raw source file is preserved as `data/real_samples/xauusd_4h_mt5_raw.csv`
+- it currently uses an explicit `Asia/Karachi` offset as a provisional chart-time assumption
 - this is acceptable for structural verification, but session-sensitive doctrine
-  should later be checked against a confirmed vendor timezone
+  should later be checked against confirmed broker/server time
 
 ## Verification Steps
 

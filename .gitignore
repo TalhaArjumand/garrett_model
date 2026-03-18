@@ -11,3 +11,4 @@ __pycache__/
 htmlcov/
 .venv/
 .env
+XAUUSD_historical_data.csv
