@@ -1,4 +1,10 @@
 from .candles import Candle, require_closed, utc_datetime
+from .erl_proxy import (
+    ERLProxy,
+    build_bearish_swing_low_erl_proxy,
+    build_bullish_swing_high_erl_proxy,
+    validate_erl_proxy_inputs,
+)
 from .fvg import (
     FairValueGap,
     build_bearish_fvg,
@@ -7,6 +13,14 @@ from .fvg import (
     is_bearish_fvg,
     is_bullish_fvg,
     validate_fvg_inputs,
+)
+from .local_swing import (
+    LocalSwingPoint,
+    build_local_swing_high,
+    build_local_swing_low,
+    is_local_swing_high,
+    is_local_swing_low,
+    validate_local_swing_inputs,
 )
 from .sequence_primitives import (
     closes_inside_range,
@@ -40,6 +54,16 @@ __all__ = [
     "Candle",
     "require_closed",
     "utc_datetime",
+    "LocalSwingPoint",
+    "validate_local_swing_inputs",
+    "is_local_swing_high",
+    "is_local_swing_low",
+    "build_local_swing_high",
+    "build_local_swing_low",
+    "ERLProxy",
+    "validate_erl_proxy_inputs",
+    "build_bullish_swing_high_erl_proxy",
+    "build_bearish_swing_low_erl_proxy",
     "FairValueGap",
     "validate_fvg_inputs",
     "is_bullish_fvg",
