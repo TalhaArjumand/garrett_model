@@ -54,6 +54,43 @@ The reviewed teaching material also states:
 At the current doctrine state, this grouping concept is locked at a qualitative
 level only.
 
+The reviewed examples show two common forms:
+
+### Form 1: Multiple Swing Points Very Close Together
+
+Relatively equal highs or lows can appear as:
+
+- two different swing points
+- whose highs are very close together
+  or
+- whose lows are very close together
+
+This still forms one grouped liquidity area.
+
+### Form 2: Clustered Highs Or Lows
+
+Relatively equal highs or lows can also appear as:
+
+- multiple highs clustered together
+  or
+- multiple lows clustered together
+
+This also forms one grouped liquidity area.
+
+## Old Highs And Old Lows
+
+Old highs and old lows refer to prior standout swing points.
+
+At the current reviewed doctrine level:
+
+- an old high refers to a previous high where a single swing high stands out
+- an old low refers to a previous low where a single swing low stands out
+
+So the current liquidity layer includes both:
+
+- grouped liquidity from relatively equal highs / lows
+- single standout old highs / old lows
+
 ## Obvious Outside-Of-Range Focus
 
 The reviewed teaching material emphasizes focusing on:
