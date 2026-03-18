@@ -30,7 +30,7 @@ The following terms are present but not yet fully defined here:
 ## Core Source-Derived Doctrine
 
 From the current transcript chunk and accompanying diagram, the universal model
-is presented as a framework.
+is presented as a generalized framework.
 
 The framework says, in effect:
 
@@ -38,11 +38,32 @@ The framework says, in effect:
 - reversal is expected from that level
 - the expected objective is the relevant external range
 
-This gives the model three context objects:
+This gives the model three high-level context objects:
 
 1. a watch location / key level
 2. an expected reaction
 3. a target level
+
+## Current Hierarchy
+
+The cleanest current doctrinal hierarchy is:
+
+1. `Universal Model`
+   - generalized framework
+2. `Key Levels`
+   - important locations inside the framework
+3. `IRL / ERL`
+   - internal / external range-liquidity structure used by the framework
+4. `IRL Key Level`
+   - in the current chunk, the fair value gap (`FVG`)
+
+This hierarchy is important because it prevents collapsing:
+
+- framework
+- range relationship
+- key level object
+
+into one concept.
 
 ## Internal to External Model
 
@@ -55,28 +76,33 @@ For the `internal to external` model:
 
 The current evidence strongly supports the interpretation that:
 
-- `IRL` is the internal fair value gap / internal imbalance zone
-- `ERL` is the external target liquidity
+- `IRL` is the internal-side range-liquidity context
+- `ERL` is the external-side target liquidity context
 
 So, in the current doctrinal reading:
 
-- watch location / key level = `IRL`
-- expected behavior = reversal from `IRL`
+- watch location / key level is found on the `IRL` side
+- expected behavior = reversal from the `IRL` key level
 - target = `ERL`
 
 ## IRL as Key Level
 
 From the current transcript and image pair, the internal key level is being
-presented as the fair value gap / imbalance zone inside the model structure.
+presented as the fair value gap / imbalance zone inside the `IRL` structure.
 
 Current source-derived doctrine statement:
 
-- in this universal-model explanation, `IRL` is being represented as the fair
-  value gap / internal imbalance zone that price retraces into before
-  reversing
+- in this universal-model explanation, the `IRL` key level is the fair value
+  gap / internal imbalance zone that price retraces into before reversing
 
 This is important because it ties the higher-level model directly to a
-specific key level concept.
+specific key-level subtype.
+
+So the current refined reading is:
+
+- `IRL` is not simply equal to `FVG`
+- rather, `FVG` is the current key level being defined within the `IRL`
+  structure
 
 ## ERL as Target
 
@@ -98,8 +124,11 @@ grammar, not standalone trade context.
 Current hierarchy:
 
 1. universal-model context
-2. key level (`IRL`)
-3. target (`ERL`)
+2. range / key-level context:
+   - `IRL`
+   - `ERL`
+3. specific key level under the current chunk:
+   - `FVG` inside `IRL`
 4. candle reaction / execution grammar:
    - `C2` closure
    - `C3` support / expansion
@@ -112,12 +141,14 @@ contextual location.
 
 Locked as source-derived doctrine context:
 
-- the universal model is a framework for where to watch and where to target
+- the universal model is a generalized framework for where to watch and where
+  to target
+- the framework uses key levels
 - in the current `internal to external` explanation:
-  - `IRL` is the key level
-  - `ERL` is the target
-- the current evidence strongly supports `IRL` being represented as the fair
-  value gap / internal imbalance zone
+  - `IRL` is the internal-side range-liquidity context
+  - `ERL` is the external target-side liquidity context
+- the current evidence strongly supports the `IRL` key level being represented
+  by the fair value gap / internal imbalance zone
 
 ## What Is Not Yet Locked
 
@@ -125,13 +156,14 @@ Not yet locked:
 
 1. the exact mechanical boundaries of `IRL`
 2. the exact mechanical boundaries of `ERL`
-3. whether every `IRL` in Garrett's framework is always exactly a codable
-   three-candle fair value gap object
+3. whether every `IRL` in Garrett's framework always contains the same kind of
+   codable `FVG` object
 4. how the active `ERL` is selected unambiguously when multiple candidates
    exist
 5. the exact doctrine for:
    - `external to internal`
    - `manipulation range`
+6. whether there are additional key-level types under `IRL` besides `FVG`
 
 ## Implementation Status
 
