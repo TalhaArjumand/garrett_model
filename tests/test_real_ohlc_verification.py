@@ -7,6 +7,7 @@ from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
     count_c4_candidates,
+    count_erl_candidates,
     count_fvgs,
     count_valid_sequences,
     iter_quads,
@@ -41,6 +42,11 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_fvg_count, 0)
+        self.assertGreaterEqual(report.erl_candidate_count, 0)
+        self.assertGreaterEqual(report.erl_old_high_count, 0)
+        self.assertGreaterEqual(report.erl_old_low_count, 0)
+        self.assertGreaterEqual(report.erl_equal_highs_count, 0)
+        self.assertGreaterEqual(report.erl_equal_lows_count, 0)
 
     def test_count_valid_sequences_skips_non_consecutive_windows(self) -> None:
         candles = [
@@ -101,6 +107,26 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_fvgs(candles)
         self.assertEqual((bullish, bearish), (0, 0))
+
+    def test_count_erl_candidates_counts_old_and_equal_structures(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 95, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 120.0, 101, 113),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 109, 114, 104, 112),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 112, 119.6, 105, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 111, 113, 103, 104),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 104, 112, 100.0, 105),
+            Candle("XAUUSD", utc_datetime(2026, 3, 15, 0), "4H", 105, 116, 104, 112),
+            Candle("XAUUSD", utc_datetime(2026, 3, 15, 4), "4H", 112, 119, 100.3, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 15, 8), "4H", 111, 120, 104, 115),
+        ]
+
+        counts = count_erl_candidates(candles, equal_tolerance=0.5)
+        self.assertEqual(counts["erl_candidate_count"], 6)
+        self.assertEqual(counts["erl_old_high_count"], 2)
+        self.assertEqual(counts["erl_old_low_count"], 2)
+        self.assertEqual(counts["erl_equal_highs_count"], 1)
+        self.assertEqual(counts["erl_equal_lows_count"], 1)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Iterable
 
 from .candles import Candle
+from .erl_proxy import detect_erl_candidates
 from .fvg import is_bearish_fvg, is_bullish_fvg
 from .sequence_primitives import (
     has_bearish_c4_continuation_candidate,
@@ -27,6 +28,11 @@ class RealSampleReport:
     bearish_c4_candidate_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
+    erl_candidate_count: int
+    erl_old_high_count: int
+    erl_old_low_count: int
+    erl_equal_highs_count: int
+    erl_equal_lows_count: int
 
 
 def load_candles_from_csv(csv_path: Path) -> list[Candle]:
@@ -122,7 +128,38 @@ def count_fvgs(candles: list[Candle]) -> tuple[int, int]:
     return bullish, bearish
 
 
-def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
+def count_erl_candidates(
+    candles: list[Candle],
+    *,
+    equal_tolerance: float | None = None,
+) -> dict[str, int]:
+    candidates = detect_erl_candidates(candles, equal_tolerance=equal_tolerance)
+    counts = {
+        "erl_candidate_count": len(candidates),
+        "erl_old_high_count": 0,
+        "erl_old_low_count": 0,
+        "erl_equal_highs_count": 0,
+        "erl_equal_lows_count": 0,
+    }
+
+    for candidate in candidates:
+        if candidate.kind == "old_high":
+            counts["erl_old_high_count"] += 1
+        elif candidate.kind == "old_low":
+            counts["erl_old_low_count"] += 1
+        elif candidate.kind == "equal_highs":
+            counts["erl_equal_highs_count"] += 1
+        elif candidate.kind == "equal_lows":
+            counts["erl_equal_lows_count"] += 1
+
+    return counts
+
+
+def build_real_sample_report(
+    candles: list[Candle],
+    *,
+    erl_equal_tolerance: float | None = None,
+) -> RealSampleReport:
     if not candles:
         raise ValueError("real sample cannot be empty")
 
@@ -139,6 +176,7 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
     bullish, bearish = count_valid_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_fvg, bearish_fvg = count_fvgs(candles)
+    erl_counts = count_erl_candidates(candles, equal_tolerance=erl_equal_tolerance)
     first = candles[0]
     return RealSampleReport(
         symbol=first.symbol,
@@ -151,4 +189,9 @@ def build_real_sample_report(candles: list[Candle]) -> RealSampleReport:
         bearish_c4_candidate_count=bearish_c4,
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
+        erl_candidate_count=erl_counts["erl_candidate_count"],
+        erl_old_high_count=erl_counts["erl_old_high_count"],
+        erl_old_low_count=erl_counts["erl_old_low_count"],
+        erl_equal_highs_count=erl_counts["erl_equal_highs_count"],
+        erl_equal_lows_count=erl_counts["erl_equal_lows_count"],
     )
