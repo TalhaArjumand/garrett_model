@@ -183,6 +183,94 @@ Interpretation:
 - current real-data review supports using the standard bullish/bearish
   three-candle imbalance geometry as the working Garrett-compatible baseline
 
+## Confirmed IRL / FVG State Matches
+
+### Reached Bearish FVG Match 1
+
+- `C1 = 2026-02-23 20:00`
+- `C2 = 2026-02-24 00:00`
+- `C3 = 2026-02-24 04:00`
+- candidate state = `reached`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+- zone = `5191.92` to `5201.13`
+- later reviewed candle:
+  - `2026-02-25 04:00`
+  - `high = 5210.76`
+  - `low = 5166.64`
+- this later candle range overlaps the gap zone
+
+Interpretation:
+
+- the bearish `FVG` geometry is valid
+- price later reached the gap
+- so this `IRL` candidate is historical / reached, not still resting
+
+### Reached Bullish FVG Match 1
+
+- `C1 = 2026-02-27 08:00`
+- `C2 = 2026-02-27 12:00`
+- `C3 = 2026-02-27 16:00`
+- candidate state = `reached`
+- result: `match`
+
+Why it matches:
+
+- `low(C3) > high(C1)`
+- zone = `5199.15` to `5213.95`
+- later reviewed candle:
+  - `2026-03-03 12:00`
+  - `high = 5288.13`
+  - `low = 5075.28`
+- this later candle range overlaps the gap zone
+
+Interpretation:
+
+- the bullish `FVG` geometry is valid
+- price later reached the gap
+- so this `IRL` candidate is historical / reached, not still resting
+
+### Resting Bearish FVG Match 1
+
+- `C1 = 2026-03-03 04:00`
+- `C2 = 2026-03-03 08:00`
+- `C3 = 2026-03-03 12:00`
+- candidate state = `resting`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+- zone = `5288.13` to `5305.41`
+- no later reviewed candle overlaps that zone
+
+Interpretation:
+
+- this bearish `FVG` is still resting in the current reviewed sample
+- so it remains a live `IRL` candidate in the helper/research layer
+
+### Resting Bearish FVG Match 2
+
+- `C1 = 2026-03-13 12:00`
+- `C2 = 2026-03-13 16:00`
+- `C3 = 2026-03-13 20:00`
+- candidate state = `resting`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+- zone = `5051.82` to `5079.88`
+- no later reviewed candle overlaps that zone
+
+Interpretation:
+
+- this bearish `FVG` is also still resting in the current reviewed sample
+- current IRL reporting correctly preserves it as an unreached candidate
+
 ## Confirmed ERL Liquidity-State Matches
 
 ### Resting Old High Match 1
@@ -299,6 +387,9 @@ Current reviewed result set:
 - bearish `C4` candidate matches: `1`
 - bullish `FVG` matches: `1`
 - bearish `FVG` matches: `1`
+- reached bearish `FVG` matches: `1`
+- reached bullish `FVG` matches: `1`
+- resting bearish `FVG` matches: `2`
 - resting `old_high` ERL matches: `1`
 - taken `old_high` ERL matches: `1`
 - rejected `equal_lows` grouping matches: `1`
@@ -310,6 +401,9 @@ This is sufficient evidence to:
 - keep the narrow bullish `C4` candidate primitive
 - keep the narrow bearish `C4` candidate primitive
 - keep the baseline bullish/bearish `FVG` primitive
+- keep the helper-layer `IRL` candidate-state boundary between:
+  - resting gaps
+  - and already-reached gaps
 - keep the corrected ERL liquidity-state boundary between:
   - historical swing-derived liquidity
   - and still-resting liquidity
