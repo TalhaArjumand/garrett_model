@@ -90,14 +90,16 @@ Garrett explicitly locks them.
 
 Within the currently extracted universal-model layer:
 
-- `FVG` is the current key-level subtype being discussed inside `IRL`
+- `IRL` is now directly defined as a fair value gap
+- so `FVG` is not merely associated with `IRL`
+- it is the current direct `IRL` object
 
 So the current contextual hierarchy is:
 
 1. `Universal Model`
 2. `Key Levels`
 3. `IRL / ERL`
-4. `FVG` as the currently discussed `IRL` key-level object
+4. `FVG` as the current direct `IRL` object
 
 This means `FVG` is currently important because it is the key level price is
 expected to retrace into before the candle-sequence execution logic becomes
@@ -109,6 +111,8 @@ Locked in the current repo doctrine:
 
 - `FVG` is the currently discussed `IRL` key-level subtype in the universal
   model context
+- in the currently reviewed defining material, `IRL` is directly defined as a
+  fair value gap
 - `FVG` should be treated as a separate doctrine object from:
   - `IRL`
   - `ERL`

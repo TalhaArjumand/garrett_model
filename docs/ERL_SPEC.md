@@ -29,7 +29,19 @@ depending on which side of the universal-model relationship is active.
 
 ## Chart Objects That Can Count As ERL
 
-From the currently reviewed doctrine, `ERL` may be represented by:
+From the reviewed defining material, `ERL` is directly described as:
+
+- a swing high
+  or
+- a swing low
+
+in the form of:
+
+- buy-side liquidity
+  or
+- sell-side liquidity
+
+The broader reviewed object family also includes:
 
 - range high / range low
 - swing high / swing low
@@ -64,6 +76,8 @@ It can also be the reaction location in the mirrored universal-model path.
 Locked in the current repo doctrine:
 
 - `ERL` is the external-side chart object in the universal model
+- `ERL` is directly described in the reviewed defining material as a swing
+  high or swing low in the form of buy-side or sell-side liquidity
 - current chart objects that can count as `ERL` include:
   - range high / range low
   - swing high / swing low

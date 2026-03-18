@@ -17,7 +17,7 @@ Already locked elsewhere in the repo:
 
 - the universal model is the higher-level framework
 - `IRL / ERL` define the current internal / external range-liquidity structure
-- `FVG` is the currently discussed `IRL` key-level object
+- `IRL` is directly defined as `FVG`
 - candle-formation logic is watched once price reaches a key level
 - `ERL` functions as the target side in the current `internal to external`
   explanation
