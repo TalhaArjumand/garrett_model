@@ -7,7 +7,9 @@ from gxt.sequence_primitives import (
     has_bearish_c4_continuation_candidate,
     closes_inside_range,
     equilibrium,
+    is_bearish_c2_reversal_to_expansion,
     has_bearish_c3_support,
+    is_bullish_c2_reversal_to_expansion,
     has_bullish_c4_continuation_candidate,
     has_bullish_c3_support,
     is_bearish_c2_closure,
@@ -16,6 +18,7 @@ from gxt.sequence_primitives import (
     is_bullish_c3_expansion_confirmation,
     is_valid_bearish_c2_sequence,
     is_valid_bullish_c2_sequence,
+    validate_case_b_inputs,
     validate_continuation_inputs,
     validate_sequence_inputs,
 )
@@ -141,6 +144,36 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         self.assertFalse(is_bullish_c3_expansion_confirmation(c2, c3))
 
+    def test_valid_bullish_c2_reversal_to_expansion(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=116, low=98, close=114)
+
+        self.assertTrue(is_bullish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bullish_c2_reversal_to_expansion_requires_strict_sweep(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=116, low=100, close=114)
+
+        self.assertFalse(is_bullish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bullish_c2_reversal_to_expansion_requires_reclaim_of_c1_low(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=95, high=103, low=94, close=99)
+
+        self.assertFalse(is_bullish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bullish_c2_reversal_to_expansion_rejects_large_lower_wick(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=116, low=90, close=114)
+
+        self.assertFalse(is_bullish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bullish_c2_reversal_to_expansion_rejects_doji_like_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=104, high=110, low=98, close=104)
+
+        self.assertFalse(is_bullish_c2_reversal_to_expansion(c1, c2))
+
     def test_valid_bearish_c2_sequence(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
         c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
@@ -174,6 +207,36 @@ class SequencePrimitiveTests(unittest.TestCase):
         c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=109.0)
 
         self.assertFalse(is_bearish_c3_expansion_confirmation(c2, c3))
+
+    def test_valid_bearish_c2_reversal_to_expansion(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=109, high=112, low=96, close=97)
+
+        self.assertTrue(is_bearish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bearish_c2_reversal_to_expansion_requires_strict_sweep(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=109, high=110, low=96, close=97)
+
+        self.assertFalse(is_bearish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bearish_c2_reversal_to_expansion_requires_reclaim_of_c1_high(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=112, high=113, low=104, close=111)
+
+        self.assertFalse(is_bearish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bearish_c2_reversal_to_expansion_rejects_large_upper_wick(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=109, high=120, low=96, close=97)
+
+        self.assertFalse(is_bearish_c2_reversal_to_expansion(c1, c2))
+
+    def test_bearish_c2_reversal_to_expansion_rejects_doji_like_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=104, high=112, low=100, close=104)
+
+        self.assertFalse(is_bearish_c2_reversal_to_expansion(c1, c2))
 
     def test_mixed_symbol_rejection(self) -> None:
         c1 = self.make_candle(symbol="XAUUSD", timestamp_hour=10, open=100, high=110, low=98, close=108)
@@ -237,6 +300,41 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         with self.assertRaisesRegex(TypeError, "must be a Candle"):
             validate_sequence_inputs(c1, c2, c3)
+
+    def test_case_b_rejects_non_consecutive_inputs(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=12, open=100, high=116, low=98, close=114)
+
+        with self.assertRaisesRegex(ValueError, "must be consecutive"):
+            validate_case_b_inputs(c1, c2)
+
+    def test_case_b_rejects_unclosed_inputs(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(
+            timestamp_hour=11,
+            open=100,
+            high=116,
+            low=98,
+            close=114,
+            is_closed=False,
+        )
+
+        with self.assertRaisesRegex(ValueError, "must be closed"):
+            validate_case_b_inputs(c1, c2)
+
+    def test_case_b_rejects_zero_range_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=100, low=100, close=100)
+
+        with self.assertRaisesRegex(ValueError, "positive-range"):
+            is_bullish_c2_reversal_to_expansion(c1, c2)
+
+    def test_case_b_rejects_invalid_wick_fraction(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=116, low=98, close=114)
+
+        with self.assertRaisesRegex(ValueError, "between 0 and 1 inclusive"):
+            is_bullish_c2_reversal_to_expansion(c1, c2, max_lower_wick_fraction=1.1)
 
     def test_c4_non_consecutive_rejection(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)

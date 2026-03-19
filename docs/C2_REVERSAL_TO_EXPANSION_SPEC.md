@@ -86,7 +86,20 @@ Not yet locked:
 
 ## Implementation Status
 
-Implementation status: doctrine only.
+Implementation status: partially implemented.
 
-No code should currently treat this as already machine-ready just because the
-high-level case is now locked.
+Current implementation includes:
+
+- isolated bullish and bearish Case B primitives
+- explicit research wick-threshold parameter
+- real-data candidate counting
+
+The implementation boundary is documented separately in:
+
+- `C2_REVERSAL_TO_EXPANSION_IMPLEMENTATION_NOTES.md`
+
+What remains open:
+
+- final machine-ready Garrett threshold for wick size
+- merged swing-formation selection across multiple cases
+- trade-selection logic on top of this primitive

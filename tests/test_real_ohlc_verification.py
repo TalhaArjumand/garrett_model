@@ -6,11 +6,13 @@ from pathlib import Path
 from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
+    count_case_b_candidates,
     count_c4_candidates,
     count_fvg_candidates,
     count_erl_candidates,
     count_fvgs,
     count_valid_sequences,
+    iter_pairs,
     iter_quads,
     load_candles_from_csv,
 )
@@ -41,6 +43,8 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_sequence_count, 0)
         self.assertGreaterEqual(report.bullish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
+        self.assertGreaterEqual(report.bullish_case_b_candidate_count, 0)
+        self.assertGreaterEqual(report.bearish_case_b_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_fvg_count, 0)
         self.assertGreaterEqual(report.fvg_candidate_count, 0)
@@ -88,6 +92,20 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(quads[1][0].timestamp, candles[1].timestamp)
         self.assertEqual(quads[1][3].timestamp, candles[4].timestamp)
 
+    def test_iter_pairs_yields_overlapping_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 105, 95, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 102, 106, 96, 103),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 103, 107, 97, 104),
+        ]
+
+        pairs = list(iter_pairs(candles))
+        self.assertEqual(len(pairs), 2)
+        self.assertEqual(pairs[0][0].timestamp, candles[0].timestamp)
+        self.assertEqual(pairs[0][1].timestamp, candles[1].timestamp)
+        self.assertEqual(pairs[1][0].timestamp, candles[1].timestamp)
+        self.assertEqual(pairs[1][1].timestamp, candles[2].timestamp)
+
     def test_count_c4_candidates_skips_non_consecutive_windows(self) -> None:
         candles = [
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 105, 95, 102),
@@ -98,6 +116,27 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_c4_candidates(candles)
         self.assertEqual((bullish, bearish), (0, 0))
+
+    def test_count_case_b_candidates_counts_bullish_and_bearish_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 98, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 109, 112, 96, 97),
+        ]
+
+        bullish, bearish = count_case_b_candidates(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
+
+    def test_count_case_b_candidates_skips_non_consecutive_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 98, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 17, 0), "4H", 100, 110, 98, 108),
+        ]
+
+        bullish, bearish = count_case_b_candidates(candles)
+        self.assertEqual((bullish, bearish), (1, 0))
 
     def test_count_fvgs_counts_bullish_and_bearish_baseline_gaps(self) -> None:
         candles = [

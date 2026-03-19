@@ -11,7 +11,9 @@ from .fvg import detect_fvg_candidates, is_bearish_fvg, is_bullish_fvg
 from .sequence_primitives import (
     has_bearish_c4_continuation_candidate,
     has_bullish_c4_continuation_candidate,
+    is_bearish_c2_reversal_to_expansion,
     is_valid_bearish_c2_sequence,
+    is_bullish_c2_reversal_to_expansion,
     is_valid_bullish_c2_sequence,
 )
 
@@ -26,6 +28,8 @@ class RealSampleReport:
     bearish_sequence_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
+    bullish_case_b_candidate_count: int
+    bearish_case_b_candidate_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
     fvg_candidate_count: int
@@ -90,6 +94,12 @@ def iter_triples(candles: Iterable[Candle]) -> Iterable[tuple[Candle, Candle, Ca
         yield candles[idx], candles[idx + 1], candles[idx + 2]
 
 
+def iter_pairs(candles: Iterable[Candle]) -> Iterable[tuple[Candle, Candle]]:
+    candles = list(candles)
+    for idx in range(len(candles) - 1):
+        yield candles[idx], candles[idx + 1]
+
+
 def iter_quads(candles: Iterable[Candle]) -> Iterable[tuple[Candle, Candle, Candle, Candle]]:
     candles = list(candles)
     for idx in range(len(candles) - 3):
@@ -122,6 +132,33 @@ def count_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
             if has_bearish_c4_continuation_candidate(c1, c2, c3, c4):
                 bearish += 1
         except ValueError:
+            continue
+    return bullish, bearish
+
+
+def count_case_b_candidates(
+    candles: list[Candle],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2 in iter_pairs(candles):
+        try:
+            if is_bullish_c2_reversal_to_expansion(
+                c1,
+                c2,
+                max_lower_wick_fraction=max_wick_fraction,
+            ):
+                bullish += 1
+            if is_bearish_c2_reversal_to_expansion(
+                c1,
+                c2,
+                max_upper_wick_fraction=max_wick_fraction,
+            ):
+                bearish += 1
+        except ValueError:
+            # Weekend gaps and invalid runtime windows are not candidate pairs.
             continue
     return bullish, bearish
 
@@ -215,6 +252,7 @@ def build_real_sample_report(
     candles: list[Candle],
     *,
     erl_equal_tolerance: float | None = None,
+    case_b_max_wick_fraction: float = 0.25,
 ) -> RealSampleReport:
     if not candles:
         raise ValueError("real sample cannot be empty")
@@ -231,6 +269,10 @@ def build_real_sample_report(
     gaps = find_timestamp_gaps(candles)
     bullish, bearish = count_valid_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
+    bullish_case_b, bearish_case_b = count_case_b_candidates(
+        candles,
+        max_wick_fraction=case_b_max_wick_fraction,
+    )
     bullish_fvg, bearish_fvg = count_fvgs(candles)
     fvg_candidate_counts = count_fvg_candidates(candles)
     erl_counts = count_erl_candidates(candles, equal_tolerance=erl_equal_tolerance)
@@ -244,6 +286,8 @@ def build_real_sample_report(
         bearish_sequence_count=bearish,
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
+        bullish_case_b_candidate_count=bullish_case_b,
+        bearish_case_b_candidate_count=bearish_case_b,
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
         fvg_candidate_count=fvg_candidate_counts["fvg_candidate_count"],
