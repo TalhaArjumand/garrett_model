@@ -153,6 +153,32 @@ for research/helper classification such as:
 - whether a detected `FVG` is still resting
 - whether price has already reached that gap
 
+## Repo Lifecycle Policy
+
+The repo now separates:
+
+1. baseline `FVG` geometry
+2. helper-layer lifecycle state
+3. directional eligibility for same-bias use
+
+Current helper/research lifecycle states are:
+
+- `resting`
+- `reached`
+- `invalidated`
+
+Current repo lifecycle policy for directional invalidation is:
+
+- bullish `FVG` becomes invalid for bullish use if a later candle closes below
+  the lower boundary
+- bearish `FVG` becomes invalid for bearish use if a later candle closes above
+  the upper boundary
+
+This is a repo lifecycle / eligibility policy used by integration and
+research-layer code. It should not be overstated as a universal industry law or
+as fully locked Garrett doctrine unless later source material explicitly does
+so.
+
 ## Non-goals
 
 This spec does not yet define:

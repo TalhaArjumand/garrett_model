@@ -105,7 +105,11 @@ def _distance_to_zone(candidate: FVGCandidate, current_price: float) -> float:
 
 
 def _state_score(candidate: FVGCandidate) -> float:
-    return 1.0 if candidate.is_resting else 0.35
+    if candidate.is_resting:
+        return 1.0
+    if candidate.is_invalidated:
+        return 0.0
+    return 0.35
 
 
 def _direction_score(candidate: FVGCandidate, direction_bias: IRLDirectionBias) -> float:
@@ -163,6 +167,8 @@ def _build_reasons(
     reasons: list[str] = []
     if candidate.is_resting:
         reasons.append("candidate is resting, receiving full state score")
+    elif candidate.is_invalidated:
+        reasons.append("candidate has been directionally invalidated, receiving zero state score")
     else:
         reasons.append("candidate has already been reached, receiving discounted state score")
 
@@ -231,7 +237,7 @@ def _rank_detected_irl_candidates(
 
         feature_values = MappingProxyType(
             {
-                "state": "resting" if candidate.is_resting else "reached",
+                "state": candidate.lifecycle_state,
                 "candidate_direction": candidate.direction,
                 "state_score": state_score,
                 "direction_score": direction_score,

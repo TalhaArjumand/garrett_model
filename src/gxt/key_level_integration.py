@@ -285,6 +285,8 @@ def detect_internal_to_external_type_a_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -309,6 +311,8 @@ def detect_internal_to_external_type_a_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -363,6 +367,8 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -392,6 +398,8 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,

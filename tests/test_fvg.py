@@ -149,6 +149,7 @@ class FairValueGapTests(unittest.TestCase):
         self.assertEqual(len(candidates), 1)
         self.assertTrue(candidates[0].is_resting)
         self.assertIsNone(candidates[0].reached_at)
+        self.assertIsNone(candidates[0].invalidated_at)
 
     def test_detect_fvg_candidates_does_not_infer_reach_when_later_candle_skips_past_zone(self) -> None:
         candles = [
@@ -161,8 +162,41 @@ class FairValueGapTests(unittest.TestCase):
         candidates = detect_fvg_candidates(candles)
 
         self.assertEqual(len(candidates), 1)
-        self.assertTrue(candidates[0].is_resting)
+        self.assertFalse(candidates[0].is_resting)
         self.assertFalse(candidates[0].is_reached)
+        self.assertTrue(candidates[0].is_invalidated)
+
+    def test_detect_fvg_candidates_marks_bearish_gap_invalidated_on_close_above_upper_bound(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=120, high=125, low=110, close=112),
+            self.make_candle(timestamp_hour=11, open=111, high=113, low=100, close=101),
+            self.make_candle(timestamp_hour=12, open=102, high=108, low=95, close=97),
+            self.make_candle(timestamp_hour=13, open=111, high=115, low=111, close=114),
+        ]
+
+        candidates = detect_fvg_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertFalse(candidates[0].is_resting)
+        self.assertFalse(candidates[0].is_reached)
+        self.assertTrue(candidates[0].is_invalidated)
+        self.assertEqual(candidates[0].invalidated_at, candles[3].timestamp)
+
+    def test_detect_fvg_candidates_marks_bullish_gap_invalidated_on_close_below_lower_bound(self) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=10, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=11, open=108, high=120, low=107, close=119),
+            self.make_candle(timestamp_hour=12, open=118, high=125, low=112, close=123),
+            self.make_candle(timestamp_hour=13, open=109, high=109, low=100, close=105),
+        ]
+
+        candidates = detect_fvg_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertFalse(candidates[0].is_resting)
+        self.assertFalse(candidates[0].is_reached)
+        self.assertTrue(candidates[0].is_invalidated)
+        self.assertEqual(candidates[0].invalidated_at, candles[3].timestamp)
 
     def test_mixed_timeframe_rejection(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, timeframe="1H", open=100, high=110, low=95, close=108)

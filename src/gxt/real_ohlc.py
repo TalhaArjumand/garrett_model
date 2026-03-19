@@ -80,10 +80,13 @@ class RealSampleReport:
     fvg_candidate_count: int
     fvg_resting_candidate_count: int
     fvg_reached_candidate_count: int
+    fvg_invalidated_candidate_count: int
     bullish_resting_fvg_count: int
     bearish_resting_fvg_count: int
     bullish_reached_fvg_count: int
     bearish_reached_fvg_count: int
+    bullish_invalidated_fvg_count: int
+    bearish_invalidated_fvg_count: int
     erl_candidate_count: int
     erl_resting_candidate_count: int
     erl_old_high_count: int
@@ -400,10 +403,13 @@ def count_fvg_candidates(candles: list[Candle]) -> dict[str, int]:
         "fvg_candidate_count": len(candidates),
         "fvg_resting_candidate_count": 0,
         "fvg_reached_candidate_count": 0,
+        "fvg_invalidated_candidate_count": 0,
         "bullish_resting_fvg_count": 0,
         "bearish_resting_fvg_count": 0,
         "bullish_reached_fvg_count": 0,
         "bearish_reached_fvg_count": 0,
+        "bullish_invalidated_fvg_count": 0,
+        "bearish_invalidated_fvg_count": 0,
     }
 
     for candidate in candidates:
@@ -413,12 +419,18 @@ def count_fvg_candidates(candles: list[Candle]) -> dict[str, int]:
                 counts["bullish_resting_fvg_count"] += 1
             elif candidate.direction == "bearish":
                 counts["bearish_resting_fvg_count"] += 1
-        else:
+        if candidate.is_reached:
             counts["fvg_reached_candidate_count"] += 1
             if candidate.direction == "bullish":
                 counts["bullish_reached_fvg_count"] += 1
             elif candidate.direction == "bearish":
                 counts["bearish_reached_fvg_count"] += 1
+        if candidate.is_invalidated:
+            counts["fvg_invalidated_candidate_count"] += 1
+            if candidate.direction == "bullish":
+                counts["bullish_invalidated_fvg_count"] += 1
+            elif candidate.direction == "bearish":
+                counts["bearish_invalidated_fvg_count"] += 1
 
     return counts
 
@@ -599,10 +611,13 @@ def build_real_sample_report(
         fvg_candidate_count=fvg_candidate_counts["fvg_candidate_count"],
         fvg_resting_candidate_count=fvg_candidate_counts["fvg_resting_candidate_count"],
         fvg_reached_candidate_count=fvg_candidate_counts["fvg_reached_candidate_count"],
+        fvg_invalidated_candidate_count=fvg_candidate_counts["fvg_invalidated_candidate_count"],
         bullish_resting_fvg_count=fvg_candidate_counts["bullish_resting_fvg_count"],
         bearish_resting_fvg_count=fvg_candidate_counts["bearish_resting_fvg_count"],
         bullish_reached_fvg_count=fvg_candidate_counts["bullish_reached_fvg_count"],
         bearish_reached_fvg_count=fvg_candidate_counts["bearish_reached_fvg_count"],
+        bullish_invalidated_fvg_count=fvg_candidate_counts["bullish_invalidated_fvg_count"],
+        bearish_invalidated_fvg_count=fvg_candidate_counts["bearish_invalidated_fvg_count"],
         erl_candidate_count=erl_counts["erl_candidate_count"],
         erl_resting_candidate_count=erl_counts["erl_resting_candidate_count"],
         erl_old_high_count=erl_counts["erl_old_high_count"],

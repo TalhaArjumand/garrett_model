@@ -98,10 +98,13 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.fvg_candidate_count, 0)
         self.assertGreaterEqual(report.fvg_resting_candidate_count, 0)
         self.assertGreaterEqual(report.fvg_reached_candidate_count, 0)
+        self.assertGreaterEqual(report.fvg_invalidated_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_resting_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_resting_fvg_count, 0)
         self.assertGreaterEqual(report.bullish_reached_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_reached_fvg_count, 0)
+        self.assertGreaterEqual(report.bullish_invalidated_fvg_count, 0)
+        self.assertGreaterEqual(report.bearish_invalidated_fvg_count, 0)
         self.assertGreaterEqual(report.erl_candidate_count, 0)
         self.assertGreaterEqual(report.erl_resting_candidate_count, 0)
         self.assertGreaterEqual(report.erl_old_high_count, 0)
@@ -384,10 +387,13 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(counts["fvg_candidate_count"], 2)
         self.assertEqual(counts["fvg_resting_candidate_count"], 1)
         self.assertEqual(counts["fvg_reached_candidate_count"], 1)
+        self.assertEqual(counts["fvg_invalidated_candidate_count"], 1)
         self.assertEqual(counts["bullish_resting_fvg_count"], 0)
         self.assertEqual(counts["bearish_resting_fvg_count"], 1)
         self.assertEqual(counts["bullish_reached_fvg_count"], 1)
         self.assertEqual(counts["bearish_reached_fvg_count"], 0)
+        self.assertEqual(counts["bullish_invalidated_fvg_count"], 1)
+        self.assertEqual(counts["bearish_invalidated_fvg_count"], 0)
 
     def test_count_erl_candidates_counts_old_and_equal_structures(self) -> None:
         candles = [

@@ -79,10 +79,18 @@ Those remain separate doctrine questions.
 
 ## Implementation Status
 
-Implementation status: doctrine only.
+Implementation status: doctrine plus helper-layer lifecycle tracking.
 
-The repo already contains baseline `FVG` code, but no higher-order `IRL`
-selection or qualification engine is currently implemented.
+The repo already contains:
+
+- baseline `FVG` geometry detection
+- helper-layer `IRL/FVG` lifecycle tracking:
+  - `resting`
+  - `reached`
+  - `invalidated`
+
+But no higher-order `IRL` selection or qualification engine is currently
+implemented.
 
 ## Non-goals
 

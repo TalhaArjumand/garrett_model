@@ -41,6 +41,7 @@ class FVGCandidate:
     reached_at: datetime | None
     decision_time_safe: bool
     reason: str
+    invalidated_at: datetime | None = None
 
     @property
     def width(self) -> float:
@@ -48,7 +49,19 @@ class FVGCandidate:
 
     @property
     def is_resting(self) -> bool:
-        return not self.is_reached
+        return not self.is_reached and not self.is_invalidated
+
+    @property
+    def is_invalidated(self) -> bool:
+        return self.invalidated_at is not None
+
+    @property
+    def lifecycle_state(self) -> str:
+        if self.is_invalidated:
+            return "invalidated"
+        if self.is_reached:
+            return "reached"
+        return "resting"
 
 
 def validate_fvg_inputs(c1: Any, c2: Any, c3: Any) -> tuple[Candle, Candle, Candle]:
@@ -160,7 +173,32 @@ def _find_first_reach_timestamp(
     return None
 
 
-def _build_fvg_candidate(gap: FairValueGap, reached_at: datetime | None) -> FVGCandidate:
+def _is_directionally_invalidated_by_close(
+    gap: FairValueGap,
+    candle: Candle,
+) -> bool:
+    if candle.timestamp <= gap.c3_timestamp:
+        return False
+    if gap.direction == "bullish":
+        return candle.close < gap.lower_bound
+    return candle.close > gap.upper_bound
+
+
+def _find_first_invalidation_timestamp(
+    candles: list[Candle],
+    gap: FairValueGap,
+) -> datetime | None:
+    for candle in candles:
+        if _is_directionally_invalidated_by_close(gap, candle):
+            return candle.timestamp
+    return None
+
+
+def _build_fvg_candidate(
+    gap: FairValueGap,
+    reached_at: datetime | None,
+    invalidated_at: datetime | None,
+) -> FVGCandidate:
     return FVGCandidate(
         symbol=gap.symbol,
         timeframe=gap.timeframe,
@@ -173,10 +211,12 @@ def _build_fvg_candidate(gap: FairValueGap, reached_at: datetime | None) -> FVGC
         confirmed_at=gap.c3_timestamp,
         is_reached=reached_at is not None,
         reached_at=reached_at,
+        invalidated_at=invalidated_at,
         decision_time_safe=True,
         reason=(
             "Baseline three-candle FVG candidate with later state tracking for whether "
-            "price has already reached the gap zone."
+            "price has reached the gap zone or directionally invalidated it by "
+            "closing through the opposite side."
         ),
     )
 
@@ -195,7 +235,13 @@ def detect_fvg_candidates(candles: Iterable[Any]) -> list[FVGCandidate]:
             continue
         if gap is None:
             continue
-        candidates.append(_build_fvg_candidate(gap, _find_first_reach_timestamp(validated, gap)))
+        candidates.append(
+            _build_fvg_candidate(
+                gap,
+                _find_first_reach_timestamp(validated, gap),
+                _find_first_invalidation_timestamp(validated, gap),
+            )
+        )
 
     return sorted(
         candidates,

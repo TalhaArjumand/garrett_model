@@ -55,9 +55,9 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         candidates = detect_internal_to_external_type_a_candidates(candles)
 
-        self.assertEqual(len(candidates), 2)
+        self.assertEqual(len(candidates), 1)
         self.assertEqual({candidate.direction for candidate in candidates}, {"bullish"})
-        self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"both", "c2"})
+        self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"c2"})
         self.assertEqual(
             count_internal_to_external_type_a_sequences(candles),
             (1, 0),
@@ -80,7 +80,7 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         strict_candidates = detect_internal_to_external_type_a_expansion_quality_candidates(candles)
 
-        self.assertEqual(len(strict_candidates), 2)
+        self.assertEqual(len(strict_candidates), 1)
         self.assertEqual(
             count_internal_to_external_type_a_expansion_quality_sequences(candles),
             (1, 0),
@@ -161,6 +161,24 @@ class KeyLevelIntegrationTests(unittest.TestCase):
         self.assertEqual(len(base_candidates), 1)
         self.assertEqual(strict_candidates, [])
         self.assertEqual(count_internal_to_external_type_a_sequences(candles), (1, 0))
+        self.assertEqual(
+            count_internal_to_external_type_a_expansion_quality_sequences(candles),
+            (0, 0),
+        )
+
+    def test_detect_internal_to_external_type_a_candidates_rejects_close_through_invalidation(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=96, high=100, low=95, close=99),
+            self.make_candle(timestamp_hour=4, open=99, high=105, low=98, close=104),
+            self.make_candle(timestamp_hour=8, open=104, high=110, low=102, close=109),
+            self.make_candle(timestamp_hour=12, open=108, high=112, low=97, close=99),
+            self.make_candle(timestamp_hour=16, open=99, high=113, low=96, close=104),
+            self.make_candle(timestamp_hour=20, open=104, high=118, low=103.5, close=117),
+        ]
+
+        self.assertEqual(detect_internal_to_external_type_a_candidates(candles), [])
         self.assertEqual(
             count_internal_to_external_type_a_expansion_quality_sequences(candles),
             (0, 0),

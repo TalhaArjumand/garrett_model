@@ -45,11 +45,17 @@ class IrlRankingTests(unittest.TestCase):
         symbol: str = "XAUUSD",
         timeframe: str = "1H",
         reached_at_hour: int | None = None,
+        invalidated_at_hour: int | None = None,
     ) -> FVGCandidate:
         confirmed_at = utc_datetime(2026, 3, 17, confirmed_hour, 0)
         reached_at = (
             utc_datetime(2026, 3, 17, reached_at_hour, 0)
             if reached_at_hour is not None
+            else None
+        )
+        invalidated_at = (
+            utc_datetime(2026, 3, 17, invalidated_at_hour, 0)
+            if invalidated_at_hour is not None
             else None
         )
         return FVGCandidate(
@@ -66,6 +72,7 @@ class IrlRankingTests(unittest.TestCase):
             reached_at=reached_at,
             decision_time_safe=True,
             reason="test candidate",
+            invalidated_at=invalidated_at,
         )
 
     def test_rank_irl_candidates_returns_empty_when_no_candidates_exist(self) -> None:
@@ -227,6 +234,7 @@ class IrlRankingTests(unittest.TestCase):
             reached_at=None,
             decision_time_safe=True,
             reason="invalid",
+            invalidated_at=None,
         )
 
         with self.assertRaisesRegex(ValueError, "positive width"):
@@ -242,6 +250,26 @@ class IrlRankingTests(unittest.TestCase):
     def test_negative_weight_rejection(self) -> None:
         with self.assertRaisesRegex(ValueError, "must be >= 0"):
             IRLRankingWeights(state=-0.1)
+
+    def test_rank_detected_irl_candidates_marks_invalidated_state_with_zero_score(self) -> None:
+        candidate = self.make_candidate(
+            confirmed_hour=12,
+            lower_bound=100,
+            upper_bound=110,
+            invalidated_at_hour=14,
+        )
+
+        ranked = _rank_detected_irl_candidates(
+            [candidate],
+            current_price=105,
+            direction_bias="bullish",
+            weights=IRLRankingWeights(),
+            age_candles_by_confirmed_at={candidate.confirmed_at: 2},
+            price_scale=10.0,
+        )
+
+        self.assertEqual(ranked[0].feature_values["state"], "invalidated")
+        self.assertEqual(ranked[0].feature_values["state_score"], 0.0)
 
 
 if __name__ == "__main__":
