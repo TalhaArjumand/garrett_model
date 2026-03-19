@@ -6,6 +6,7 @@ from pathlib import Path
 from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
+    count_c3_closure_rare_cases,
     count_c3_closure_c4_candidates,
     count_c3_closures,
     count_case_b_candidates,
@@ -49,6 +50,8 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_case_b_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_c3_closure_count, 0)
         self.assertGreaterEqual(report.bearish_c3_closure_count, 0)
+        self.assertGreaterEqual(report.bullish_c3_closure_rare_case_count, 0)
+        self.assertGreaterEqual(report.bearish_c3_closure_rare_case_count, 0)
         self.assertGreaterEqual(report.bullish_c3_closure_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c3_closure_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
@@ -178,6 +181,19 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_c3_closure_c4_candidates(candles)
         self.assertEqual((bullish, bearish), (0, 1))
+
+    def test_count_c3_closure_rare_cases_counts_bullish_and_bearish_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 92, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 105, 118),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 108, 116, 94, 96),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 96, 101, 90, 92),
+        ]
+
+        bullish, bearish = count_c3_closure_rare_cases(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
 
     def test_count_fvgs_counts_bullish_and_bearish_baseline_gaps(self) -> None:
         candles = [

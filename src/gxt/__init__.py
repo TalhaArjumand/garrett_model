@@ -54,9 +54,14 @@ from .sequence_primitives import (
     validate_continuation_inputs,
     validate_sequence_inputs,
 )
+from .swing_research import (
+    is_bearish_rare_c3_closure_subtype,
+    is_bullish_rare_c3_closure_subtype,
+)
 from .real_ohlc import (
     RealSampleReport,
     build_real_sample_report,
+    count_c3_closure_rare_cases,
     count_c3_closure_c4_candidates,
     count_c3_closures,
     count_case_b_candidates,
@@ -111,6 +116,8 @@ __all__ = [
     "is_bearish_c2_reversal_to_expansion",
     "is_bullish_c3_closure",
     "is_bearish_c3_closure",
+    "is_bullish_rare_c3_closure_subtype",
+    "is_bearish_rare_c3_closure_subtype",
     "has_bullish_c3_support",
     "has_bearish_c3_support",
     "has_bullish_c4_after_c3_closure_candidate",
@@ -133,6 +140,7 @@ __all__ = [
     "count_c4_candidates",
     "count_case_b_candidates",
     "count_c3_closures",
+    "count_c3_closure_rare_cases",
     "count_c3_closure_c4_candidates",
     "count_fvgs",
     "count_fvg_candidates",

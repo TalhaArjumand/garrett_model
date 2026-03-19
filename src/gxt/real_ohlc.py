@@ -20,6 +20,10 @@ from .sequence_primitives import (
     is_bullish_c3_closure,
     is_valid_bullish_c2_sequence,
 )
+from .swing_research import (
+    is_bearish_rare_c3_closure_subtype,
+    is_bullish_rare_c3_closure_subtype,
+)
 
 
 @dataclass(frozen=True)
@@ -36,6 +40,8 @@ class RealSampleReport:
     bearish_case_b_candidate_count: int
     bullish_c3_closure_count: int
     bearish_c3_closure_count: int
+    bullish_c3_closure_rare_case_count: int
+    bearish_c3_closure_rare_case_count: int
     bullish_c3_closure_c4_candidate_count: int
     bearish_c3_closure_c4_candidate_count: int
     bullish_fvg_count: int
@@ -185,6 +191,20 @@ def count_c3_closures(candles: list[Candle]) -> tuple[int, int]:
     return bullish, bearish
 
 
+def count_c3_closure_rare_cases(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3 in iter_triples(candles):
+        try:
+            if is_bullish_rare_c3_closure_subtype(c1, c2, c3):
+                bullish += 1
+            if is_bearish_rare_c3_closure_subtype(c1, c2, c3):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
 def count_c3_closure_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
@@ -310,6 +330,7 @@ def build_real_sample_report(
         max_wick_fraction=case_b_max_wick_fraction,
     )
     bullish_c3_closure, bearish_c3_closure = count_c3_closures(candles)
+    bullish_c3_closure_rare, bearish_c3_closure_rare = count_c3_closure_rare_cases(candles)
     bullish_c3_closure_c4, bearish_c3_closure_c4 = count_c3_closure_c4_candidates(candles)
     bullish_fvg, bearish_fvg = count_fvgs(candles)
     fvg_candidate_counts = count_fvg_candidates(candles)
@@ -328,6 +349,8 @@ def build_real_sample_report(
         bearish_case_b_candidate_count=bearish_case_b,
         bullish_c3_closure_count=bullish_c3_closure,
         bearish_c3_closure_count=bearish_c3_closure,
+        bullish_c3_closure_rare_case_count=bullish_c3_closure_rare,
+        bearish_c3_closure_rare_case_count=bearish_c3_closure_rare,
         bullish_c3_closure_c4_candidate_count=bullish_c3_closure_c4,
         bearish_c3_closure_c4_candidate_count=bearish_c3_closure_c4,
         bullish_fvg_count=bullish_fvg,
