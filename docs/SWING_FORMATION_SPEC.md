@@ -215,9 +215,12 @@ Current code already implements:
   - `C4` continuation candidate
 - Type B components:
   - isolated bullish and bearish `C2 reversal to expansion` primitives
+- Type C components:
+  - isolated bullish and bearish `C3 closure` primitives
+  - separate bullish and bearish `C4` continuation candidates after `C3`
+    closure
 
 What is not implemented yet:
 
-- a separate `C3 closure` primitive
 - a merged top-level swing-formation detector across Type A, Type B, and Type C
 - later SMT-integrated confirmation logic

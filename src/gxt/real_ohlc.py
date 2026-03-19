@@ -9,11 +9,15 @@ from .candles import Candle
 from .erl_proxy import detect_erl_candidates
 from .fvg import detect_fvg_candidates, is_bearish_fvg, is_bullish_fvg
 from .sequence_primitives import (
+    has_bearish_c4_after_c3_closure_candidate,
     has_bearish_c4_continuation_candidate,
     has_bullish_c4_continuation_candidate,
+    has_bullish_c4_after_c3_closure_candidate,
     is_bearish_c2_reversal_to_expansion,
+    is_bearish_c3_closure,
     is_valid_bearish_c2_sequence,
     is_bullish_c2_reversal_to_expansion,
+    is_bullish_c3_closure,
     is_valid_bullish_c2_sequence,
 )
 
@@ -30,6 +34,10 @@ class RealSampleReport:
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
     bearish_case_b_candidate_count: int
+    bullish_c3_closure_count: int
+    bearish_c3_closure_count: int
+    bullish_c3_closure_c4_candidate_count: int
+    bearish_c3_closure_c4_candidate_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
     fvg_candidate_count: int
@@ -163,6 +171,34 @@ def count_case_b_candidates(
     return bullish, bearish
 
 
+def count_c3_closures(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3 in iter_triples(candles):
+        try:
+            if is_bullish_c3_closure(c1, c2, c3):
+                bullish += 1
+            if is_bearish_c3_closure(c1, c2, c3):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
+def count_c3_closure_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3, c4 in iter_quads(candles):
+        try:
+            if has_bullish_c4_after_c3_closure_candidate(c1, c2, c3, c4):
+                bullish += 1
+            if has_bearish_c4_after_c3_closure_candidate(c1, c2, c3, c4):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
 def count_fvgs(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
@@ -273,6 +309,8 @@ def build_real_sample_report(
         candles,
         max_wick_fraction=case_b_max_wick_fraction,
     )
+    bullish_c3_closure, bearish_c3_closure = count_c3_closures(candles)
+    bullish_c3_closure_c4, bearish_c3_closure_c4 = count_c3_closure_c4_candidates(candles)
     bullish_fvg, bearish_fvg = count_fvgs(candles)
     fvg_candidate_counts = count_fvg_candidates(candles)
     erl_counts = count_erl_candidates(candles, equal_tolerance=erl_equal_tolerance)
@@ -288,6 +326,10 @@ def build_real_sample_report(
         bearish_c4_candidate_count=bearish_c4,
         bullish_case_b_candidate_count=bullish_case_b,
         bearish_case_b_candidate_count=bearish_case_b,
+        bullish_c3_closure_count=bullish_c3_closure,
+        bearish_c3_closure_count=bearish_c3_closure,
+        bullish_c3_closure_c4_candidate_count=bullish_c3_closure_c4,
+        bearish_c3_closure_c4_candidate_count=bearish_c3_closure_c4,
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
         fvg_candidate_count=fvg_candidate_counts["fvg_candidate_count"],

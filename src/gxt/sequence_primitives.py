@@ -79,6 +79,11 @@ def _require_positive_range(candle: Candle) -> None:
         raise ValueError("case B requires a positive-range candle")
 
 
+def _require_positive_range_for(label: str, candle: Candle) -> None:
+    if candle.range_size <= 0:
+        raise ValueError(f"{label} requires a positive-range candle")
+
+
 def is_bullish_c2_closure(c1: Any, c2: Any) -> bool:
     c1, c2 = _validate_pair_inputs("c1", c1, "c2", c2)
     return c2.low < c1.low and closes_inside_range(c1, c2)
@@ -107,6 +112,30 @@ def is_bullish_c3_expansion_confirmation(c2: Any, c3: Any) -> bool:
 def is_bearish_c3_expansion_confirmation(c2: Any, c3: Any) -> bool:
     c2, c3 = _validate_pair_inputs("c2", c2, "c3", c3)
     return c3.close < c2.low
+
+
+def is_bullish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    _require_positive_range_for("c2", c2)
+    return (
+        not is_bullish_c2_closure(c1, c2)
+        and c2.is_bearish
+        and c3.is_bullish
+        and c3.low > c2.low
+        and c3.close > c2.body_top
+    )
+
+
+def is_bearish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    _require_positive_range_for("c2", c2)
+    return (
+        not is_bearish_c2_closure(c1, c2)
+        and c2.is_bullish
+        and c3.is_bearish
+        and c3.high < c2.high
+        and c3.close < c2.body_bottom
+    )
 
 
 def is_bullish_c2_reversal_to_expansion(
@@ -165,6 +194,16 @@ def is_valid_bearish_c2_sequence(c1: Any, c2: Any, c3: Any) -> bool:
         and has_bearish_c3_support(c2, c3)
         and is_bearish_c3_expansion_confirmation(c2, c3)
     )
+
+
+def has_bullish_c4_after_c3_closure_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
+    c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
+    return is_bullish_c3_closure(c1, c2, c3) and c4.low > equilibrium(c3)
+
+
+def has_bearish_c4_after_c3_closure_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
+    c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
+    return is_bearish_c3_closure(c1, c2, c3) and c4.high < equilibrium(c3)
 
 
 def has_bullish_c4_continuation_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:

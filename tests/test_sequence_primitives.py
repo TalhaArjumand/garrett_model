@@ -4,12 +4,16 @@ import unittest
 
 from gxt.candles import Candle, utc_datetime
 from gxt.sequence_primitives import (
+    has_bearish_c4_after_c3_closure_candidate,
     has_bearish_c4_continuation_candidate,
     closes_inside_range,
     equilibrium,
     is_bearish_c2_reversal_to_expansion,
+    is_bearish_c3_closure,
     has_bearish_c3_support,
+    has_bullish_c4_after_c3_closure_candidate,
     is_bullish_c2_reversal_to_expansion,
+    is_bullish_c3_closure,
     has_bullish_c4_continuation_candidate,
     has_bullish_c3_support,
     is_bearish_c2_closure,
@@ -144,6 +148,57 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         self.assertFalse(is_bullish_c3_expansion_confirmation(c2, c3))
 
+    def test_valid_bullish_c3_closure(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=93, close=101.5)
+
+        self.assertTrue(is_bullish_c3_closure(c1, c2, c3))
+
+    def test_bullish_c3_closure_requires_no_type_a_c2_closure(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=104, high=105, low=98, close=101)
+        c3 = self.make_candle(timestamp_hour=12, open=102, high=108, low=100.5, close=106)
+
+        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+
+    def test_bullish_c3_closure_requires_c3_to_hold_above_c2_low(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=92, close=101.5)
+
+        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+
+    def test_bullish_c3_closure_requires_strict_close_over_c2_body(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=93, close=100)
+
+        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+
+    def test_bullish_c3_closure_rejects_doji_like_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=100)
+        c3 = self.make_candle(timestamp_hour=12, open=99, high=108, low=93, close=101.5)
+
+        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+
+    def test_valid_bullish_c4_after_c3_closure_candidate(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=93, close=101.5)
+        c4 = self.make_candle(timestamp_hour=13, open=102, high=112, low=101, close=110)
+
+        self.assertTrue(has_bullish_c4_after_c3_closure_candidate(c1, c2, c3, c4))
+
+    def test_bullish_c4_after_c3_closure_candidate_requires_low_above_eq_of_c3(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=93, close=101.5)
+        c4 = self.make_candle(timestamp_hour=13, open=102, high=112, low=100.5, close=110)
+
+        self.assertFalse(has_bullish_c4_after_c3_closure_candidate(c1, c2, c3, c4))
+
     def test_valid_bullish_c2_reversal_to_expansion(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
         c2 = self.make_candle(timestamp_hour=11, open=100, high=116, low=98, close=114)
@@ -207,6 +262,57 @@ class SequencePrimitiveTests(unittest.TestCase):
         c3 = self.make_candle(timestamp_hour=12, open=112, high=114.5, low=99, close=109.0)
 
         self.assertFalse(is_bearish_c3_expansion_confirmation(c2, c3))
+
+    def test_valid_bearish_c3_closure(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=114)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=115, low=104, close=107)
+
+        self.assertTrue(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_bearish_c3_closure_requires_no_type_a_c2_closure(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=106, high=114, low=104, close=109)
+        c3 = self.make_candle(timestamp_hour=12, open=108, high=109.5, low=100, close=105)
+
+        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_bearish_c3_closure_requires_c3_to_hold_below_c2_high(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=114)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=116, low=104, close=107)
+
+        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_bearish_c3_closure_requires_strict_close_below_c2_body(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=114)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=115, low=104, close=108)
+
+        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_bearish_c3_closure_rejects_doji_like_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=108)
+        c3 = self.make_candle(timestamp_hour=12, open=109, high=115, low=104, close=107)
+
+        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_valid_bearish_c4_after_c3_closure_candidate(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=114)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=115, low=104, close=107)
+        c4 = self.make_candle(timestamp_hour=13, open=106, high=108.5, low=99, close=100)
+
+        self.assertTrue(has_bearish_c4_after_c3_closure_candidate(c1, c2, c3, c4))
+
+    def test_bearish_c4_after_c3_closure_candidate_requires_high_below_eq_of_c3(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=114)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=115, low=104, close=107)
+        c4 = self.make_candle(timestamp_hour=13, open=106, high=109.5, low=99, close=100)
+
+        self.assertFalse(has_bearish_c4_after_c3_closure_candidate(c1, c2, c3, c4))
 
     def test_valid_bearish_c2_reversal_to_expansion(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
@@ -335,6 +441,14 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "between 0 and 1 inclusive"):
             is_bullish_c2_reversal_to_expansion(c1, c2, max_lower_wick_fraction=1.1)
+
+    def test_c3_closure_rejects_zero_range_c2(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=100, high=100, low=100, close=100)
+        c3 = self.make_candle(timestamp_hour=12, open=99, high=108, low=93, close=101.5)
+
+        with self.assertRaisesRegex(ValueError, "c2 requires a positive-range candle"):
+            is_bullish_c3_closure(c1, c2, c3)
 
     def test_c4_non_consecutive_rejection(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)

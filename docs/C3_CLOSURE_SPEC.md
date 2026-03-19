@@ -73,6 +73,13 @@ Not yet locked:
 
 ## Implementation Status
 
-Implementation status: doctrine only.
+Implementation status: partially implemented.
 
-Current code does not yet implement a separate `C3 closure` primitive.
+Current implementation includes:
+
+- isolated bullish and bearish `C3 closure` primitives
+- separate bullish and bearish `C4` continuation candidates after `C3 closure`
+
+The implementation boundary is documented separately in:
+
+- `C3_CLOSURE_IMPLEMENTATION_NOTES.md`

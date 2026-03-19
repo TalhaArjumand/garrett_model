@@ -113,11 +113,13 @@ The following remain unresolved and are not yet locked:
 
 Implementation status: partially implemented.
 
-Current code implements the narrower Type A-derived `C4` candidate primitive.
+Current code implements:
+
+- Type A-derived `C4` candidate primitives
+- Type C-derived `C4` candidate primitives
 
 Not implemented yet:
 
-- a separate Type C-derived `C4` continuation primitive
 - a unified top-level `C4` detector across multiple predecessor branches
 
 ## Non-goals

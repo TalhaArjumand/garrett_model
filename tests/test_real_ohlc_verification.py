@@ -6,6 +6,8 @@ from pathlib import Path
 from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
+    count_c3_closure_c4_candidates,
+    count_c3_closures,
     count_case_b_candidates,
     count_c4_candidates,
     count_fvg_candidates,
@@ -45,6 +47,10 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_case_b_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_case_b_candidate_count, 0)
+        self.assertGreaterEqual(report.bullish_c3_closure_count, 0)
+        self.assertGreaterEqual(report.bearish_c3_closure_count, 0)
+        self.assertGreaterEqual(report.bullish_c3_closure_c4_candidate_count, 0)
+        self.assertGreaterEqual(report.bearish_c3_closure_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
         self.assertGreaterEqual(report.bearish_fvg_count, 0)
         self.assertGreaterEqual(report.fvg_candidate_count, 0)
@@ -137,6 +143,41 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_case_b_candidates(candles)
         self.assertEqual((bullish, bearish), (1, 0))
+
+    def test_count_c3_closures_counts_bullish_and_bearish_windows(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 101, 92, 94),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 95, 108, 93, 101.5),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 108, 116, 107, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 113, 115, 104, 107),
+        ]
+
+        bullish, bearish = count_c3_closures(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
+
+    def test_count_c3_closure_c4_candidates_counts_bullish_window(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 101, 92, 94),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 95, 108, 93, 101.5),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 102, 112, 101, 110),
+        ]
+
+        bullish, bearish = count_c3_closure_c4_candidates(candles)
+        self.assertEqual((bullish, bearish), (1, 0))
+
+    def test_count_c3_closure_c4_candidates_counts_bearish_window(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 116, 107, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 113, 115, 104, 107),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 106, 108.5, 99, 100),
+        ]
+
+        bullish, bearish = count_c3_closure_c4_candidates(candles)
+        self.assertEqual((bullish, bearish), (0, 1))
 
     def test_count_fvgs_counts_bullish_and_bearish_baseline_gaps(self) -> None:
         candles = [
