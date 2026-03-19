@@ -7,8 +7,10 @@ from gxt.candles import Candle, utc_datetime
 from gxt.key_level_integration import (
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
+    count_internal_to_external_type_b_sequences,
     detect_internal_to_external_type_a_candidates,
     detect_internal_to_external_type_a_expansion_quality_candidates,
+    detect_internal_to_external_type_b_candidates,
 )
 
 
@@ -180,6 +182,60 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             detect_internal_to_external_type_a_candidates(candles)
+
+    def test_detect_internal_to_external_type_b_candidates_returns_bullish_pairings_and_dedupes_counts(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=96, high=100, low=95, close=99),
+            self.make_candle(timestamp_hour=4, open=99, high=105, low=98, close=104),
+            self.make_candle(timestamp_hour=8, open=104, high=110, low=102, close=109),
+            self.make_candle(timestamp_hour=12, open=106, high=107, low=103, close=104),
+            self.make_candle(timestamp_hour=16, open=104, high=112, low=103, close=111),
+            self.make_candle(timestamp_hour=20, open=111, high=118, low=108, close=117),
+            self.make_candle(timestamp_hour=24, open=108, high=109, low=101, close=103),
+            self.make_candle(timestamp_hour=28, open=103, high=113, low=100, close=112),
+        ]
+
+        candidates = detect_internal_to_external_type_b_candidates(candles)
+
+        self.assertEqual(len(candidates), 2)
+        self.assertEqual({candidate.direction for candidate in candidates}, {"bullish"})
+        self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"both"})
+        self.assertEqual(count_internal_to_external_type_b_sequences(candles), (1, 0))
+
+    def test_detect_internal_to_external_type_b_candidates_supports_bearish_touch_through_c2_only(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=202, high=205, low=195, close=198),
+            self.make_candle(timestamp_hour=4, open=198, high=200, low=190, close=192),
+            self.make_candle(timestamp_hour=8, open=188, high=188, low=180, close=182),
+            self.make_candle(timestamp_hour=12, open=181, high=187, low=176, close=183),
+            self.make_candle(timestamp_hour=16, open=189, high=190, low=175, close=178),
+        ]
+
+        candidates = detect_internal_to_external_type_b_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual({candidate.direction for candidate in candidates}, {"bearish"})
+        self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"c2"})
+        self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 1))
+
+    def test_detect_internal_to_external_type_b_candidates_requires_gap_to_be_resting_before_pair(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=96, high=100, low=95, close=99),
+            self.make_candle(timestamp_hour=4, open=99, high=105, low=98, close=104),
+            self.make_candle(timestamp_hour=8, open=104, high=110, low=102, close=109),
+            self.make_candle(timestamp_hour=12, open=109, high=111, low=101, close=110),
+            self.make_candle(timestamp_hour=16, open=108, high=109, low=101, close=103),
+            self.make_candle(timestamp_hour=20, open=103, high=113, low=100, close=112),
+        ]
+
+        self.assertEqual(detect_internal_to_external_type_b_candidates(candles), [])
+        self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 0))
 
 
 if __name__ == "__main__":

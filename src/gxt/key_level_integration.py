@@ -7,8 +7,10 @@ from typing import Any, Iterable, Literal
 from .candles import Candle, require_closed
 from .fvg import FVGCandidate, detect_fvg_candidates
 from .sequence_primitives import (
+    is_bearish_c2_reversal_to_expansion,
     is_valid_bearish_c2_sequence,
     is_valid_bearish_c2_sequence_expansion_quality,
+    is_bullish_c2_reversal_to_expansion,
     is_valid_bullish_c2_sequence,
     is_valid_bullish_c2_sequence_expansion_quality,
 )
@@ -31,6 +33,24 @@ class InternalToExternalTypeACandidate:
     sequence_c1_timestamp: datetime
     sequence_c2_timestamp: datetime
     sequence_c3_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class InternalToExternalTypeBCandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    irl_lower_bound: float
+    irl_upper_bound: float
+    irl_c1_timestamp: datetime
+    irl_c2_timestamp: datetime
+    irl_c3_timestamp: datetime
+    irl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
     key_level_touch: KeyLevelTouch
     decision_time_safe: bool
     reason: str
@@ -99,6 +119,38 @@ def _collect_active_directional_irls(
     ]
 
 
+def _collect_touching_active_directional_irls(
+    candles: list[Candle],
+    *,
+    before_index: int,
+    direction: Direction,
+    c1: Candle,
+    c2: Candle,
+) -> list[tuple[FVGCandidate, KeyLevelTouch]]:
+    touching: list[tuple[FVGCandidate, KeyLevelTouch]] = []
+    for irl in _collect_active_directional_irls(
+        candles,
+        before_index=before_index,
+        direction=direction,
+    ):
+        touch_c1 = _ranges_overlap(
+            candle_low=c1.low,
+            candle_high=c1.high,
+            zone_low=irl.lower_bound,
+            zone_high=irl.upper_bound,
+        )
+        touch_c2 = _ranges_overlap(
+            candle_low=c2.low,
+            candle_high=c2.high,
+            zone_low=irl.lower_bound,
+            zone_high=irl.upper_bound,
+        )
+        touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
+        if touch is not None:
+            touching.append((irl, touch))
+    return touching
+
+
 def _build_type_a_candidate(
     *,
     irl: FVGCandidate,
@@ -133,6 +185,36 @@ def _build_type_a_candidate(
     )
 
 
+def _build_type_b_candidate(
+    *,
+    irl: FVGCandidate,
+    c1: Candle,
+    c2: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+) -> InternalToExternalTypeBCandidate:
+    return InternalToExternalTypeBCandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        irl_lower_bound=irl.lower_bound,
+        irl_upper_bound=irl.upper_bound,
+        irl_c1_timestamp=irl.c1_timestamp,
+        irl_c2_timestamp=irl.c2_timestamp,
+        irl_c3_timestamp=irl.c3_timestamp,
+        irl_confirmed_at=irl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} Type B reversal-to-expansion candle formed after a prior "
+            f"{direction} IRL/FVG was confirmed and still resting before sequence "
+            "C1. The active IRL was then touched through C1 or C2."
+        ),
+    )
+
+
 def detect_internal_to_external_type_a_candidates(
     candles: Iterable[Any],
 ) -> list[InternalToExternalTypeACandidate]:
@@ -149,26 +231,13 @@ def detect_internal_to_external_type_a_candidates(
         except ValueError:
             bullish_sequence = False
         if bullish_sequence:
-            for irl in _collect_active_directional_irls(
+            for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
                 direction="bullish",
+                c1=c1,
+                c2=c2,
             ):
-                touch_c1 = _ranges_overlap(
-                    candle_low=c1.low,
-                    candle_high=c1.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch_c2 = _ranges_overlap(
-                    candle_low=c2.low,
-                    candle_high=c2.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
-                if touch is None:
-                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -186,26 +255,13 @@ def detect_internal_to_external_type_a_candidates(
         except ValueError:
             bearish_sequence = False
         if bearish_sequence:
-            for irl in _collect_active_directional_irls(
+            for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
                 direction="bearish",
+                c1=c1,
+                c2=c2,
             ):
-                touch_c1 = _ranges_overlap(
-                    candle_low=c1.low,
-                    candle_high=c1.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch_c2 = _ranges_overlap(
-                    candle_low=c2.low,
-                    candle_high=c2.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
-                if touch is None:
-                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -253,26 +309,13 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
         except ValueError:
             bullish_sequence = False
         if bullish_sequence:
-            for irl in _collect_active_directional_irls(
+            for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
                 direction="bullish",
+                c1=c1,
+                c2=c2,
             ):
-                touch_c1 = _ranges_overlap(
-                    candle_low=c1.low,
-                    candle_high=c1.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch_c2 = _ranges_overlap(
-                    candle_low=c2.low,
-                    candle_high=c2.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
-                if touch is None:
-                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -295,26 +338,13 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
         except ValueError:
             bearish_sequence = False
         if bearish_sequence:
-            for irl in _collect_active_directional_irls(
+            for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
                 direction="bearish",
+                c1=c1,
+                c2=c2,
             ):
-                touch_c1 = _ranges_overlap(
-                    candle_low=c1.low,
-                    candle_high=c1.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch_c2 = _ranges_overlap(
-                    candle_low=c2.low,
-                    candle_high=c2.high,
-                    zone_low=irl.lower_bound,
-                    zone_high=irl.upper_bound,
-                )
-                touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
-                if touch is None:
-                    continue
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -387,6 +417,111 @@ def count_internal_to_external_type_a_expansion_quality_sequences(
             candidate.sequence_c1_timestamp,
             candidate.sequence_c2_timestamp,
             candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def detect_internal_to_external_type_b_candidates(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> list[InternalToExternalTypeBCandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 2:
+        return []
+
+    candidates: list[InternalToExternalTypeBCandidate] = []
+    for idx in range(len(validated) - 1):
+        c1, c2 = validated[idx], validated[idx + 1]
+
+        try:
+            bullish_sequence = is_bullish_c2_reversal_to_expansion(
+                c1,
+                c2,
+                max_lower_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_type_b_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        direction="bullish",
+                        touch=touch,
+                    )
+                )
+
+        try:
+            bearish_sequence = is_bearish_c2_reversal_to_expansion(
+                c1,
+                c2,
+                max_upper_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_type_b_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        direction="bearish",
+                        touch=touch,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.irl_confirmed_at,
+            candidate.irl_lower_bound,
+            candidate.irl_upper_bound,
+        ),
+    )
+
+
+def count_internal_to_external_type_b_sequences(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    candidates = detect_internal_to_external_type_b_candidates(
+        candles,
+        max_wick_fraction=max_wick_fraction,
+    )
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
         )
         for candidate in candidates
         if candidate.direction == "bearish"
