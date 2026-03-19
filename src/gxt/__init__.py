@@ -18,6 +18,7 @@ from .fvg import (
     is_bullish_fvg,
     validate_fvg_inputs,
 )
+from .irl_ranking import IRLRankedCandidate, IRLRankingWeights, rank_irl_candidates
 from .local_swing import (
     LocalSwingPoint,
     build_local_swing_high,
@@ -110,4 +111,7 @@ __all__ = [
     "count_fvgs",
     "count_fvg_candidates",
     "build_real_sample_report",
+    "IRLRankingWeights",
+    "IRLRankedCandidate",
+    "rank_irl_candidates",
 ]

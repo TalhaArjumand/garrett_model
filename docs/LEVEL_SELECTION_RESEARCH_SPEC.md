@@ -172,9 +172,14 @@ Not yet locked:
 
 ## Implementation Status
 
-Implementation status: not started.
+Implementation status: partially implemented.
 
-If implemented later, it should remain clearly separated from:
+Current implementation status:
+
+- `IRL` ranking proxy v1 is implemented as a research-layer ranker
+- `ERL` ranking is still open
+
+This implementation remains clearly separated from:
 
 - doctrine detectors
 - helper geometry primitives
