@@ -17,6 +17,8 @@ From the reviewed transcript:
 
 - `C1` can hit a key level, or `C2` can hit a key level
 - in this case, we do not get a `C2` closure
+  - meaning we do not get the Type A `C2` closure condition where `C2` closes
+    back inside the full range of `C1`
 - `C3` expands away from `C2`'s low without taking that low out in the bullish
   example
 - prior to `C3` open, the reversal cannot be anticipated because there is no
@@ -35,7 +37,7 @@ swing-formation type.
 In this case:
 
 - the key level has already been reached by `C1` or `C2`
-- `C2` does not produce a valid `C2` closure
+- `C2` does not produce a valid Type A `C2` closure back inside `C1` range
 - the formation is not knowable before `C3` closes
 - `C3` becomes the candle that completes the swing formation
 - `EQ(C3)` then becomes the active continuation boundary for `C4`
@@ -50,7 +52,8 @@ Locked at the current reviewed doctrine level:
 
 - `C3 closure` is a third reviewed swing-formation type
 - this type can arise when `C1` or `C2` reaches the key level
-- a valid `C2` closure is absent in this case
+- a valid Type A `C2` closure is absent in this case
+- that means `C2` does not close back inside the full range of `C1`
 - reversal cannot be anticipated before `C3` closes
 - the reviewed mechanical definition is:
   - strong `C3` closure over the body of `C2`

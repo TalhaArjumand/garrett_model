@@ -31,6 +31,8 @@ Current reviewed execution interpretation:
 This spec does not claim that all reviewed swing-formation cases defer
 expansion to `C3`.
 The compressed `C2 reversal to expansion` case is handled separately.
+The later `C3 closure` case is also separate and begins specifically where this
+Type A `C2` closure does not occur.
 
 ## Inputs
 

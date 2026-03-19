@@ -31,6 +31,7 @@ From the reviewed transcript:
 - the current reviewed `candle 2` reversal-to-expansion structure is the same
   core reversal logic, with wick size being the discriminator
 - in the `candle 3 closure` case, we do not get a `C2` closure
+  - meaning we do not get the Type A `C2` closure back inside `C1` range
 - prior to `C3` open, reversal cannot be anticipated in that case
 - the `C3 closure` forms only after candle `3` closes strongly over the body of
   candle `2`
@@ -86,7 +87,7 @@ So in this compressed case, reversal and expansion occur in `C2` itself.
 In the third currently reviewed case:
 
 1. `C1` or `C2` reaches the key level
-2. no `C2` closure forms
+2. no Type A `C2` closure forms back inside `C1` range
 3. prior to `C3` open, reversal cannot be anticipated
 4. swing formation only exists after `C3` closes strongly
 5. that strong `C3` closure is mechanically defined as closing over the body of
