@@ -2,49 +2,54 @@
 
 ## Purpose
 
-This spec defines the next Garrett-specific doctrine layer after a valid
-`C1 -> C2 -> C3` sequence: `C4 continuation`.
+This spec defines the next Garrett-specific doctrine layer after a qualifying
+predecessor state that activates `EQ(C3)`: `C4 continuation`.
 
 At this layer, `C4` is not treated as an independent pattern. It is evaluated
-only after `C3` has already qualified as a valid expansion candle.
+only after a reviewed predecessor path has already made `EQ(C3)` the active
+boundary.
 
 ## Locked Predecessor Context
 
 The following predecessor doctrine is already locked:
 
-- bullish `C2` closure back inside `C1` range
-- bullish `C3` support relative to `EQ(C2)`
-- bullish `C3` expansion confirmation:
-  - `close(C3) > high(C2)`
-- bearish mirror for the above
+- Type A predecessor:
+  - bullish / bearish `C2` closure
+  - `C3` support relative to `EQ(C2)`
+  - `C3` expansion confirmation beyond `C2`
+- Type C predecessor:
+  - no valid `C2` closure
+  - strong `C3` closure over the body of `C2`
+  - `EQ(C3)` becomes active only after `C3` closes
 
 This means:
 
-- `C2` is the reversal / swing-formation-side event
-- `C3` is the candidate expansion candle and current reviewed trade candle
-- `EQ(C2)` is the wick-quality boundary used to qualify `C3`
+- `C4` is always downstream of an already-qualified predecessor state
+- `EQ(C3)` is the active continuation boundary at this layer
+- current code coverage is still narrower than full doctrine coverage
 
 ## Direct Transcript Evidence
 
 Relevant transcript statement:
+
+> "Once we have a strong candle 3 closure, mechanically defined as closing over
+> the body of candle 2. This is where we can mark out equilibrium of candle 3's
+> range seeking expansion or continuation in candle 4 where the low is formed
+> in the upper half of candle 3's range."
+
+Previously reviewed transcript statement:
 
 > "So after candle 3 expands, seeking continuation in candle 4 is if we close
 > candle 3 above candle 2's high. Once we have that closure, mark a equilibrium
 > of the candle 3 expansion. This is where we seek a candle for continuation
 > forming a low in the upper half of candle 3's range."
 
-This directly supports:
+Together, these reviewed statements support:
 
-- `C4` continuation is evaluated only after valid `C3` expansion
-- the active midpoint reference shifts from `EQ(C2)` to `EQ(C3)`
-- bullish continuation is judged by whether `C4` forms its low in the upper
-  half of `C3`
-
-Additional doctrine clarification:
-
-- Garrett states a generalized symmetry rule, so conditions that are locked for
-  bullish continuation can be mirrored into bearish continuation unless a later
-  doctrine unit explicitly overrides them
+- `C4` continuation is judged relative to `EQ(C3)`
+- `C4` is sought only after the relevant predecessor closure / expansion event
+  exists
+- the active midpoint reference at this layer is `EQ(C3)`
 
 ## Inputs
 
@@ -57,21 +62,9 @@ This doctrine unit uses:
 
 All inputs must be valid `Candle` objects.
 
-## Preconditions
-
-Before evaluating `C4`, all of the following must already be true:
-
-1. `c1`, `c2`, `c3`, and `c4` are valid `Candle` objects.
-2. All four candles are closed.
-3. All four candles have the same symbol.
-4. All four candles have the same timeframe.
-5. The candles are in strict timestamp order.
-6. Each candle is consecutive for the timeframe.
-7. `c1 -> c2 -> c3` already forms a valid predecessor sequence.
-
 ## Bullish C4 Continuation Candidate
 
-After a valid bullish `C3` expansion has been confirmed:
+After a qualifying bullish predecessor has activated `EQ(C3)`:
 
 - mark `EQ(C3) = (high(C3) + low(C3)) / 2`
 - seek a `C4` that forms its low in the upper half of `C3` range
@@ -80,13 +73,11 @@ For the current doctrine candidate, that means:
 
 - `low(C4) > EQ(C3)`
 
-This is a strong doctrinal candidate supported by the transcript.
-
 ## Bearish Mirror
 
 Under the locked generalized symmetry rule, the bearish mirror is also locked:
 
-- after valid bearish `C3` expansion
+- after a qualifying bearish predecessor has activated `EQ(C3)`
 - mark `EQ(C3)`
 - seek `C4` with:
   - `high(C4) < EQ(C3)`
@@ -96,7 +87,7 @@ Under the locked generalized symmetry rule, the bearish mirror is also locked:
 `EQ(C3)` is not used merely as a midpoint marker.
 
 At this layer, it functions as a mechanical wick-quality boundary for `C4`,
-just as `EQ(C2)` functioned as a wick-quality boundary for `C3`.
+just as `EQ(C2)` functioned as a wick-quality boundary for `C3` in Type A.
 
 The purpose is to distinguish:
 
@@ -107,33 +98,27 @@ from:
 - deeper retracement or unstable behavior that does not preserve clean
   continuation
 
-Current reviewed execution interpretation:
-
-- `C4` is downstream of the primary expansion trade candle
-- this makes `C4` a continuation layer, not the primary entry candle in the
-  currently reviewed flow
-
 ## Open Questions
 
 The following remain unresolved and are not yet locked:
 
 1. Is `C4` only a continuation candidate, or already a confirmed continuation?
 2. Does `C4` require its own close-based expansion rule?
-   - for example: `close(C4) > high(C3)` in the bullish case
-3. Are there invalidation rules beyond midpoint violation?
-
-Current doctrinal status:
-
-- `C4` close behavior is not locked yet
-- no `C4` close-confirmation rule is currently implemented
-- any future `C4` close rule must be added only after direct doctrinal
-  evidence or be labeled explicitly as a separate research hypothesis
+3. Are invalidation rules different between the Type A and Type C predecessor
+   branches?
+4. Is `C4` in Type C best treated as a continuation candle only, or also as a
+   reviewed actionable candle?
 
 ## Implementation Status
 
-Implementation status: in progress.
+Implementation status: partially implemented.
 
-This spec exists to preserve the doctrinal boundary before code is written.
+Current code implements the narrower Type A-derived `C4` candidate primitive.
+
+Not implemented yet:
+
+- a separate Type C-derived `C4` continuation primitive
+- a unified top-level `C4` detector across multiple predecessor branches
 
 ## Non-goals
 

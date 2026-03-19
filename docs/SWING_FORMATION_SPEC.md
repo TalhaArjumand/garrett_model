@@ -30,19 +30,28 @@ From the reviewed transcript:
 - reversal candles have large wicks
 - the current reviewed `candle 2` reversal-to-expansion structure is the same
   core reversal logic, with wick size being the discriminator
-- after candle `3` expands, continuation in candle `4` depends on candle `3`
-  closing beyond candle `2`'s extreme and preserving the correct half of candle
-  `3`
+- in the `candle 3 closure` case, we do not get a `C2` closure
+- prior to `C3` open, reversal cannot be anticipated in that case
+- the `C3 closure` forms only after candle `3` closes strongly over the body of
+  candle `2`
+- once that `C3` closure exists, mark `EQ(C3)` and seek continuation in `C4`
 
 ## Current Reviewed Reading
 
 At the current repo doctrine level, Garrett swing formation is the reversal /
 confirmation structure that appears at a valid key level before the tradeable
-expansion candle.
+expansion or continuation candle.
 
-At least two currently reviewed cases now exist:
+Current organizing abstraction:
 
-### Case 1 - Standard Delayed Expansion
+- swing formation is organized around `C2` and `C3`
+- `C2` currently has two reviewed types
+- `C3` currently has one reviewed closure type
+- the exact path determines which later candle becomes actionable
+
+At least three currently reviewed swing-formation types now exist:
+
+### Type A - C2 Closure -> C3 Expansion
 
 In the standard currently reviewed candle grammar:
 
@@ -60,7 +69,7 @@ So the standard swing-formation flow is:
 - `C3` support
 - `C3` expansion
 
-### Case 2 - Compressed C2 Reversal To Expansion
+### Type B - C2 Reversal To Expansion
 
 In the second currently reviewed case:
 
@@ -72,6 +81,22 @@ In the second currently reviewed case:
 
 So in this compressed case, reversal and expansion occur in `C2` itself.
 
+### Type C - C3 Closure
+
+In the third currently reviewed case:
+
+1. `C1` or `C2` reaches the key level
+2. no `C2` closure forms
+3. prior to `C3` open, reversal cannot be anticipated
+4. swing formation only exists after `C3` closes strongly
+5. that strong `C3` closure is mechanically defined as closing over the body of
+   `C2`
+6. after that closure, `EQ(C3)` becomes the active continuation boundary for
+   `C4`
+
+So in this delayed-confirmation case, the formation completes only at `C3`
+close and continuation is then sought in `C4`.
+
 ## Relationship To Key Level
 
 Swing formation is not the key level itself.
@@ -80,7 +105,7 @@ Current boundary:
 
 - key level = location / context
 - swing formation = confirmation at that location
-- expansion candle = tradeable event after confirmation
+- expansion or continuation candle = tradeable event after confirmation
 
 ## Relationship To Generic Swing Points
 
@@ -109,16 +134,19 @@ Current reviewed interpretation:
 
 This is the doctrinal reason the repo already uses:
 
-- `EQ(C2)` to qualify `C3`
-- `EQ(C3)` to qualify `C4`
+- `EQ(C2)` to qualify `C3` in Type A
+- wick size to qualify `C2` itself in Type B
+- `EQ(C3)` to qualify `C4` in Type C
 
 So the currently reviewed chain is:
 
 - `C2` can be:
-  - reversal-side closure event in the standard case
-  - reversal-to-expansion candle in the compressed case
-- `C3` = expansion-qualified event in the standard delayed-expansion case
-- `C4` = continuation-qualified event
+  - closure-side event in Type A
+  - reversal-to-expansion candle in Type B
+- `C3` can be:
+  - expansion-qualified event in Type A
+  - closure-side event in Type C
+- `C4` = continuation-qualified event after the appropriate predecessor state
 
 ## Relationship To Entry
 
@@ -126,31 +154,39 @@ Current reviewed execution reading:
 
 - Garrett does not blindly trade the key level
 - Garrett waits for swing formation there
-- Garrett then trades the expansion candle
+- Garrett then trades the reviewed expansion / continuation candle of that
+  formation type
 
 In the current reviewed grammar:
 
 - `C1` is not the trade candle
-- `C2` belongs to swing formation in both reviewed cases
-- `C3` is the tradeable expansion candle in the standard delayed-expansion case
-- `C2` can itself be the tradeable expansion candle in the compressed case
-- `C4` is later continuation context
+- Type A:
+  - `C2` belongs to swing formation
+  - `C3` is the tradeable expansion candle
+- Type B:
+  - `C2` belongs to swing formation
+  - `C2` can itself be the tradeable expansion candle
+- Type C:
+  - `C3` is the closure / formation candle
+  - `C4` becomes the next reviewed continuation / expansion candidate after the
+    formation exists
 
 ## What Is Locked
 
 Locked at the current doctrine level:
 
 - the market cannot reverse without a swing formation
-- `C2` closure is part of swing formation
+- swing formation is organized around `C2` and `C3`
 - `EQ` is used mechanically to measure wick size
-- swing formation is the confirmation object between key level and expansion
-  candle
+- swing formation is the confirmation object between key level and expansion /
+  continuation
 - swing formation is not equivalent to a generic local swing point
 - the currently reviewed swing-formation logic is a reversal-to-expansion
   structure whose key discriminator is wick quality
-- at least two currently reviewed swing-formation cases exist:
-  - standard `C2 closure -> C3 expansion`
-  - compressed `C2 reversal to expansion`
+- at least three currently reviewed swing-formation types exist:
+  - Type A: `C2 closure -> C3 expansion`
+  - Type B: `C2 reversal to expansion`
+  - Type C: `C3 closure -> C4 continuation candidate`
 
 ## What Is Not Yet Locked
 
@@ -158,21 +194,29 @@ Not yet locked:
 
 1. a final exhaustive taxonomy of all Garrett swing formations
 2. whether later material adds other swing-formation variants beyond the
-   two currently reviewed cases
+   three currently reviewed types
 3. whether SMT must be present for a swing formation to become tradeable in all
    later cases
-4. exact execution details inside the expansion candle
+4. exact execution details inside the actionable candle
+5. exact machine-ready bullish and bearish formulas for `C3` closing over the
+   body of `C2`
 
 ## Implementation Status
 
-Implementation status: doctrine only.
+Implementation status: partially implemented.
 
-Current code already implements parts of this formation through:
+Current code already implements:
 
-- `C2` closure
-- `C3` support
-- `C3` expansion
-- `C4` continuation candidate
+- Type A components:
+  - `C2` closure
+  - `C3` support
+  - `C3` expansion
+  - `C4` continuation candidate
+- Type B components:
+  - isolated bullish and bearish `C2 reversal to expansion` primitives
 
-But the repo does not yet contain a separate top-level swing-formation engine
-or later SMT-integrated confirmation logic.
+What is not implemented yet:
+
+- a separate `C3 closure` primitive
+- a merged top-level swing-formation detector across Type A, Type B, and Type C
+- later SMT-integrated confirmation logic
