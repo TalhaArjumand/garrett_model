@@ -1124,3 +1124,115 @@ Interpretation:
   - real
   - testable
   - not yet doctrine
+
+## Confirmed Integrated Internal-to-External Type A Review
+
+### Corrected Bridge Boundary
+
+- review scope:
+  - integrated `IRL -> Type A -> strict C3` bridge
+- correction applied:
+  - the first bridge version was too permissive because it paired Type A
+    sequences with prior `FVG` geometry even if that gap had already been
+    reached earlier
+- corrected rule:
+  - build the `IRL` inventory from candles strictly before sequence `C1`
+  - use existing `FVGCandidate` state logic
+  - only same-direction `is_resting` `IRL`s are eligible
+  - then check whether sequence `C1` or `C2` touches that still-active `IRL`
+
+Interpretation:
+
+- this now follows left-to-right market state instead of retrospective pairing
+- already-reached `IRL/FVG`s cannot be reused later as active key levels
+
+### Corrected March 19 Window Counts
+
+- `bullish_internal_to_external_type_a_count = 0`
+- `bearish_internal_to_external_type_a_count = 1`
+- `bullish_internal_to_external_type_a_expansion_quality_count = 0`
+- `bearish_internal_to_external_type_a_expansion_quality_count = 1`
+
+Interpretation:
+
+- the earlier bullish and one earlier bearish pairing disappeared for the
+  correct reason: their `IRL/FVG`s had already been reached before the later
+  Type A sequence began
+- the corrected integrated bridge now leaves only one valid same-window
+  real-data match
+
+### Dropped Historical IRL Pairing 1
+
+- dropped prior `IRL`:
+  - bullish `FVG` `5094.80 -> 5114.39`
+  - confirmed at `2026-03-06 04:00 +05:00`
+  - reached at `2026-03-06 08:00 +05:00`
+- later sequence that must no longer pair:
+  - `2026-03-09 12:00 / 16:00 / 20:00 +05:00`
+- result after correction:
+  - rejected as active integrated `IRL -> Type A`
+
+Interpretation:
+
+- this confirms the bridge no longer reuses an already-reached bullish `IRL`
+  for a later bullish Type A sequence
+
+### Dropped Historical IRL Pairing 2
+
+- dropped prior `IRL`:
+  - bearish `FVG` `5175.60 -> 5226.29`
+  - confirmed at `2026-03-03 16:00 +05:00`
+  - reached at `2026-03-04 00:00 +05:00`
+- later sequence that must no longer pair:
+  - `2026-03-12 08:00 / 12:00 / 16:00 +05:00`
+- result after correction:
+  - rejected as active integrated `IRL -> Type A`
+
+Interpretation:
+
+- this confirms the bridge no longer reuses an already-reached bearish `IRL`
+  for a much later bearish Type A sequence
+
+### Surviving Integrated Type A Match 1
+
+- classification:
+  - bearish integrated `IRL -> Type A -> strict C3`
+- active `IRL`:
+  - bearish `FVG` from:
+    - `2026-03-12 12:00 +05:00`
+    - `2026-03-12 16:00 +05:00`
+    - `2026-03-12 20:00 +05:00`
+  - zone:
+    - `5112.61 -> 5146.09`
+  - state immediately before sequence `C1`:
+    - `resting`
+- sequence:
+  - `C1 = 2026-03-13 00:00 +05:00`
+  - `C2 = 2026-03-13 04:00 +05:00`
+  - `C3 = 2026-03-13 08:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- before `C1`, this bearish `IRL` still exists as a resting candidate
+- both `C1` and `C2` overlap the active `IRL` zone
+- `C2` swept above `high(C1)`
+  - `5128.53 > 5124.29`
+- `C2` closed back inside the full range of `C1`
+  - `5073.02 < 5103.21 < 5124.29`
+- `EQ(C2) = 5113.47`
+- `high(C3) < EQ(C2)`
+  - `5107.91 < 5113.47`
+- `close(C3) < low(C2)`
+  - `5089.61 < 5098.41`
+- strict expansion-quality check also passes
+  - same-side wick fraction on `C3`:
+    - `0.101337`
+
+Interpretation:
+
+- this is the surviving same-source MT5 example after enforcing real
+  left-to-right `IRL` state
+- the corrected integrated Type A bridge now behaves consistently with the
+  existing `IRL/FVG` state model and runtime market ordering
