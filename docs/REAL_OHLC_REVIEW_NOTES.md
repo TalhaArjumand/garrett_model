@@ -368,6 +368,151 @@ Interpretation:
 - the sell-side liquidity below that swing low is still resting in the current
   reviewed sample
 
+## Confirmed IRL Ranking V1 Matches
+
+### IRL Ranking Match 1
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bearish`
+- ranked candidate:
+  - bearish `FVG`
+  - `C1 = 2026-03-13 12:00`
+  - `C2 = 2026-03-13 16:00`
+  - `C3 = 2026-03-13 20:00`
+  - zone = `5051.82` to `5079.88`
+  - rank = `1`
+- result: `match`
+
+Why it matches:
+
+- candidate is `resting`
+- candidate direction aligns with bearish bias
+- it is the nearest `IRL` candidate to current price in the reviewed snapshot
+- its score advantage over the next candidates is explained by:
+  - full state score
+  - full direction-alignment score
+  - best proximity score among ranked candidates
+
+Interpretation:
+
+- this is a strong sanity check that the v1 ranker prefers a nearby, resting,
+  direction-aligned `IRL`
+
+### IRL Ranking Match 2
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bearish`
+- ranked candidate:
+  - bearish `FVG`
+  - `C1 = 2026-03-03 04:00`
+  - `C2 = 2026-03-03 08:00`
+  - `C3 = 2026-03-03 12:00`
+  - zone = `5288.13` to `5305.41`
+  - rank = `2`
+- result: `match`
+
+Why it matches:
+
+- candidate is also `resting`
+- candidate is also direction-aligned
+- but it is much farther from current price and much older than rank `1`
+
+Interpretation:
+
+- the v1 ranking order correctly places this behind the closer and newer
+  bearish resting gap
+
+### IRL Ranking Match 3
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bullish`
+- ranked candidate:
+  - bullish `FVG`
+  - `C1 = 2026-03-05 20:00`
+  - `C2 = 2026-03-06 00:00`
+  - `C3 = 2026-03-06 04:00`
+  - zone = `5094.80` to `5114.39`
+  - state = `reached`
+  - rank = `2`
+- result: `match`
+
+Why it matches:
+
+- candidate direction aligns with bullish bias
+- but it is already `reached`
+- the current v1 score still keeps it above many other bullish candidates
+  because it is relatively closer and less stale than those alternatives
+
+Interpretation:
+
+- this confirms the intended v1 tradeoff:
+  - reached candidates are discounted
+  - but not hard-excluded
+
+### IRL Ranking Match 4
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bullish`
+- ranked candidate:
+  - bearish `FVG`
+  - `C1 = 2026-03-13 12:00`
+  - `C2 = 2026-03-13 16:00`
+  - `C3 = 2026-03-13 20:00`
+  - zone = `5051.82` to `5079.88`
+  - state = `resting`
+  - rank = `1`
+- result: `match`
+
+Why it matches:
+
+- candidate opposes bullish bias
+- but it is still `resting`
+- and it is the nearest `IRL` candidate to current price
+- under the current v1 weights, those advantages are enough to outrank the
+  aligned but already-reached bullish alternatives
+
+Interpretation:
+
+- this is not a bug
+- it is a reviewed and understood property of v1 weighting
+- future versions may change this only by explicit research refinement
+
+### IRL Ranking Match 5
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bullish`
+- ranked candidate:
+  - bullish `FVG`
+  - `C1 = 2026-03-09 16:00`
+  - `C2 = 2026-03-09 20:00`
+  - `C3 = 2026-03-10 00:00`
+  - zone = `5116.12` to `5124.65`
+  - state = `reached`
+  - rank = `3`
+- result: `match`
+
+Why it matches:
+
+- candidate is bullish and therefore bias-aligned
+- candidate is reached, so it is discounted on state
+- it ranks below the bullish reached candidate at rank `2` because its feature
+  mix is slightly weaker in the reviewed snapshot
+
+Interpretation:
+
+- the relative order among reached bullish candidates matched the reviewed chart
+  state and current v1 scoring explanation
+
 ## Current Assessment
 
 The current doctrine implementation state is:
@@ -394,6 +539,7 @@ Current reviewed result set:
 - taken `old_high` ERL matches: `1`
 - rejected `equal_lows` grouping matches: `1`
 - resting `old_low` ERL matches: `1`
+- reviewed `IRL` ranking v1 matches: `5`
 
 This is sufficient evidence to:
 
@@ -404,6 +550,10 @@ This is sufficient evidence to:
 - keep the helper-layer `IRL` candidate-state boundary between:
   - resting gaps
   - and already-reached gaps
+- keep the current `IRL` ranking v1 behavior as a valid research baseline:
+  - explicit
+  - leakage-safe
+  - manually reviewed on MT5
 - keep the corrected ERL liquidity-state boundary between:
   - historical swing-derived liquidity
   - and still-resting liquidity
