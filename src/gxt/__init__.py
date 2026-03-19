@@ -28,6 +28,13 @@ from .fvg import (
     validate_fvg_inputs,
 )
 from .irl_ranking import IRLRankedCandidate, IRLRankingWeights, rank_irl_candidates
+from .key_level_integration import (
+    InternalToExternalTypeACandidate,
+    count_internal_to_external_type_a_expansion_quality_sequences,
+    count_internal_to_external_type_a_sequences,
+    detect_internal_to_external_type_a_candidates,
+    detect_internal_to_external_type_a_expansion_quality_candidates,
+)
 from .local_swing import (
     LocalSwingPoint,
     build_local_swing_high,
@@ -192,4 +199,9 @@ __all__ = [
     "IRLRankingWeights",
     "IRLRankedCandidate",
     "rank_irl_candidates",
+    "InternalToExternalTypeACandidate",
+    "detect_internal_to_external_type_a_candidates",
+    "detect_internal_to_external_type_a_expansion_quality_candidates",
+    "count_internal_to_external_type_a_sequences",
+    "count_internal_to_external_type_a_expansion_quality_sequences",
 ]

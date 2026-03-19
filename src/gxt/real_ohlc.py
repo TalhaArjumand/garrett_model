@@ -8,6 +8,10 @@ from typing import Iterable
 from .candles import Candle
 from .erl_proxy import detect_erl_candidates
 from .fvg import detect_fvg_candidates, is_bearish_fvg, is_bullish_fvg
+from .key_level_integration import (
+    count_internal_to_external_type_a_expansion_quality_sequences,
+    count_internal_to_external_type_a_sequences,
+)
 from .sequence_primitives import (
     has_bearish_c4_after_c3_closure_candidate,
     has_bearish_c4_after_c3_closure_expansion_quality_candidate,
@@ -46,6 +50,10 @@ class RealSampleReport:
     bearish_sequence_count: int
     bullish_sequence_expansion_quality_count: int
     bearish_sequence_expansion_quality_count: int
+    bullish_internal_to_external_type_a_count: int
+    bearish_internal_to_external_type_a_count: int
+    bullish_internal_to_external_type_a_expansion_quality_count: int
+    bearish_internal_to_external_type_a_expansion_quality_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
@@ -483,6 +491,17 @@ def build_real_sample_report(
         candles,
         max_wick_fraction=c3_expansion_max_wick_fraction,
     )
+    (
+        bullish_internal_to_external_type_a,
+        bearish_internal_to_external_type_a,
+    ) = count_internal_to_external_type_a_sequences(candles)
+    (
+        bullish_internal_to_external_type_a_expansion_quality,
+        bearish_internal_to_external_type_a_expansion_quality,
+    ) = count_internal_to_external_type_a_expansion_quality_sequences(
+        candles,
+        max_wick_fraction=c3_expansion_max_wick_fraction,
+    )
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_case_b, bearish_case_b = count_case_b_candidates(
         candles,
@@ -529,6 +548,14 @@ def build_real_sample_report(
         bearish_sequence_count=bearish,
         bullish_sequence_expansion_quality_count=bullish_sequence_expansion_quality,
         bearish_sequence_expansion_quality_count=bearish_sequence_expansion_quality,
+        bullish_internal_to_external_type_a_count=bullish_internal_to_external_type_a,
+        bearish_internal_to_external_type_a_count=bearish_internal_to_external_type_a,
+        bullish_internal_to_external_type_a_expansion_quality_count=(
+            bullish_internal_to_external_type_a_expansion_quality
+        ),
+        bearish_internal_to_external_type_a_expansion_quality_count=(
+            bearish_internal_to_external_type_a_expansion_quality
+        ),
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
         bullish_case_b_candidate_count=bullish_case_b,
