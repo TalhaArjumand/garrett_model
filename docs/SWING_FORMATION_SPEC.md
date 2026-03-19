@@ -48,6 +48,8 @@ Current organizing abstraction:
 - swing formation is organized around `C2` and `C3`
 - `C2` currently has two reviewed types
 - `C3` currently has one reviewed closure type
+- all three currently reviewed types require `C2` to sweep the relevant edge of
+  `C1`
 - the exact path determines which later candle becomes actionable
 
 At least three currently reviewed swing-formation types now exist:
@@ -57,10 +59,11 @@ At least three currently reviewed swing-formation types now exist:
 In the standard currently reviewed candle grammar:
 
 1. price reaches a key level
-2. `C2` closes back inside `C1` range
-3. `EQ(C2)` measures wick quality mechanically
-4. `C3` must preserve the correct half of `C2`
-5. `C3` must then expand beyond `C2`
+2. `C2` sweeps beyond the relevant edge of `C1`
+3. `C2` closes back inside `C1` range
+4. `EQ(C2)` measures wick quality mechanically
+5. `C3` must preserve the correct half of `C2`
+6. `C3` must then expand beyond `C2`
 
 So the standard swing-formation flow is:
 
@@ -76,9 +79,10 @@ In the second currently reviewed case:
 
 1. `C1` reaches the key level
 2. `C1` is not the trade candle
-3. `C2` reverses from the relevant edge of `C1`
-4. `C2` also expands away from that reversal
-5. the key discriminator is smaller wick structure
+3. `C2` sweeps the relevant edge of `C1`
+4. `C2` reverses from that sweep
+5. `C2` also expands away from that reversal
+6. the key discriminator is smaller wick structure
 
 So in this compressed case, reversal and expansion occur in `C2` itself.
 
@@ -87,12 +91,13 @@ So in this compressed case, reversal and expansion occur in `C2` itself.
 In the third currently reviewed case:
 
 1. `C1` or `C2` reaches the key level
-2. no Type A `C2` closure forms back inside `C1` range
-3. prior to `C3` open, reversal cannot be anticipated
-4. swing formation only exists after `C3` closes strongly
-5. that strong `C3` closure is mechanically defined as closing over the body of
+2. `C2` sweeps the relevant edge of `C1`
+3. no Type A `C2` closure forms back inside `C1` range
+4. prior to `C3` open, reversal cannot be anticipated
+5. swing formation only exists after `C3` closes strongly
+6. that strong `C3` closure is mechanically defined as closing over the body of
    `C2`
-6. after that closure, `EQ(C3)` becomes the active continuation boundary for
+7. after that closure, `EQ(C3)` becomes the active continuation boundary for
    `C4`
 
 So in this delayed-confirmation case, the formation completes only at `C3`
@@ -178,6 +183,8 @@ Locked at the current doctrine level:
 
 - the market cannot reverse without a swing formation
 - swing formation is organized around `C2` and `C3`
+- all three currently reviewed types require `C2` to sweep the relevant edge of
+  `C1`
 - `EQ` is used mechanically to measure wick size
 - swing formation is the confirmation object between key level and expansion /
   continuation

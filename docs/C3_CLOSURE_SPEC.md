@@ -16,6 +16,8 @@ case that is not reducible to either:
 From the reviewed transcript:
 
 - `C1` can hit a key level, or `C2` can hit a key level
+- the reviewed swing-formation family still requires `C2` to sweep the
+  relevant edge of `C1`
 - in this case, we do not get a `C2` closure
   - meaning we do not get the Type A `C2` closure condition where `C2` closes
     back inside the full range of `C1`
@@ -37,6 +39,7 @@ swing-formation type.
 In this case:
 
 - the key level has already been reached by `C1` or `C2`
+- `C2` still sweeps the relevant edge of `C1`
 - `C2` does not produce a valid Type A `C2` closure back inside `C1` range
 - the formation is not knowable before `C3` closes
 - `C3` becomes the candle that completes the swing formation
@@ -52,6 +55,7 @@ Locked at the current reviewed doctrine level:
 
 - `C3 closure` is a third reviewed swing-formation type
 - this type can arise when `C1` or `C2` reaches the key level
+- `C2` must still sweep the relevant edge of `C1`
 - a valid Type A `C2` closure is absent in this case
 - that means `C2` does not close back inside the full range of `C1`
 - reversal cannot be anticipated before `C3` closes

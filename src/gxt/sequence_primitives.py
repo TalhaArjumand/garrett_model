@@ -118,7 +118,8 @@ def is_bullish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
     c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
     _require_positive_range_for("c2", c2)
     return (
-        not is_bullish_c2_closure(c1, c2)
+        c2.low < c1.low
+        and not is_bullish_c2_closure(c1, c2)
         and c2.is_bearish
         and c3.is_bullish
         and c3.low > c2.low
@@ -130,7 +131,8 @@ def is_bearish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
     c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
     _require_positive_range_for("c2", c2)
     return (
-        not is_bearish_c2_closure(c1, c2)
+        c2.high > c1.high
+        and not is_bearish_c2_closure(c1, c2)
         and c2.is_bullish
         and c3.is_bearish
         and c3.high < c2.high

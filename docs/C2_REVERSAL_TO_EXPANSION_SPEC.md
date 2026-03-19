@@ -34,7 +34,8 @@ In this case:
 
 - `C1` reaches the key level
 - `C1` itself is not the trade candle
-- `C2` reverses from the relevant edge of `C1`
+- `C2` sweeps the relevant edge of `C1`
+- `C2` reverses from that sweep
 - `C2` also expands away from that reversal
 - the key discriminator is small wick structure
 
@@ -67,6 +68,7 @@ Locked at the current reviewed doctrine level:
 - `C1` is not the primary trade candle
 - `C2 reversal to expansion` is a second currently reviewed candle-formation
   case
+- `C2` must sweep the relevant edge of `C1`
 - in this case, `C2` can be the tradeable expansion candle
 - the discriminator between standard reversal and reversal-to-expansion is wick
   size

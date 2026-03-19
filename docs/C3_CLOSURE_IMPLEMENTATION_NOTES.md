@@ -16,6 +16,7 @@ It exists to keep separate:
 Current reviewed doctrine supports:
 
 - `C3 closure` is a third swing-formation type
+- `C2` still sweeps the relevant edge of `C1` in this type
 - it begins where the Type A `C2` closure does not occur
 - reversal is not knowable before `C3` closes
 - a strong `C3` closure is defined as closing over the body of `C2`
@@ -54,6 +55,7 @@ machine form.
 
 Bullish primitive:
 
+- `low(C2) < low(C1)`
 - no valid Type A bullish `C2` closure exists
 - `C2` is bearish
 - `C3` is bullish
@@ -62,6 +64,7 @@ Bullish primitive:
 
 Bearish primitive:
 
+- `high(C2) > high(C1)`
 - no valid Type A bearish `C2` closure exists
 - `C2` is bullish
 - `C3` is bearish
@@ -103,6 +106,8 @@ The current implementation should reject:
 - zero-range `C2`
 - doji-like `C2`
 - equality at the decisive boundaries:
+  - `low(C2) == low(C1)` is not enough for bullish
+  - `high(C2) == high(C1)` is not enough for bearish
   - `close(C3) == body_top(C2)` is not enough for bullish
   - `close(C3) == body_bottom(C2)` is not enough for bearish
   - `low(C3) == low(C2)` is not enough for bullish

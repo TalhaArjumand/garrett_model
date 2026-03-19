@@ -162,6 +162,13 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
 
+    def test_bullish_c3_closure_requires_c2_to_sweep_below_c1_low(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
+        c2 = self.make_candle(timestamp_hour=11, open=105, high=106, low=100, close=101)
+        c3 = self.make_candle(timestamp_hour=12, open=102, high=108, low=101, close=106)
+
+        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+
     def test_bullish_c3_closure_requires_c3_to_hold_above_c2_low(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
         c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=94)
@@ -274,6 +281,13 @@ class SequencePrimitiveTests(unittest.TestCase):
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
         c2 = self.make_candle(timestamp_hour=11, open=106, high=114, low=104, close=109)
         c3 = self.make_candle(timestamp_hour=12, open=108, high=109.5, low=100, close=105)
+
+        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+
+    def test_bearish_c3_closure_requires_c2_to_sweep_above_c1_high(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=104, high=110, low=103, close=109)
+        c3 = self.make_candle(timestamp_hour=12, open=108, high=109.5, low=100, close=103)
 
         self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
 
