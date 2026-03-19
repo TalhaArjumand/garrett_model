@@ -8,6 +8,12 @@ closure` and `C3 support`: `C3 expansion confirmation`.
 At this layer, support is no longer enough. `C3` must prove expansion with a
 strict close beyond the relevant extreme of `C2`.
 
+Current reviewed execution interpretation:
+
+- `C3` is not only a confirmation candle in the abstract
+- `C3` is the expansion candle Garrett wants to trade in the currently reviewed
+  material
+
 ## Inputs
 
 This primitive uses:
@@ -66,6 +72,12 @@ Full sequence validity is defined later by composing:
 - `C3 support`
 - `C3 expansion confirmation`
 
+But current reviewed execution logic treats the composed result as:
+
+- key level reached
+- swing formation qualified
+- `C3` expansion becomes the tradeable event
+
 ## Non-goals
 
 This spec does not define:
@@ -74,3 +86,5 @@ This spec does not define:
 - full continuation sequence doctrine
 - reversal / aligned sequence doctrine
 - higher-order context interpretation
+- all later Garrett trade-entry variants outside the currently reviewed
+  material

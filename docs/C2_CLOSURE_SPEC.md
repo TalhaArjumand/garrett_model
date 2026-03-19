@@ -21,6 +21,13 @@ sequence:
 
 Continuation into `C4` is not implemented yet.
 
+Current reviewed execution interpretation:
+
+- `C2` is the swing-formation / closure-side event
+- `C2` is not the primary trade candle
+- the tradeable event is the later expansion candle if the structure continues
+  to qualify
+
 ## Inputs
 
 The primitive uses:
@@ -110,3 +117,4 @@ This spec does not yet define:
 - `C4` continuation logic
 - small-wick doctrine beyond the strict `C3` support rule
 - full continuation / reversal / aligned sequence logic
+- standalone trade-entry mechanics by itself

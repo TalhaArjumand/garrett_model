@@ -21,7 +21,7 @@ The following predecessor doctrine is already locked:
 This means:
 
 - `C2` is the reversal / swing-formation-side event
-- `C3` is the candidate expansion candle
+- `C3` is the candidate expansion candle and current reviewed trade candle
 - `EQ(C2)` is the wick-quality boundary used to qualify `C3`
 
 ## Direct Transcript Evidence
@@ -106,6 +106,12 @@ from:
 
 - deeper retracement or unstable behavior that does not preserve clean
   continuation
+
+Current reviewed execution interpretation:
+
+- `C4` is downstream of the primary expansion trade candle
+- this makes `C4` a continuation layer, not the primary entry candle in the
+  currently reviewed flow
 
 ## Open Questions
 

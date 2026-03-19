@@ -59,13 +59,27 @@ The current working interpretation is:
 1. identify the universal-model context
 2. identify the relevant key-level area
 3. wait for price to reach that key level
-4. evaluate candle formation and later confluences there
+4. evaluate swing formation and later confluences there
+5. if the formation qualifies, trade the expansion candle away from the level
 
 So the current doctrine flow is:
 
 - watch location first
 - confluence second
-- execution qualification third
+- swing formation third
+- expansion-candle execution fourth
+
+Current reviewed execution clarification:
+
+- key level is the location / context object
+- swing formation is the confirmation / qualification object at that location
+- the tradeable event is the subsequent expansion candle
+
+In the currently reviewed candle grammar, this means:
+
+- `C2` belongs to the swing-formation / closure side
+- `C3` is the expansion candle
+- `C4` is later continuation context, not the primary trade candle
 
 ## What Is Locked
 
@@ -74,6 +88,10 @@ Locked in the current repo doctrine:
 - there is no standalone explicit `active IRL` selection rule currently locked
 - key-level relevance is currently understood through confluence
 - candle formation is one confirmed confluence layer at key level
+- the current reviewed trade logic is:
+  - key level -> swing formation -> expansion candle
+- within the currently reviewed material, Garrett prefers the expansion candle
+  rather than the raw reversal candle itself
 
 ## What Is Not Yet Locked
 
@@ -107,3 +125,5 @@ This spec does not yet define:
 - multi-confluence weighting
 - entry rules by itself
 - target rules by itself
+- whether this exact expansion-entry preference is universal across all later
+  Garrett material
