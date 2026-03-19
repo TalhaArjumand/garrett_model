@@ -269,6 +269,119 @@ Why it matches:
 Interpretation:
 
 - this bearish `FVG` is also still resting in the current reviewed sample
+- it remains a live `IRL` candidate in the helper/research layer
+
+## Confirmed Case B Matches
+
+### Bullish Case B Match 1
+
+- `C1 = 2026-02-27 08:00`
+- `C2 = 2026-02-27 12:00`
+- result: `match`
+
+Why it matches:
+
+- `low(C2) < low(C1)`
+- `close(C2) > open(C2)`
+- `close(C2) > low(C1)`
+- `lower_wick(C2) / range(C2) = 0.101391`
+- current default research threshold = `0.25`
+
+Interpretation:
+
+- this is a clean bullish `C2 reversal to expansion` candidate
+- the reversal and expansion are compressed into `C2`
+- the lower wick remains small enough to support expansion away from reversal
+
+### Bullish Case B Match 2
+
+- `C1 = 2026-03-16 08:00`
+- `C2 = 2026-03-16 12:00`
+- result: `match`
+
+Why it matches:
+
+- `low(C2) < low(C1)`
+- `close(C2) > open(C2)`
+- `close(C2) > low(C1)`
+- `lower_wick(C2) / range(C2) = 0.081623`
+- current default research threshold = `0.25`
+
+Interpretation:
+
+- this is another strong bullish compressed reversal-to-expansion case
+- the wick is small relative to the full candle range
+- the runtime-safe two-candle primitive matches the reviewed MT5 chart
+
+### Bullish Case B Match 3
+
+- `C1 = 2026-03-09 12:00`
+- `C2 = 2026-03-09 16:00`
+- result: `match`
+
+Why it matches:
+
+- `low(C2) < low(C1)`
+- `close(C2) > open(C2)`
+- `close(C2) > low(C1)`
+- `lower_wick(C2) / range(C2) = 0.237836`
+- current default research threshold = `0.25`
+
+Interpretation:
+
+- this bullish Case B candidate still passes, but it is near the current wick
+  threshold
+- it is therefore a useful stress-test example for the research parameter
+  boundary
+
+### Bearish Case B Match 1
+
+- `C1 = 2026-03-10 00:00`
+- `C2 = 2026-03-10 04:00`
+- result: `match`
+
+Why it matches:
+
+- `high(C2) > high(C1)`
+- `close(C2) < open(C2)`
+- `close(C2) < high(C1)`
+- `upper_wick(C2) / range(C2) = 0.083766`
+- current default research threshold = `0.25`
+
+Interpretation:
+
+- this is a clean bearish `C2 reversal to expansion` candidate
+- expansion away from the reversal occurs inside `C2` itself
+
+### Bearish Case B Match 2
+
+- `C1 = 2026-03-13 00:00`
+- `C2 = 2026-03-13 04:00`
+- result: `match`
+
+Why it matches:
+
+- `high(C2) > high(C1)`
+- `close(C2) < open(C2)`
+- `close(C2) < high(C1)`
+- `upper_wick(C2) / range(C2) = 0.143758`
+- current default research threshold = `0.25`
+
+Interpretation:
+
+- this is another reviewed bearish compressed reversal-to-expansion case
+- the current Case B primitive matches the same-source MT5 chart here as well
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+- zone = `5051.82` to `5079.88`
+- no later reviewed candle overlaps that zone
+
+Interpretation:
+
+- this bearish `FVG` is also still resting in the current reviewed sample
 - current IRL reporting correctly preserves it as an unreached candidate
 
 ## Confirmed ERL Liquidity-State Matches
@@ -599,6 +712,8 @@ Current reviewed result set:
 - reviewed near-miss rejection: `1`
 - bullish `C4` candidate matches: `1`
 - bearish `C4` candidate matches: `1`
+- bullish Case B matches: `3`
+- bearish Case B matches: `2`
 - bullish `FVG` matches: `1`
 - bearish `FVG` matches: `1`
 - reached bearish `FVG` matches: `1`
@@ -609,12 +724,15 @@ Current reviewed result set:
 - rejected `equal_lows` grouping matches: `1`
 - resting `old_low` ERL matches: `1`
 - reviewed `IRL` ranking v1 matches: `5`
+- reviewed `ERL` ranking v1 matches: `2`
 
 This is sufficient evidence to:
 
 - keep the current `C1 -> C2 -> C3` primitive
 - keep the narrow bullish `C4` candidate primitive
 - keep the narrow bearish `C4` candidate primitive
+- keep the narrow bullish `C2 reversal to expansion` primitive
+- keep the narrow bearish `C2 reversal to expansion` primitive
 - keep the baseline bullish/bearish `FVG` primitive
 - keep the helper-layer `IRL` candidate-state boundary between:
   - resting gaps
