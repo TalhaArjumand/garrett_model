@@ -513,6 +513,75 @@ Interpretation:
 - the relative order among reached bullish candidates matched the reviewed chart
   state and current v1 scoring explanation
 
+## Confirmed ERL Ranking V1 Matches
+
+### ERL Ranking Match 1
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bullish`
+- ranked candidate:
+  - `old_low`
+  - side = `sell_side`
+  - anchors:
+    - `2026-03-17 12:00 +05:00`
+    - `2026-03-17 16:00 +05:00`
+    - `2026-03-17 20:00 +05:00`
+  - level = `4973.51`
+  - state = `resting`
+  - rank = `1`
+- result: `match`
+
+Why it matches:
+
+- `low(B) < low(A)`
+- `low(B) < low(C)`
+- so the middle candle is a confirmed swing low
+- no later candle in the reviewed snapshot traded below `4973.51`
+- under corrected `ERL -> IRL` reaction semantics:
+  - bullish bias watches `old_low` / `sell_side` liquidity
+
+Interpretation:
+
+- this confirms the corrected `ERL` ranking direction model:
+  - bullish bias aligns with reaction from `old_lows`
+- the top-ranked bullish `ERL` is a nearby, resting swing low
+
+### ERL Ranking Match 2
+
+- snapshot:
+  - `as_of = 2026-03-18 04:00 +05:00`
+  - `current_price = 4989.97`
+  - `direction_bias = bearish`
+- ranked candidate:
+  - `old_high`
+  - side = `buy_side`
+  - anchors:
+    - `2026-03-17 20:00 +05:00`
+    - `2026-03-18 00:00 +05:00`
+    - `2026-03-18 04:00 +05:00`
+  - level = `5015.99`
+  - state = `resting`
+  - rank = `1`
+- result: `match`
+
+Why it matches:
+
+- `high(B) > high(A)`
+- `high(B) > high(C)`
+- so the middle candle is a confirmed swing high
+- no later candle exists after `confirmed_at` inside the reviewed snapshot, so
+  the liquidity is still resting
+- under corrected `ERL -> IRL` reaction semantics:
+  - bearish bias watches `old_high` / `buy_side` liquidity
+
+Interpretation:
+
+- this confirms the corrected `ERL` ranking direction model:
+  - bearish bias aligns with reaction from `old_highs`
+- the top-ranked bearish `ERL` is a nearby, fresh, resting swing high
+
 ## Current Assessment
 
 The current doctrine implementation state is:
