@@ -60,6 +60,8 @@ But it is still not enough to lock:
 Use this subtype only for:
 
 - counting rarity on real data
+- checking whether downstream `C4` continuation also appears
+- checking whether downstream `C4` also keeps expansion-quality wick behavior
 - gathering more bullish and bearish examples
 - comparing strong `Type C` against base `Type C`
 
@@ -69,6 +71,26 @@ Do not use it yet as:
 - a standalone entry family
 - a ranking rule
 
+## Downstream Continuation Research
+
+The rare subtype can also be checked through the same downstream `C4` logic
+used by base `Type C`.
+
+### Base rare-subtype `C4` continuation
+
+- valid rare-case `Type C`
+- bullish: `low(C4) > EQ(C3)`
+- bearish: `high(C4) < EQ(C3)`
+
+### Stricter rare-subtype `C4` expansion quality
+
+This is a research-quality layer only.
+
+- valid rare-case `Type C` `C4` continuation
+- directional `C4` body
+- small same-side wick on `C4`
+- default wick threshold `0.25`
+
 ## Current Reviewed MT5 Status
 
 Current reviewed status on the normalized `XAUUSD 4H` MT5 sample:
@@ -77,6 +99,10 @@ Current reviewed status on the normalized `XAUUSD 4H` MT5 sample:
 - base bearish `Type C` count = `3`
 - bullish rare-case subtype count = `2`
 - bearish rare-case subtype count = `0`
+- bullish rare-case `C4` continuation count = `0`
+- bearish rare-case `C4` continuation count = `0`
+- bullish rare-case `C4` expansion-quality count = `0`
+- bearish rare-case `C4` expansion-quality count = `0`
 
 Two bullish rare-case subtype examples have now been manually confirmed against
 the same-source MT5 chart.

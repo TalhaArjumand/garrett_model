@@ -23,6 +23,10 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence,
 )
 from .swing_research import (
+    has_bearish_c4_after_rare_c3_closure_candidate,
+    has_bearish_c4_after_rare_c3_closure_expansion_quality_candidate,
+    has_bullish_c4_after_rare_c3_closure_candidate,
+    has_bullish_c4_after_rare_c3_closure_expansion_quality_candidate,
     is_bearish_rare_c3_closure_subtype,
     is_bullish_rare_c3_closure_subtype,
 )
@@ -48,6 +52,10 @@ class RealSampleReport:
     bearish_c3_closure_c4_candidate_count: int
     bullish_c3_closure_c4_expansion_quality_count: int
     bearish_c3_closure_c4_expansion_quality_count: int
+    bullish_c3_closure_rare_case_c4_candidate_count: int
+    bearish_c3_closure_rare_case_c4_candidate_count: int
+    bullish_c3_closure_rare_case_c4_expansion_quality_count: int
+    bearish_c3_closure_rare_case_c4_expansion_quality_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
     fvg_candidate_count: int
@@ -253,6 +261,50 @@ def count_c3_closure_c4_expansion_quality_candidates(
     return bullish, bearish
 
 
+def count_c3_closure_rare_case_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3, c4 in iter_quads(candles):
+        try:
+            if has_bullish_c4_after_rare_c3_closure_candidate(c1, c2, c3, c4):
+                bullish += 1
+            if has_bearish_c4_after_rare_c3_closure_candidate(c1, c2, c3, c4):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
+def count_c3_closure_rare_case_c4_expansion_quality_candidates(
+    candles: list[Candle],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3, c4 in iter_quads(candles):
+        try:
+            if has_bullish_c4_after_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                c4,
+                max_lower_wick_fraction=max_wick_fraction,
+            ):
+                bullish += 1
+            if has_bearish_c4_after_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                c4,
+                max_upper_wick_fraction=max_wick_fraction,
+            ):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
 def count_fvgs(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
@@ -374,6 +426,17 @@ def build_real_sample_report(
         candles,
         max_wick_fraction=c4_expansion_max_wick_fraction,
     )
+    (
+        bullish_c3_rare_c4,
+        bearish_c3_rare_c4,
+    ) = count_c3_closure_rare_case_c4_candidates(candles)
+    (
+        bullish_c3_rare_c4_expansion_quality,
+        bearish_c3_rare_c4_expansion_quality,
+    ) = count_c3_closure_rare_case_c4_expansion_quality_candidates(
+        candles,
+        max_wick_fraction=c4_expansion_max_wick_fraction,
+    )
     bullish_fvg, bearish_fvg = count_fvgs(candles)
     fvg_candidate_counts = count_fvg_candidates(candles)
     erl_counts = count_erl_candidates(candles, equal_tolerance=erl_equal_tolerance)
@@ -397,6 +460,14 @@ def build_real_sample_report(
         bearish_c3_closure_c4_candidate_count=bearish_c3_closure_c4,
         bullish_c3_closure_c4_expansion_quality_count=bullish_c3_c4_expansion_quality,
         bearish_c3_closure_c4_expansion_quality_count=bearish_c3_c4_expansion_quality,
+        bullish_c3_closure_rare_case_c4_candidate_count=bullish_c3_rare_c4,
+        bearish_c3_closure_rare_case_c4_candidate_count=bearish_c3_rare_c4,
+        bullish_c3_closure_rare_case_c4_expansion_quality_count=(
+            bullish_c3_rare_c4_expansion_quality
+        ),
+        bearish_c3_closure_rare_case_c4_expansion_quality_count=(
+            bearish_c3_rare_c4_expansion_quality
+        ),
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,
         fvg_candidate_count=fvg_candidate_counts["fvg_candidate_count"],

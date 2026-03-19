@@ -816,3 +816,25 @@ This is sufficient evidence to:
   - and still-resting liquidity
 - proceed to the next doctrine clarification or review step without widening
   scope prematurely
+
+## Rare Type C C4 Status
+
+The rare `Type C` subtype is now implemented through the same downstream `C4`
+checks as base `Type C`:
+
+- base `C4` continuation
+- stricter `C4` expansion-quality filter
+
+Current reviewed status on the same MT5 `XAUUSD 4H` sample:
+
+- bullish rare `Type C` `C4` continuation matches: `0`
+- bearish rare `Type C` `C4` continuation matches: `0`
+- bullish rare `Type C` `C4` expansion-quality matches: `0`
+- bearish rare `Type C` `C4` expansion-quality matches: `0`
+
+So the current repo-safe statement is:
+
+- the downstream rare-subtype path is implemented
+- unit-tested
+- real-data counted
+- but there are no current same-sample MT5 manual examples yet for this path
