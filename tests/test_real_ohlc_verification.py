@@ -18,6 +18,7 @@ from gxt.real_ohlc import (
     count_erl_candidates,
     count_fvgs,
     count_valid_sequences,
+    count_valid_sequences_expansion_quality,
     iter_pairs,
     iter_quads,
     load_candles_from_csv,
@@ -47,6 +48,8 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(report.candle_count, len(candles))
         self.assertGreaterEqual(report.bullish_sequence_count, 0)
         self.assertGreaterEqual(report.bearish_sequence_count, 0)
+        self.assertGreaterEqual(report.bullish_sequence_expansion_quality_count, 0)
+        self.assertGreaterEqual(report.bearish_sequence_expansion_quality_count, 0)
         self.assertGreaterEqual(report.bullish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_case_b_candidate_count, 0)
@@ -99,6 +102,21 @@ class RealOhlcVerificationTests(unittest.TestCase):
 
         bullish, bearish = count_valid_sequences(candles)
         self.assertEqual((bullish, bearish), (0, 0))
+
+    def test_count_valid_sequences_expansion_quality_counts_bullish_and_bearish_windows(
+        self,
+    ) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 97, 106, 94, 105),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 105, 112, 104, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 110, 118, 100, 103),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 119, 121, 109, 112),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 112, 113, 99, 101),
+        ]
+
+        bullish, bearish = count_valid_sequences_expansion_quality(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
 
     def test_iter_quads_yields_overlapping_windows(self) -> None:
         candles = [

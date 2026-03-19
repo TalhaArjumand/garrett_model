@@ -16,9 +16,11 @@ from .sequence_primitives import (
     has_bullish_c4_after_c3_closure_candidate,
     has_bullish_c4_after_c3_closure_expansion_quality_candidate,
     is_bearish_c2_reversal_to_expansion,
+    is_valid_bearish_c2_sequence_expansion_quality,
     is_bearish_c3_closure,
     is_valid_bearish_c2_sequence,
     is_bullish_c2_reversal_to_expansion,
+    is_valid_bullish_c2_sequence_expansion_quality,
     is_bullish_c3_closure,
     is_valid_bullish_c2_sequence,
 )
@@ -40,6 +42,8 @@ class RealSampleReport:
     gap_count: int
     bullish_sequence_count: int
     bearish_sequence_count: int
+    bullish_sequence_expansion_quality_count: int
+    bearish_sequence_expansion_quality_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
@@ -144,6 +148,34 @@ def count_valid_sequences(candles: list[Candle]) -> tuple[int, int]:
         except ValueError:
             # Real OHLC samples can contain weekend gaps or vendor-specific
             # timestamp shifts; those windows are not valid sequence candidates.
+            continue
+    return bullish, bearish
+
+
+def count_valid_sequences_expansion_quality(
+    candles: list[Candle],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3 in iter_triples(candles):
+        try:
+            if is_valid_bullish_c2_sequence_expansion_quality(
+                c1,
+                c2,
+                c3,
+                max_lower_wick_fraction=max_wick_fraction,
+            ):
+                bullish += 1
+            if is_valid_bearish_c2_sequence_expansion_quality(
+                c1,
+                c2,
+                c3,
+                max_upper_wick_fraction=max_wick_fraction,
+            ):
+                bearish += 1
+        except ValueError:
             continue
     return bullish, bearish
 
@@ -394,6 +426,7 @@ def build_real_sample_report(
     candles: list[Candle],
     *,
     erl_equal_tolerance: float | None = None,
+    c3_expansion_max_wick_fraction: float = 0.25,
     case_b_max_wick_fraction: float = 0.25,
     c4_expansion_max_wick_fraction: float = 0.25,
 ) -> RealSampleReport:
@@ -411,6 +444,13 @@ def build_real_sample_report(
 
     gaps = find_timestamp_gaps(candles)
     bullish, bearish = count_valid_sequences(candles)
+    (
+        bullish_sequence_expansion_quality,
+        bearish_sequence_expansion_quality,
+    ) = count_valid_sequences_expansion_quality(
+        candles,
+        max_wick_fraction=c3_expansion_max_wick_fraction,
+    )
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_case_b, bearish_case_b = count_case_b_candidates(
         candles,
@@ -448,6 +488,8 @@ def build_real_sample_report(
         gap_count=len(gaps),
         bullish_sequence_count=bullish,
         bearish_sequence_count=bearish,
+        bullish_sequence_expansion_quality_count=bullish_sequence_expansion_quality,
+        bearish_sequence_expansion_quality_count=bearish_sequence_expansion_quality,
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
         bullish_case_b_candidate_count=bullish_case_b,

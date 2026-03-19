@@ -23,7 +23,9 @@ from gxt.sequence_primitives import (
     is_bullish_c2_closure,
     is_bullish_c3_expansion_confirmation,
     is_valid_bearish_c2_sequence,
+    is_valid_bearish_c2_sequence_expansion_quality,
     is_valid_bullish_c2_sequence,
+    is_valid_bullish_c2_sequence_expansion_quality,
     validate_case_b_inputs,
     validate_continuation_inputs,
     validate_sequence_inputs,
@@ -78,6 +80,27 @@ class SequencePrimitiveTests(unittest.TestCase):
         self.assertTrue(is_bullish_c3_expansion_confirmation(c2, c3))
         self.assertTrue(is_valid_bullish_c2_sequence(c1, c2, c3))
 
+    def test_valid_bullish_c2_sequence_expansion_quality(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=104, close=111)
+
+        self.assertTrue(is_valid_bullish_c2_sequence_expansion_quality(c1, c2, c3))
+
+    def test_bullish_c2_sequence_expansion_quality_requires_bullish_body(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=113, low=104, close=111)
+
+        self.assertFalse(is_valid_bullish_c2_sequence_expansion_quality(c1, c2, c3))
+
+    def test_bullish_c2_sequence_expansion_quality_rejects_large_lower_wick(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
+        c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
+        c3 = self.make_candle(timestamp_hour=12, open=105, high=112, low=101.5, close=111)
+
+        self.assertFalse(is_valid_bullish_c2_sequence_expansion_quality(c1, c2, c3))
+
     def test_valid_bullish_c4_continuation_candidate(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
         c2 = self.make_candle(timestamp_hour=11, open=97, high=106, low=94, close=105)
@@ -109,6 +132,27 @@ class SequencePrimitiveTests(unittest.TestCase):
         c4 = self.make_candle(timestamp_hour=13, open=101, high=105, low=96, close=97)
 
         self.assertTrue(has_bearish_c4_continuation_candidate(c1, c2, c3, c4))
+
+    def test_valid_bearish_c2_sequence_expansion_quality(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=112, high=113, low=99, close=101)
+
+        self.assertTrue(is_valid_bearish_c2_sequence_expansion_quality(c1, c2, c3))
+
+    def test_bearish_c2_sequence_expansion_quality_requires_bearish_body(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=100, high=101, low=99, close=101)
+
+        self.assertFalse(is_valid_bearish_c2_sequence_expansion_quality(c1, c2, c3))
+
+    def test_bearish_c2_sequence_expansion_quality_rejects_large_upper_wick(self) -> None:
+        c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)
+        c2 = self.make_candle(timestamp_hour=11, open=119, high=121, low=109, close=112)
+        c3 = self.make_candle(timestamp_hour=12, open=103, high=114.5, low=99, close=101)
+
+        self.assertFalse(is_valid_bearish_c2_sequence_expansion_quality(c1, c2, c3))
 
     def test_bearish_c4_candidate_requires_valid_bearish_predecessor(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=118, low=100, close=103)

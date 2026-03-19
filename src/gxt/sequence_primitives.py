@@ -177,6 +177,38 @@ def is_valid_bearish_c2_sequence(c1: Any, c2: Any, c3: Any) -> bool:
     )
 
 
+def is_valid_bullish_c2_sequence_expansion_quality(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    *,
+    max_lower_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    _require_positive_range_for("c3", c3)
+    return (
+        is_valid_bullish_c2_sequence(c1, c2, c3)
+        and c3.is_bullish
+        and has_small_same_side_wick(c3, threshold=max_lower_wick_fraction)
+    )
+
+
+def is_valid_bearish_c2_sequence_expansion_quality(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    *,
+    max_upper_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    _require_positive_range_for("c3", c3)
+    return (
+        is_valid_bearish_c2_sequence(c1, c2, c3)
+        and c3.is_bearish
+        and has_small_same_side_wick(c3, threshold=max_upper_wick_fraction)
+    )
+
+
 def has_bullish_c4_after_c3_closure_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
     c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
     return is_bullish_c3_closure(c1, c2, c3) and c4.low > equilibrium(c3)

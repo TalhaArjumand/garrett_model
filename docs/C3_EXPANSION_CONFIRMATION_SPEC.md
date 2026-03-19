@@ -78,6 +78,15 @@ But current reviewed execution logic treats the composed result as:
 - swing formation qualified
 - `C3` expansion becomes the tradeable event
 
+## Research Quality Layer
+
+The repo also tracks a stricter research-only quality path for this `Type A`
+expansion candle in
+[C3_EXPANSION_QUALITY_RESEARCH.md](/Users/njap/Downloads/garrett-trading-research/docs/C3_EXPANSION_QUALITY_RESEARCH.md).
+
+That stricter path is not doctrine. It adds directional body consistency and
+the shared small same-side wick helper on top of the base `Type A` sequence.
+
 ## Non-goals
 
 This spec does not define:

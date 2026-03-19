@@ -52,6 +52,18 @@ In the currently locked candle grammar, this means:
 - Garrett trades the reviewed post-formation expansion / continuation candle,
   not the raw key-level touch candle
 
+## Research Quality Layer
+
+The repo also maintains a shared research-only expansion-quality layer across
+the reviewed swing-formation family:
+
+- Type A strict `C3`
+- Type B strict `C2`
+- Type C strict `C4`
+- rare Type C strict `C4`
+
+That layer is mechanical and reusable, but it is not locked doctrine.
+
 ## Execution Flow
 
 The current execution reading is:

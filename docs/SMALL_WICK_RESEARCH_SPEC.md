@@ -6,6 +6,7 @@ This note defines a shared research-layer meaning for `small wick`.
 
 It exists to keep the current expansion-quality checks consistent across:
 
+- `Type A`
 - `Case B`
 - base `Type C` strict `C4`
 - rare `Type C` strict `C4`
