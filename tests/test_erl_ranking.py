@@ -132,8 +132,40 @@ class ErlRankingTests(unittest.TestCase):
         )
 
         by_side = {item.candidate.side: item for item in ranked}
-        self.assertEqual(by_side["buy_side"].feature_values["direction_score"], 1.0)
-        self.assertEqual(by_side["sell_side"].feature_values["direction_score"], 0.0)
+        self.assertEqual(by_side["buy_side"].feature_values["direction_score"], 0.0)
+        self.assertEqual(by_side["sell_side"].feature_values["direction_score"], 1.0)
+
+    def test_rank_erl_candidates_bullish_bias_prefers_old_lows_over_old_highs_all_else_equal(self) -> None:
+        old_high = self.make_candidate(
+            confirmed_hour=12,
+            lower_bound=120.0,
+            upper_bound=120.0,
+            kind="old_high",
+            side="buy_side",
+        )
+        old_low = self.make_candidate(
+            confirmed_hour=12,
+            lower_bound=80.0,
+            upper_bound=80.0,
+            kind="old_low",
+            side="sell_side",
+        )
+
+        ranked = _rank_detected_erl_candidates(
+            [old_high, old_low],
+            current_price=100.0,
+            direction_bias="bullish",
+            weights=ERLRankingWeights(),
+            age_candles_by_confirmed_at={
+                old_high.confirmed_at: 2,
+                old_low.confirmed_at: 2,
+            },
+            price_scale=10.0,
+        )
+
+        self.assertEqual(ranked[0].candidate.kind, "old_low")
+        self.assertEqual(ranked[0].feature_values["direction_score"], 1.0)
+        self.assertEqual(ranked[1].feature_values["direction_score"], 0.0)
 
     def test_rank_erl_candidates_price_inside_zone_gets_max_proximity_score(self) -> None:
         candles = [

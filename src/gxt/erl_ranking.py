@@ -111,9 +111,9 @@ def _state_score(candidate: ERLCandidate) -> float:
 def _direction_score(candidate: ERLCandidate, direction_bias: ERLDirectionBias) -> float:
     if direction_bias == "neutral":
         return 0.5
-    if direction_bias == "bullish" and candidate.side == "buy_side":
+    if direction_bias == "bullish" and candidate.side == "sell_side":
         return 1.0
-    if direction_bias == "bearish" and candidate.side == "sell_side":
+    if direction_bias == "bearish" and candidate.side == "buy_side":
         return 1.0
     return 0.0
 

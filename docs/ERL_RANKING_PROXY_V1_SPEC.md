@@ -54,8 +54,14 @@ V1 scores exactly four features:
 1. `state`
    - resting candidates outrank taken candidates
 2. `direction alignment`
-   - buy-side candidates align with bullish bias
-   - sell-side candidates align with bearish bias
+   - sell-side candidates align with bullish bias
+   - buy-side candidates align with bearish bias
+
+This is because `ERL` is treated here as the reaction location in the
+`ERL -> IRL` model:
+
+- bullish reaction bias watches `old_low` / sell-side liquidity
+- bearish reaction bias watches `old_high` / buy-side liquidity
 3. `proximity`
    - candidates nearer to current price rank higher
 4. `recency`
