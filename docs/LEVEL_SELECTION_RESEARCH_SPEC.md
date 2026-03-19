@@ -11,6 +11,10 @@ It exists because the current Garrett-reviewed doctrine does **not** provide a
 source-locked selector for the most relevant internal or external level when
 multiple candidates exist.
 
+Research process control for this layer is defined separately in:
+
+- `LEVEL_SELECTION_RESEARCH_PROTOCOL.md`
+
 ## Core Boundary
 
 There is currently no source-locked Garrett selector for the most relevant
