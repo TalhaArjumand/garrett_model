@@ -7,6 +7,7 @@ from .erl_proxy import (
     build_bullish_swing_high_erl_proxy,
     validate_erl_proxy_inputs,
 )
+from .erl_ranking import ERLRankedCandidate, ERLRankingWeights, rank_erl_candidates
 from .fvg import (
     FVGCandidate,
     FairValueGap,
@@ -78,6 +79,9 @@ __all__ = [
     "build_bullish_swing_high_erl_proxy",
     "build_bearish_swing_low_erl_proxy",
     "detect_erl_candidates",
+    "ERLRankingWeights",
+    "ERLRankedCandidate",
+    "rank_erl_candidates",
     "FVGCandidate",
     "FairValueGap",
     "validate_fvg_inputs",

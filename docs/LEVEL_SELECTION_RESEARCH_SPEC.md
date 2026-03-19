@@ -177,7 +177,7 @@ Implementation status: partially implemented.
 Current implementation status:
 
 - `IRL` ranking proxy v1 is implemented as a research-layer ranker
-- `ERL` ranking is still open
+- `ERL` ranking proxy v1 is implemented as a research-layer ranker
 
 This implementation remains clearly separated from:
 
