@@ -8,6 +8,14 @@ from .erl_proxy import (
     validate_erl_proxy_inputs,
 )
 from .erl_ranking import ERLRankedCandidate, ERLRankingWeights, rank_erl_candidates
+from .expansion_quality import (
+    body_fraction,
+    has_small_same_side_wick,
+    has_small_same_side_wick_with_context,
+    same_side_wick_fraction,
+    same_side_wick_percentile,
+    same_side_wick_size,
+)
 from .fvg import (
     FVGCandidate,
     FairValueGap,
@@ -107,6 +115,12 @@ __all__ = [
     "ERLRankingWeights",
     "ERLRankedCandidate",
     "rank_erl_candidates",
+    "same_side_wick_size",
+    "same_side_wick_fraction",
+    "same_side_wick_percentile",
+    "has_small_same_side_wick",
+    "has_small_same_side_wick_with_context",
+    "body_fraction",
     "FVGCandidate",
     "FairValueGap",
     "validate_fvg_inputs",

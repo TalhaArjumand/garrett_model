@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from math import isfinite
 from typing import Any
 
 from .candles import Candle, require_closed
+from .expansion_quality import has_small_same_side_wick
 
 
 def _require_candle(name: str, value: Any) -> Candle:
@@ -61,17 +61,6 @@ def equilibrium(candle: Candle) -> float:
 def closes_inside_range(reference: Candle, candidate: Candle) -> bool:
     _validate_pair_inputs("reference", reference, "candidate", candidate)
     return reference.low < candidate.close < reference.high
-
-
-def _validate_wick_fraction(name: str, value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise TypeError(f"{name} must be numeric")
-    numeric = float(value)
-    if not isfinite(numeric):
-        raise ValueError(f"{name} must be finite")
-    if numeric < 0 or numeric > 1:
-        raise ValueError(f"{name} must be between 0 and 1 inclusive")
-    return numeric
 
 
 def _require_positive_range(candle: Candle) -> None:
@@ -145,16 +134,12 @@ def is_bullish_c2_reversal_to_expansion(
     max_lower_wick_fraction: Any = 0.25,
 ) -> bool:
     c1, c2 = validate_case_b_inputs(c1, c2)
-    max_lower_wick_fraction = _validate_wick_fraction(
-        "max_lower_wick_fraction",
-        max_lower_wick_fraction,
-    )
     _require_positive_range(c2)
     return (
         c2.low < c1.low
         and c2.close > c2.open
         and c2.close > c1.low
-        and (c2.lower_wick / c2.range_size) <= max_lower_wick_fraction
+        and has_small_same_side_wick(c2, threshold=max_lower_wick_fraction)
     )
 
 
@@ -165,16 +150,12 @@ def is_bearish_c2_reversal_to_expansion(
     max_upper_wick_fraction: Any = 0.25,
 ) -> bool:
     c1, c2 = validate_case_b_inputs(c1, c2)
-    max_upper_wick_fraction = _validate_wick_fraction(
-        "max_upper_wick_fraction",
-        max_upper_wick_fraction,
-    )
     _require_positive_range(c2)
     return (
         c2.high > c1.high
         and c2.close < c2.open
         and c2.close < c1.high
-        and (c2.upper_wick / c2.range_size) <= max_upper_wick_fraction
+        and has_small_same_side_wick(c2, threshold=max_upper_wick_fraction)
     )
 
 
@@ -215,15 +196,11 @@ def has_bullish_c4_after_c3_closure_expansion_quality_candidate(
     max_lower_wick_fraction: Any = 0.25,
 ) -> bool:
     c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
-    max_lower_wick_fraction = _validate_wick_fraction(
-        "max_lower_wick_fraction",
-        max_lower_wick_fraction,
-    )
     _require_positive_range_for("c4", c4)
     return (
         has_bullish_c4_after_c3_closure_candidate(c1, c2, c3, c4)
         and c4.is_bullish
-        and (c4.lower_wick / c4.range_size) <= max_lower_wick_fraction
+        and has_small_same_side_wick(c4, threshold=max_lower_wick_fraction)
     )
 
 
@@ -236,15 +213,11 @@ def has_bearish_c4_after_c3_closure_expansion_quality_candidate(
     max_upper_wick_fraction: Any = 0.25,
 ) -> bool:
     c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
-    max_upper_wick_fraction = _validate_wick_fraction(
-        "max_upper_wick_fraction",
-        max_upper_wick_fraction,
-    )
     _require_positive_range_for("c4", c4)
     return (
         has_bearish_c4_after_c3_closure_candidate(c1, c2, c3, c4)
         and c4.is_bearish
-        and (c4.upper_wick / c4.range_size) <= max_upper_wick_fraction
+        and has_small_same_side_wick(c4, threshold=max_upper_wick_fraction)
     )
 
 

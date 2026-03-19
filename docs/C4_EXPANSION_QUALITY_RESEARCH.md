@@ -19,6 +19,20 @@ This note adds a stricter research filter on top of that base candidate:
 
 - expansion-like `C4` should also have a small same-side wick
 
+## Shared Small-Wick Definition
+
+The strict `C4` path now uses the shared small-wick helper defined in
+[SMALL_WICK_RESEARCH_SPEC.md](/Users/njap/Downloads/garrett-trading-research/docs/SMALL_WICK_RESEARCH_SPEC.md).
+
+Current hard-cap rule:
+
+- bullish `C4`: `lower_wick / range <= threshold`
+- bearish `C4`: `upper_wick / range <= threshold`
+
+Current research default:
+
+- `threshold = 0.25`
+
 ## Why This Exists
 
 Earlier reviewed doctrine already tied expansion candles to smaller wick

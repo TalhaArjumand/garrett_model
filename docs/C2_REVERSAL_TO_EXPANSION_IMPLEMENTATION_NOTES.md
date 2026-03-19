@@ -35,6 +35,22 @@ So a Case B primitive may only use:
 - `C1`
 - `C2`
 
+## Small Wick Definition
+
+The current shared research helper defines `small wick` as:
+
+- bullish candle: `lower_wick / range`
+- bearish candle: `upper_wick / range`
+
+The current strict `Case B` primitive uses a configurable hard cap on that
+same-side wick fraction.
+
+Current research default:
+
+- `0.25`
+
+This is a research default, not locked Garrett doctrine.
+
 It must not use:
 
 - `C3`
