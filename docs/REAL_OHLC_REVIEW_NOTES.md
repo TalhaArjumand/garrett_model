@@ -795,6 +795,7 @@ Current reviewed result set:
 - reviewed `IRL` ranking v1 matches: `5`
 - reviewed `ERL` ranking v1 matches: `2`
 - reviewed rare bullish `Type C` subtype matches: `2`
+- reviewed rare bullish `Type C` `C3` expansion-quality matches: `2`
 
 This is sufficient evidence to:
 
@@ -838,3 +839,72 @@ So the current repo-safe statement is:
 - unit-tested
 - real-data counted
 - but there are no current same-sample MT5 manual examples yet for this path
+
+## Confirmed Rare Type C C3 Expansion-Quality Matches
+
+### Rare Type C C3 Expansion-Quality Match 1
+
+- classification:
+  - research-only bullish rare `Type C` `C3` expansion-quality subtype
+- `C1 = 2026-02-24 20:00 +05:00`
+- `C2 = 2026-02-25 00:00 +05:00`
+- `C3 = 2026-02-25 04:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- valid bullish rare `Type C` subtype already exists
+- `C2` swept below `low(C1)`
+  - `5120.04 < 5140.49`
+- `C2` closed beyond `high(C1)`
+  - `5176.99 > 5173.30`
+- `EQ(C2) = 5155.03`
+- `low(C3) > EQ(C2)`
+  - `5166.64 > 5155.03`
+- `close(C3) > body_top(C2)`
+  - `5201.88 > 5176.99`
+- `C3` same-side wick fraction:
+  - `0.234587`
+
+Interpretation:
+
+- this confirms that, in this rare bullish `Type C` subtype, `C3` itself can
+  already satisfy the research expansion-quality condition
+- this remains:
+  - research only
+  - real-data confirmed
+  - not yet doctrine
+
+### Rare Type C C3 Expansion-Quality Match 2
+
+- classification:
+  - research-only bullish rare `Type C` `C3` expansion-quality subtype
+- `C1 = 2026-02-27 08:00 +05:00`
+- `C2 = 2026-02-27 12:00 +05:00`
+- `C3 = 2026-02-27 16:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- valid bullish rare `Type C` subtype already exists
+- `C2` swept below `low(C1)`
+  - `5168.70 < 5172.24`
+- `C2` closed beyond `high(C1)`
+  - `5223.13 > 5199.15`
+- `EQ(C2) = 5204.65`
+- `low(C3) > EQ(C2)`
+  - `5213.95 > 5204.65`
+- `close(C3) > body_top(C2)`
+  - `5234.71 > 5223.13`
+- `C3` same-side wick fraction:
+  - `0.208494`
+
+Interpretation:
+
+- this second manual confirmation shows the new `C3` quality path is
+  repeatable on the same-source MT5 export
+- current repo-safe status remains:
+  - rare
+  - real
+  - testable
+  - not yet doctrine
