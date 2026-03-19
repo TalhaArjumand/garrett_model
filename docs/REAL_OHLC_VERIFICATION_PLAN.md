@@ -7,6 +7,10 @@ correctly on real market candles.
 
 It is not a backtest, not a profitability study, and not an ML evaluation.
 
+Window updates and sample replacements should follow:
+
+- `docs/REAL_DATA_REFRESH_PROTOCOL.md`
+
 ## Current Scope
 
 The first real-data verification target is:
