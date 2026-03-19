@@ -76,6 +76,33 @@ Do not use it yet as:
 The rare subtype can also be checked through the same downstream `C4` logic
 used by base `Type C`.
 
+## Rare-Subtype `C3` Expansion-Quality Research
+
+This is a stricter research refinement inside the rare subtype itself.
+
+It does **not** change base `Type C` doctrine.
+
+### Bullish rare-subtype `C3` expansion quality
+
+- valid bullish rare-case `Type C`
+- `low(C3) > EQ(C2)`
+- small same-side wick on `C3`
+
+### Bearish rare-subtype `C3` expansion quality
+
+- valid bearish rare-case `Type C`
+- `high(C3) < EQ(C2)`
+- small same-side wick on `C3`
+
+Interpretation:
+
+- `C2` already sweeps and closes strongly beyond `C1`
+- `C3` then accepts the correct half of `C2`
+- controlled wick behavior on `C3` suggests that `C3` itself may already
+  behave like an expansion-quality candle, rather than waiting for `C4`
+
+This is still research only.
+
 ### Base rare-subtype `C4` continuation
 
 - valid rare-case `Type C`
@@ -99,6 +126,8 @@ Current reviewed status on the normalized `XAUUSD 4H` MT5 sample:
 - base bearish `Type C` count = `3`
 - bullish rare-case subtype count = `2`
 - bearish rare-case subtype count = `0`
+- bullish rare-case `C3` expansion-quality count = `2`
+- bearish rare-case `C3` expansion-quality count = `0`
 - bullish rare-case `C4` continuation count = `0`
 - bearish rare-case `C4` continuation count = `0`
 - bullish rare-case `C4` expansion-quality count = `0`

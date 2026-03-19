@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .expansion_quality import has_small_same_side_wick
 from .sequence_primitives import (
     equilibrium,
     has_bearish_c4_after_c3_closure_candidate,
@@ -30,6 +31,42 @@ def is_bearish_rare_c3_closure_subtype(c1: Any, c2: Any, c3: Any) -> bool:
         is_bearish_c3_closure(c1, c2, c3)
         and c2.close < c1.low
         and c3.high < equilibrium(c2)
+    )
+
+
+def has_bullish_rare_c3_closure_expansion_quality_candidate(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    *,
+    max_lower_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    return is_bullish_rare_c3_closure_subtype(
+        c1,
+        c2,
+        c3,
+    ) and has_small_same_side_wick(
+        c3,
+        threshold=max_lower_wick_fraction,
+    )
+
+
+def has_bearish_rare_c3_closure_expansion_quality_candidate(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    *,
+    max_upper_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3 = validate_sequence_inputs(c1, c2, c3)
+    return is_bearish_rare_c3_closure_subtype(
+        c1,
+        c2,
+        c3,
+    ) and has_small_same_side_wick(
+        c3,
+        threshold=max_upper_wick_fraction,
     )
 
 

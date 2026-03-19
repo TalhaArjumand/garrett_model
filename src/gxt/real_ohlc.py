@@ -25,8 +25,10 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence,
 )
 from .swing_research import (
+    has_bearish_rare_c3_closure_expansion_quality_candidate,
     has_bearish_c4_after_rare_c3_closure_candidate,
     has_bearish_c4_after_rare_c3_closure_expansion_quality_candidate,
+    has_bullish_rare_c3_closure_expansion_quality_candidate,
     has_bullish_c4_after_rare_c3_closure_candidate,
     has_bullish_c4_after_rare_c3_closure_expansion_quality_candidate,
     is_bearish_rare_c3_closure_subtype,
@@ -52,6 +54,8 @@ class RealSampleReport:
     bearish_c3_closure_count: int
     bullish_c3_closure_rare_case_count: int
     bearish_c3_closure_rare_case_count: int
+    bullish_c3_closure_rare_case_c3_expansion_quality_count: int
+    bearish_c3_closure_rare_case_c3_expansion_quality_count: int
     bullish_c3_closure_c4_candidate_count: int
     bearish_c3_closure_c4_candidate_count: int
     bullish_c3_closure_c4_expansion_quality_count: int
@@ -243,6 +247,34 @@ def count_c3_closure_rare_cases(candles: list[Candle]) -> tuple[int, int]:
             if is_bullish_rare_c3_closure_subtype(c1, c2, c3):
                 bullish += 1
             if is_bearish_rare_c3_closure_subtype(c1, c2, c3):
+                bearish += 1
+        except ValueError:
+            continue
+    return bullish, bearish
+
+
+def count_c3_closure_rare_case_c3_expansion_quality_candidates(
+    candles: list[Candle],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    bullish = 0
+    bearish = 0
+    for c1, c2, c3 in iter_triples(candles):
+        try:
+            if has_bullish_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_lower_wick_fraction=max_wick_fraction,
+            ):
+                bullish += 1
+            if has_bearish_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_upper_wick_fraction=max_wick_fraction,
+            ):
                 bearish += 1
         except ValueError:
             continue
@@ -458,6 +490,13 @@ def build_real_sample_report(
     )
     bullish_c3_closure, bearish_c3_closure = count_c3_closures(candles)
     bullish_c3_closure_rare, bearish_c3_closure_rare = count_c3_closure_rare_cases(candles)
+    (
+        bullish_c3_closure_rare_c3_expansion_quality,
+        bearish_c3_closure_rare_c3_expansion_quality,
+    ) = count_c3_closure_rare_case_c3_expansion_quality_candidates(
+        candles,
+        max_wick_fraction=c3_expansion_max_wick_fraction,
+    )
     bullish_c3_closure_c4, bearish_c3_closure_c4 = count_c3_closure_c4_candidates(candles)
     (
         bullish_c3_c4_expansion_quality,
@@ -498,6 +537,12 @@ def build_real_sample_report(
         bearish_c3_closure_count=bearish_c3_closure,
         bullish_c3_closure_rare_case_count=bullish_c3_closure_rare,
         bearish_c3_closure_rare_case_count=bearish_c3_closure_rare,
+        bullish_c3_closure_rare_case_c3_expansion_quality_count=(
+            bullish_c3_closure_rare_c3_expansion_quality
+        ),
+        bearish_c3_closure_rare_case_c3_expansion_quality_count=(
+            bearish_c3_closure_rare_c3_expansion_quality
+        ),
         bullish_c3_closure_c4_candidate_count=bullish_c3_closure_c4,
         bearish_c3_closure_c4_candidate_count=bearish_c3_closure_c4,
         bullish_c3_closure_c4_expansion_quality_count=bullish_c3_c4_expansion_quality,
