@@ -183,12 +183,12 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
 
-    def test_bullish_c3_closure_rejects_doji_like_c2(self) -> None:
+    def test_bullish_c3_closure_allows_bullish_c2_when_sweep_and_no_type_a_close_hold(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
-        c2 = self.make_candle(timestamp_hour=11, open=100, high=101, low=92, close=100)
-        c3 = self.make_candle(timestamp_hour=12, open=99, high=108, low=93, close=101.5)
+        c2 = self.make_candle(timestamp_hour=11, open=93, high=96, low=92, close=95)
+        c3 = self.make_candle(timestamp_hour=12, open=95, high=108, low=93, close=97)
 
-        self.assertFalse(is_bullish_c3_closure(c1, c2, c3))
+        self.assertTrue(is_bullish_c3_closure(c1, c2, c3))
 
     def test_valid_bullish_c4_after_c3_closure_candidate(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=110, high=112, low=100, close=102)
@@ -305,12 +305,12 @@ class SequencePrimitiveTests(unittest.TestCase):
 
         self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
 
-    def test_bearish_c3_closure_rejects_doji_like_c2(self) -> None:
+    def test_bearish_c3_closure_allows_bearish_c2_when_sweep_and_no_type_a_close_hold(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)
-        c2 = self.make_candle(timestamp_hour=11, open=108, high=116, low=107, close=108)
-        c3 = self.make_candle(timestamp_hour=12, open=109, high=115, low=104, close=107)
+        c2 = self.make_candle(timestamp_hour=11, open=115, high=116, low=112, close=113)
+        c3 = self.make_candle(timestamp_hour=12, open=113, high=115, low=104, close=111)
 
-        self.assertFalse(is_bearish_c3_closure(c1, c2, c3))
+        self.assertTrue(is_bearish_c3_closure(c1, c2, c3))
 
     def test_valid_bearish_c4_after_c3_closure_candidate(self) -> None:
         c1 = self.make_candle(timestamp_hour=10, open=100, high=110, low=98, close=108)

@@ -57,7 +57,6 @@ Bullish primitive:
 
 - `low(C2) < low(C1)`
 - no valid Type A bullish `C2` closure exists
-- `C2` is bearish
 - `C3` is bullish
 - `low(C3) > low(C2)`
 - `close(C3) > body_top(C2)`
@@ -66,7 +65,6 @@ Bearish primitive:
 
 - `high(C2) > high(C1)`
 - no valid Type A bearish `C2` closure exists
-- `C2` is bullish
 - `C3` is bearish
 - `high(C3) < high(C2)`
 - `close(C3) < body_bottom(C2)`
@@ -75,6 +73,10 @@ Bearish primitive:
 
 These machine rules are the current best implementation reading of the reviewed
 material, but they still contain explicit symmetry assumptions.
+
+They now intentionally do not require a fixed `C2` body color in Type C,
+because the current reviewed reading is that sweep + absence of Type A closure +
+strong `C3` body close are the decisive conditions.
 
 So they should be treated as:
 
@@ -104,7 +106,6 @@ The current implementation should reject:
 - mixed symbol or timeframe inputs
 - non-consecutive candles
 - zero-range `C2`
-- doji-like `C2`
 - equality at the decisive boundaries:
   - `low(C2) == low(C1)` is not enough for bullish
   - `high(C2) == high(C1)` is not enough for bearish

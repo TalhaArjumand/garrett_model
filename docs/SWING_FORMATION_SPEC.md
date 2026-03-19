@@ -103,6 +103,15 @@ In the third currently reviewed case:
 So in this delayed-confirmation case, the formation completes only at `C3`
 close and continuation is then sought in `C4`.
 
+For the current reviewed Type C reading, what matters is:
+
+- `C2` sweeps the relevant edge of `C1`
+- `C2` does not produce a Type A close back inside `C1` range
+- `C3` closes strongly over the body of `C2`
+
+`C2` itself does not currently require a locked bullish or bearish body color
+for Type C.
+
 ## Relationship To Key Level
 
 Swing formation is not the key level itself.
@@ -153,6 +162,11 @@ So the currently reviewed chain is:
   - expansion-qualified event in Type A
   - closure-side event in Type C
 - `C4` = continuation-qualified event after the appropriate predecessor state
+
+In Type C specifically:
+
+- the decisive object is the strong `C3` body close over `C2`
+- `C2` color is not the current locked discriminator
 
 ## Relationship To Entry
 

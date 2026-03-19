@@ -120,7 +120,6 @@ def is_bullish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
     return (
         c2.low < c1.low
         and not is_bullish_c2_closure(c1, c2)
-        and c2.is_bearish
         and c3.is_bullish
         and c3.low > c2.low
         and c3.close > c2.body_top
@@ -133,7 +132,6 @@ def is_bearish_c3_closure(c1: Any, c2: Any, c3: Any) -> bool:
     return (
         c2.high > c1.high
         and not is_bearish_c2_closure(c1, c2)
-        and c2.is_bullish
         and c3.is_bearish
         and c3.high < c2.high
         and c3.close < c2.body_bottom

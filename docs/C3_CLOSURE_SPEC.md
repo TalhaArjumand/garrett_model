@@ -45,6 +45,14 @@ In this case:
 - `C3` becomes the candle that completes the swing formation
 - `EQ(C3)` then becomes the active continuation boundary for `C4`
 
+What matters most in the current reviewed Type C reading is:
+
+- sweep by `C2`
+- absence of Type A `C2` closure
+- strong `C3` close over the body of `C2`
+
+`C2` body color is not currently a locked requirement for Type C.
+
 So unlike the standard delayed-expansion case, `C3` is not merely the already
 anticipated expansion candle. In this case, `C3` is the candle that finally
 creates the actionable confirmation.
@@ -70,9 +78,10 @@ Not yet locked:
 
 1. exact machine-ready bullish and bearish body-closure rules
 2. whether `C1` and `C2` key-level contact are equally valid in all cases
-3. whether `C4` in this branch should already be treated as the trade candle or
+3. whether `C2` body color ever matters in a later, stricter Type C reading
+4. whether `C4` in this branch should already be treated as the trade candle or
    only as the next continuation candidate
-4. whether additional confluences must sit on top of this branch before it is
+5. whether additional confluences must sit on top of this branch before it is
    tradeable
 
 ## Implementation Status
