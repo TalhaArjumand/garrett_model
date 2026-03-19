@@ -199,7 +199,7 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         candidates = detect_internal_to_external_type_b_candidates(candles)
 
-        self.assertEqual(len(candidates), 2)
+        self.assertEqual(len(candidates), 1)
         self.assertEqual({candidate.direction for candidate in candidates}, {"bullish"})
         self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"both"})
         self.assertEqual(count_internal_to_external_type_b_sequences(candles), (1, 0))
@@ -217,7 +217,7 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         candidates = detect_internal_to_external_type_b_candidates(candles)
 
-        self.assertEqual(len(candidates), 1)
+        self.assertEqual(len(candidates), 2)
         self.assertEqual({candidate.direction for candidate in candidates}, {"bearish"})
         self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"c2"})
         self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 1))
@@ -236,6 +236,38 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         self.assertEqual(detect_internal_to_external_type_b_candidates(candles), [])
         self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 0))
+
+    def test_detect_internal_to_external_type_b_candidates_rejects_close_through_invalidation(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=205, high=208, low=200, close=202),
+            self.make_candle(timestamp_hour=4, open=202, high=204, low=194, close=196),
+            self.make_candle(timestamp_hour=8, open=196, high=198, low=190, close=191),
+            self.make_candle(timestamp_hour=12, open=191, high=206, low=189, close=205),
+            self.make_candle(timestamp_hour=16, open=205, high=207, low=180, close=182),
+        ]
+
+        self.assertEqual(detect_internal_to_external_type_b_candidates(candles), [])
+        self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 0))
+
+    def test_detect_internal_to_external_type_b_candidates_allows_gap_confirmed_on_c1_close(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=120, high=122, low=110, close=111),
+            self.make_candle(timestamp_hour=4, open=111, high=112, low=100, close=101),
+            self.make_candle(timestamp_hour=8, open=108, high=109, low=95, close=96),
+            self.make_candle(timestamp_hour=12, open=109, high=109.5, low=90, close=91),
+        ]
+
+        candidates = detect_internal_to_external_type_b_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0].direction, "bearish")
+        self.assertEqual(candidates[0].key_level_touch, "c2")
+        self.assertEqual(candidates[0].irl_confirmed_at, candles[2].timestamp)
+        self.assertEqual(count_internal_to_external_type_b_sequences(candles), (0, 1))
 
 
 if __name__ == "__main__":

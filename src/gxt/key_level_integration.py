@@ -151,6 +151,46 @@ def _collect_touching_active_directional_irls(
     return touching
 
 
+def _is_irl_invalidated_by_close(irl: FVGCandidate, candle: Candle) -> bool:
+    if irl.direction == "bullish":
+        return candle.close < irl.lower_bound
+    return candle.close > irl.upper_bound
+
+
+def _sequence_preserves_irl_on_closes(irl: FVGCandidate, *candles: Candle) -> bool:
+    return not any(_is_irl_invalidated_by_close(irl, candle) for candle in candles)
+
+
+def _collect_fresh_directional_irls_confirmed_on_c1(
+    candles: list[Candle],
+    *,
+    c1_index: int,
+    direction: Direction,
+    c2: Candle,
+) -> list[tuple[FVGCandidate, KeyLevelTouch]]:
+    if c1_index < 2:
+        return []
+
+    touching: list[tuple[FVGCandidate, KeyLevelTouch]] = []
+    c1 = candles[c1_index]
+    for irl in detect_fvg_candidates(candles[: c1_index + 1]):
+        if irl.direction != direction:
+            continue
+        if irl.confirmed_at != c1.timestamp:
+            continue
+        if not _ranges_overlap(
+            candle_low=c2.low,
+            candle_high=c2.high,
+            zone_low=irl.lower_bound,
+            zone_high=irl.upper_bound,
+        ):
+            continue
+        if not _sequence_preserves_irl_on_closes(irl, c2):
+            continue
+        touching.append((irl, "c2"))
+    return touching
+
+
 def _build_type_a_candidate(
     *,
     irl: FVGCandidate,
@@ -192,7 +232,13 @@ def _build_type_b_candidate(
     c2: Candle,
     direction: Direction,
     touch: KeyLevelTouch,
+    fresh_on_c1_close: bool,
 ) -> InternalToExternalTypeBCandidate:
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
     return InternalToExternalTypeBCandidate(
         symbol=c1.symbol,
         timeframe=c1.timeframe,
@@ -208,9 +254,10 @@ def _build_type_b_candidate(
         key_level_touch=touch,
         decision_time_safe=True,
         reason=(
-            f"Valid {direction} Type B reversal-to-expansion candle formed after a prior "
-            f"{direction} IRL/FVG was confirmed and still resting before sequence "
-            "C1. The active IRL was then touched through C1 or C2."
+            f"Valid {direction} Type B reversal-to-expansion candle formed after a "
+            f"{direction} IRL/FVG {timing_phrase}. The active IRL was then touched "
+            "through the allowed sequence candles without a close-through "
+            "invalidation."
         ),
     )
 
@@ -453,6 +500,8 @@ def detect_internal_to_external_type_b_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2):
+                    continue
                 candidates.append(
                     _build_type_b_candidate(
                         irl=irl,
@@ -460,6 +509,23 @@ def detect_internal_to_external_type_b_candidates(
                         c2=c2,
                         direction="bullish",
                         touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_type_b_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
                     )
                 )
 
@@ -479,6 +545,8 @@ def detect_internal_to_external_type_b_candidates(
                 c1=c1,
                 c2=c2,
             ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2):
+                    continue
                 candidates.append(
                     _build_type_b_candidate(
                         irl=irl,
@@ -486,6 +554,23 @@ def detect_internal_to_external_type_b_candidates(
                         c2=c2,
                         direction="bearish",
                         touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_type_b_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
                     )
                 )
 
