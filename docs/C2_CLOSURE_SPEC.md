@@ -11,7 +11,7 @@ it does not belong to Garrett's teaching as the primary doctrine unit.
 ## Sequence Scope
 
 This spec covers the first part of the bullish and bearish swing-formation
-sequence:
+sequence in the standard delayed-expansion case:
 
 1. `C1` establishes the reference range.
 2. `C2` sweeps beyond the relevant edge of `C1`.
@@ -27,6 +27,10 @@ Current reviewed execution interpretation:
 - `C2` is not the primary trade candle
 - the tradeable event is the later expansion candle if the structure continues
   to qualify
+
+This spec does not claim that all reviewed swing-formation cases defer
+expansion to `C3`.
+The compressed `C2 reversal to expansion` case is handled separately.
 
 ## Inputs
 

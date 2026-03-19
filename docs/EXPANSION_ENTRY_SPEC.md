@@ -38,9 +38,14 @@ At the current doctrinal level:
 
 In the currently locked candle grammar, this means:
 
-- `C2` belongs to the swing-formation / qualification side
-- `C3` is the expansion candle
-- Garrett trades the expansion candle
+- `C1` is not the trade candle
+- in the standard delayed-expansion case:
+  - `C2` belongs to the swing-formation / qualification side
+  - `C3` is the expansion candle
+- in the compressed `C2 reversal to expansion` case:
+  - `C2` itself can be the tradeable expansion candle
+- Garrett trades the expansion candle of the reviewed case, not the raw
+  key-level touch candle
 
 ## Execution Flow
 
@@ -49,9 +54,13 @@ The current execution reading is:
 1. identify the relevant key level
 2. wait for price to reach that level
 3. require Garrett swing formation there
-   - currently represented by `C2` closure and downstream qualification
+   - currently represented by either:
+     - `C2` closure and downstream qualification
+     - or `C2` reversal to expansion
 4. trade the expansion candle
-   - currently `C3`
+   - currently:
+     - `C3` in the standard delayed-expansion case
+     - `C2` in the compressed case
 
 So the current doctrinal flow is:
 
@@ -61,9 +70,9 @@ So the current doctrinal flow is:
 
 This doctrine clarification means:
 
-- `C2` is not the primary trade candle
-- `C3` is not just confirmation in the abstract
-- `C3` is the actual expansion candle Garrett wants to trade
+- `C1` is not the primary trade candle
+- `C3` is not just confirmation in the abstract in the standard case
+- the actual trade candle is the candle that performs the reviewed expansion
 - `C4` is not the primary entry candle in this flow
 
 ## Relationship to C4
@@ -72,9 +81,11 @@ This doctrine clarification means:
 
 That means:
 
-- `C3` is the primary trade candle in the currently reviewed flow
-- `C4` is downstream continuation behavior after that trade candle already
+- `C4` is downstream continuation behavior after the trade candle already
   exists
+- the trade candle can currently be:
+  - `C3` in the standard delayed-expansion case
+  - `C2` in the compressed reversal-to-expansion case
 
 ## What Is Locked
 
@@ -82,17 +93,19 @@ Locked at the current doctrine level:
 
 - Garrett wants swing formation at key level
 - Garrett trades the expansion candle
-- in the current candle grammar, the expansion candle is `C3`
+- `C1` is not the trade candle
+- in the standard delayed-expansion case, the expansion candle is `C3`
+- in the compressed reviewed case, `C2` can itself be the expansion candle
 
 ## What Is Not Yet Locked
 
 Not yet locked:
 
-1. exact execution mechanics inside the `C3` candle
+1. exact execution mechanics inside the trade candle
 2. stop placement doctrine
 3. target-taking doctrine
-4. whether later material adds exceptions where a non-`C3` candle is the
-   primary trade candle
+4. whether later material adds more entry variants beyond the two currently
+   reviewed cases
 
 ## Implementation Status
 

@@ -40,7 +40,11 @@ At the current repo doctrine level, Garrett swing formation is the reversal /
 confirmation structure that appears at a valid key level before the tradeable
 expansion candle.
 
-In the currently reviewed candle grammar, that means:
+At least two currently reviewed cases now exist:
+
+### Case 1 - Standard Delayed Expansion
+
+In the standard currently reviewed candle grammar:
 
 1. price reaches a key level
 2. `C2` closes back inside `C1` range
@@ -48,13 +52,25 @@ In the currently reviewed candle grammar, that means:
 4. `C3` must preserve the correct half of `C2`
 5. `C3` must then expand beyond `C2`
 
-So the current reviewed swing-formation flow is:
+So the standard swing-formation flow is:
 
 - key level reached
 - `C2` closure
 - wick-quality check through `EQ(C2)`
 - `C3` support
 - `C3` expansion
+
+### Case 2 - Compressed C2 Reversal To Expansion
+
+In the second currently reviewed case:
+
+1. `C1` reaches the key level
+2. `C1` is not the trade candle
+3. `C2` reverses from the relevant edge of `C1`
+4. `C2` also expands away from that reversal
+5. the key discriminator is smaller wick structure
+
+So in this compressed case, reversal and expansion occur in `C2` itself.
 
 ## Relationship To Key Level
 
@@ -98,8 +114,10 @@ This is the doctrinal reason the repo already uses:
 
 So the currently reviewed chain is:
 
-- `C2` = reversal-side closure event
-- `C3` = expansion-qualified event
+- `C2` can be:
+  - reversal-side closure event in the standard case
+  - reversal-to-expansion candle in the compressed case
+- `C3` = expansion-qualified event in the standard delayed-expansion case
 - `C4` = continuation-qualified event
 
 ## Relationship To Entry
@@ -112,8 +130,10 @@ Current reviewed execution reading:
 
 In the current reviewed grammar:
 
-- `C2` belongs to swing formation
-- `C3` is the tradeable expansion candle
+- `C1` is not the trade candle
+- `C2` belongs to swing formation in both reviewed cases
+- `C3` is the tradeable expansion candle in the standard delayed-expansion case
+- `C2` can itself be the tradeable expansion candle in the compressed case
 - `C4` is later continuation context
 
 ## What Is Locked
@@ -128,6 +148,9 @@ Locked at the current doctrine level:
 - swing formation is not equivalent to a generic local swing point
 - the currently reviewed swing-formation logic is a reversal-to-expansion
   structure whose key discriminator is wick quality
+- at least two currently reviewed swing-formation cases exist:
+  - standard `C2 closure -> C3 expansion`
+  - compressed `C2 reversal to expansion`
 
 ## What Is Not Yet Locked
 
@@ -135,7 +158,7 @@ Not yet locked:
 
 1. a final exhaustive taxonomy of all Garrett swing formations
 2. whether later material adds other swing-formation variants beyond the
-   current `C2 -> C3` structure
+   two currently reviewed cases
 3. whether SMT must be present for a swing formation to become tradeable in all
    later cases
 4. exact execution details inside the expansion candle
