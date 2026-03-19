@@ -1236,3 +1236,177 @@ Interpretation:
   left-to-right `IRL` state
 - the corrected integrated Type A bridge now behaves consistently with the
   existing `IRL/FVG` state model and runtime market ordering
+
+## Confirmed FVG Invalidation Lifecycle Review
+
+### Lifecycle Boundary
+
+- review scope:
+  - helper-layer `FVG / IRL` lifecycle
+  - integrated `Type A` and integrated `Type B` after central lifecycle update
+- lifecycle states now tracked explicitly:
+  - `resting`
+  - `reached`
+  - `invalidated`
+- current repo lifecycle policy:
+  - bullish `FVG` becomes invalid for bullish use if a later candle closes
+    below the lower bound
+  - bearish `FVG` becomes invalid for bearish use if a later candle closes
+    above the upper bound
+
+Interpretation:
+
+- `FVG` geometry remains separate from lifecycle
+- same-bias integration logic now uses:
+  - prior confirmed `IRL / FVG`
+  - still `resting` before the sequence
+  - no close-through invalidation during the sequence
+
+### Confirmed March 20 Window Counts
+
+- `bullish_internal_to_external_type_a_count = 0`
+- `bearish_internal_to_external_type_a_count = 1`
+- `bullish_internal_to_external_type_a_expansion_quality_count = 0`
+- `bearish_internal_to_external_type_a_expansion_quality_count = 1`
+- `bullish_internal_to_external_type_b_count = 0`
+- `bearish_internal_to_external_type_b_count = 2`
+- `fvg_candidate_count = 16`
+- `fvg_resting_candidate_count = 4`
+- `fvg_reached_candidate_count = 12`
+- `fvg_invalidated_candidate_count = 9`
+
+Interpretation:
+
+- current same-window integrated `Type A` still has one surviving bearish match
+- current same-window integrated `Type B` now has two surviving bearish matches
+- invalidated `FVG`s are now counted explicitly instead of being hidden inside a
+  generic non-resting bucket
+
+### Integrated Type B Match 1
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG` from:
+    - `2026-03-12 12:00 +05:00`
+    - `2026-03-12 16:00 +05:00`
+    - `2026-03-12 20:00 +05:00`
+  - zone:
+    - `5112.61 -> 5146.09`
+  - state before sequence:
+    - `resting`
+- sequence:
+  - `C1 = 2026-03-13 00:00 +05:00`
+  - `C2 = 2026-03-13 04:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bearish `IRL` is still resting before `C1`
+- both `C1` and `C2` overlap the active `IRL`
+- `C2` sweeps above `high(C1)`
+  - `5128.53 > 5124.29`
+- `C2` then closes back down with a bearish body
+  - `5103.21 < 5124.20`
+- the same-side wick remains controlled
+  - upper-wick fraction on `C2`:
+    - `0.143758`
+- neither `C1` nor `C2` closes above the upper boundary of the bearish `IRL`
+
+Interpretation:
+
+- this is a valid same-window bearish integrated `Type B`
+- it also shares the same location as the surviving bearish integrated `Type A`
+  path, but remains a separate faster branch
+
+### Integrated Type B Match 2
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG` from:
+    - `2026-03-18 08:00 +05:00`
+    - `2026-03-18 12:00 +05:00`
+    - `2026-03-18 16:00 +05:00`
+  - zone:
+    - `4898.97 -> 4977.17`
+  - state before `C2`:
+    - confirmed on `C1` close, then eligible from `C2`
+- sequence:
+  - `C1 = 2026-03-18 16:00 +05:00`
+  - `C2 = 2026-03-18 20:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bearish `IRL` becomes defined on `C1` close
+- `C2` is then the first eligible candle for the integrated `Type B` test
+- `C2` touches the fresh bearish `IRL`
+- `C2` sweeps above `high(C1)`
+  - `4899.12 > 4898.97`
+- `C2` then closes down strongly
+  - `4817.91 < 4890.36`
+- the same-side wick remains controlled
+  - upper-wick fraction on `C2`:
+    - `0.094723`
+
+Interpretation:
+
+- this confirms the fresh-on-`C1` bearish `IRL` path is real on same-source MT5
+- the bridge no longer misses this valid runtime case
+
+### Invalidated Bullish FVG Match 1
+
+- candidate:
+  - bullish `FVG`
+  - zone:
+    - `5199.15 -> 5213.95`
+- confirmed at:
+  - `2026-02-27 16:00 +05:00`
+- later invalidated at:
+  - `2026-03-03 12:00 +05:00`
+- result:
+  - `invalidated`
+
+Why it invalidates:
+
+- the invalidation candle closes below the lower boundary of the bullish `FVG`
+  - lower boundary:
+    - `5199.15`
+  - invalidation candle close:
+    - `5156.73`
+
+Interpretation:
+
+- this is a valid bullish close-through invalidation under the repo lifecycle
+  policy
+- it should no longer be treated as an active bullish `IRL`
+
+### Invalidated Bearish FVG Match 1
+
+- candidate:
+  - bearish `FVG`
+  - zone:
+    - `5175.60 -> 5226.29`
+- confirmed at:
+  - `2026-03-03 16:00 +05:00`
+- later invalidated at:
+  - `2026-03-10 16:00 +05:00`
+- result:
+  - `invalidated`
+
+Why it invalidates:
+
+- the invalidation candle closes above the upper boundary of the bearish `FVG`
+  - upper boundary:
+    - `5226.29`
+  - invalidation candle close:
+    - `5227.60`
+
+Interpretation:
+
+- this is a valid bearish close-through invalidation under the repo lifecycle
+  policy
+- it should no longer be reused as an active bearish `IRL`
