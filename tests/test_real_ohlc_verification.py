@@ -142,12 +142,9 @@ class RealOhlcVerificationTests(unittest.TestCase):
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 100, 110, 95, 108),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 115, 107, 114),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 122, 112, 121),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 113, 114, 109, 110),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 110, 118, 108, 117),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 117, 125, 116, 124),
-            Candle("XAUUSD", utc_datetime(2026, 3, 15, 0), "4H", 125, 130, 115, 118),
-            Candle("XAUUSD", utc_datetime(2026, 3, 15, 4), "4H", 116, 124, 112, 117),
-            Candle("XAUUSD", utc_datetime(2026, 3, 15, 8), "4H", 121, 128, 119, 126),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 125, 130, 115, 118),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 116, 124, 112, 117),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 121, 128, 119, 126),
         ]
 
         report = build_real_sample_report(candles)

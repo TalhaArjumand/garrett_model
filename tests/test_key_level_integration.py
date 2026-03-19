@@ -40,15 +40,15 @@ class KeyLevelIntegrationTests(unittest.TestCase):
         self,
     ) -> None:
         candles = [
-            self.make_candle(timestamp_hour=0, open=100, high=110, low=95, close=108),
-            self.make_candle(timestamp_hour=4, open=108, high=115, low=107, close=114),
-            self.make_candle(timestamp_hour=8, open=114, high=122, low=112, close=121),
-            self.make_candle(timestamp_hour=12, open=113, high=114, low=109, close=110),
-            self.make_candle(timestamp_hour=16, open=110, high=118, low=108, close=117),
-            self.make_candle(timestamp_hour=20, open=117, high=125, low=116, close=124),
-            self.make_candle(timestamp_hour=24, open=125, high=130, low=115, close=118),
-            self.make_candle(timestamp_hour=28, open=116, high=124, low=112, close=117),
-            self.make_candle(timestamp_hour=32, open=121, high=128, low=119, close=126),
+            self.make_candle(timestamp_hour=0, open=96, high=100, low=95, close=99),
+            self.make_candle(timestamp_hour=4, open=99, high=105, low=98, close=104),
+            self.make_candle(timestamp_hour=8, open=104, high=110, low=102, close=109),
+            self.make_candle(timestamp_hour=12, open=110, high=112, low=107, close=108),
+            self.make_candle(timestamp_hour=16, open=108, high=116, low=107, close=115),
+            self.make_candle(timestamp_hour=20, open=115, high=122, low=114, close=121),
+            self.make_candle(timestamp_hour=24, open=115, high=116, low=103, close=104),
+            self.make_candle(timestamp_hour=28, open=104, high=115, low=101, close=110),
+            self.make_candle(timestamp_hour=32, open=111, high=118, low=110.5, close=117),
         ]
 
         candidates = detect_internal_to_external_type_a_candidates(candles)
@@ -65,15 +65,15 @@ class KeyLevelIntegrationTests(unittest.TestCase):
         self,
     ) -> None:
         candles = [
-            self.make_candle(timestamp_hour=0, open=100, high=110, low=95, close=108),
-            self.make_candle(timestamp_hour=4, open=108, high=115, low=107, close=114),
-            self.make_candle(timestamp_hour=8, open=114, high=122, low=112, close=121),
-            self.make_candle(timestamp_hour=12, open=113, high=114, low=109, close=110),
-            self.make_candle(timestamp_hour=16, open=110, high=118, low=108, close=117),
-            self.make_candle(timestamp_hour=20, open=117, high=125, low=116, close=124),
-            self.make_candle(timestamp_hour=24, open=125, high=130, low=115, close=118),
-            self.make_candle(timestamp_hour=28, open=116, high=124, low=112, close=117),
-            self.make_candle(timestamp_hour=32, open=121, high=128, low=119, close=126),
+            self.make_candle(timestamp_hour=0, open=96, high=100, low=95, close=99),
+            self.make_candle(timestamp_hour=4, open=99, high=105, low=98, close=104),
+            self.make_candle(timestamp_hour=8, open=104, high=110, low=102, close=109),
+            self.make_candle(timestamp_hour=12, open=110, high=112, low=107, close=108),
+            self.make_candle(timestamp_hour=16, open=108, high=116, low=107, close=115),
+            self.make_candle(timestamp_hour=20, open=115, high=122, low=114, close=121),
+            self.make_candle(timestamp_hour=24, open=115, high=116, low=103, close=104),
+            self.make_candle(timestamp_hour=28, open=104, high=115, low=101, close=110),
+            self.make_candle(timestamp_hour=32, open=111, high=118, low=110.5, close=117),
         ]
 
         strict_candidates = detect_internal_to_external_type_a_expansion_quality_candidates(candles)
@@ -121,6 +121,25 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         self.assertEqual(detect_internal_to_external_type_a_candidates(candles), [])
         self.assertEqual(count_internal_to_external_type_a_sequences(candles), (0, 0))
+
+    def test_detect_internal_to_external_type_a_candidates_requires_gap_to_be_resting_before_sequence(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=100, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=4, open=108, high=115, low=107, close=114),
+            self.make_candle(timestamp_hour=8, open=114, high=122, low=112, close=121),
+            self.make_candle(timestamp_hour=12, open=121, high=123, low=111, close=120),
+            self.make_candle(timestamp_hour=16, open=113, high=114, low=109, close=110),
+            self.make_candle(timestamp_hour=20, open=110, high=113, low=108, close=111.5),
+            self.make_candle(timestamp_hour=24, open=111.5, high=118, low=111, close=117),
+        ]
+
+        self.assertEqual(detect_internal_to_external_type_a_candidates(candles), [])
+        self.assertEqual(
+            count_internal_to_external_type_a_expansion_quality_sequences(candles),
+            (0, 0),
+        )
 
     def test_detect_internal_to_external_type_a_expansion_quality_rejects_large_c3_same_side_wick(
         self,
