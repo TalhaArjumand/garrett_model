@@ -695,6 +695,75 @@ Interpretation:
   - bearish bias aligns with reaction from `old_highs`
 - the top-ranked bearish `ERL` is a nearby, fresh, resting swing high
 
+## Confirmed Rare Type C Research Matches
+
+### Rare Type C Match 1
+
+- classification:
+  - research-only rare bullish `Type C` subtype
+- `C1 = 2026-02-24 20:00 +05:00`
+- `C2 = 2026-02-25 00:00 +05:00`
+- `C3 = 2026-02-25 04:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- `C2` swept below `low(C1)`
+  - `5120.04 < 5140.49`
+- `C2` did not produce a Type A close back inside full `C1` range
+  - `close(C2) = 5176.99`
+  - `high(C1) = 5173.30`
+- `C2` closed strongly beyond the opposite boundary of `C1`
+  - `5176.99 > 5173.30`
+- `EQ(C2) = 5155.03`
+- `low(C3) > EQ(C2)`
+  - `5166.64 > 5155.03`
+- `close(C3) > body_top(C2)`
+  - `5201.88 > 5176.99`
+
+Interpretation:
+
+- this is a strong bullish `Type C` subtype on real MT5 data
+- it is stronger than base `Type C`, but still belongs in the research layer
+- current status is:
+  - rare
+  - real
+  - testable
+  - not yet doctrine
+
+### Rare Type C Match 2
+
+- classification:
+  - research-only rare bullish `Type C` subtype
+- `C1 = 2026-02-27 08:00 +05:00`
+- `C2 = 2026-02-27 12:00 +05:00`
+- `C3 = 2026-02-27 16:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- `C2` swept below `low(C1)`
+  - `5168.70 < 5172.24`
+- `C2` did not produce a Type A close back inside full `C1` range
+  - `close(C2) = 5223.13`
+  - `high(C1) = 5199.15`
+- `C2` closed strongly beyond the opposite boundary of `C1`
+  - `5223.13 > 5199.15`
+- `EQ(C2) = 5204.65`
+- `low(C3) > EQ(C2)`
+  - `5213.95 > 5204.65`
+- `close(C3) > body_top(C2)`
+  - `5234.71 > 5223.13`
+
+Interpretation:
+
+- this is a second manually confirmed bullish rare-case `Type C` subtype
+- the subtype is not a synthetic artifact because it survives:
+  - real MT5 export
+  - code detection
+  - manual chart review
+- but it is still not broad enough yet to become a new doctrine category
+
 ## Current Assessment
 
 The current doctrine implementation state is:
@@ -725,6 +794,7 @@ Current reviewed result set:
 - resting `old_low` ERL matches: `1`
 - reviewed `IRL` ranking v1 matches: `5`
 - reviewed `ERL` ranking v1 matches: `2`
+- reviewed rare bullish `Type C` subtype matches: `2`
 
 This is sufficient evidence to:
 

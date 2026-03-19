@@ -47,6 +47,7 @@ Current evidence:
 - comes from real MT5 examples
 - is structurally interesting
 - suggests stronger-quality `Type C`
+- has now been manually confirmed on reviewed same-source MT5 examples
 
 But it is still not enough to lock:
 
@@ -67,3 +68,22 @@ Do not use it yet as:
 - doctrine
 - a standalone entry family
 - a ranking rule
+
+## Current Reviewed MT5 Status
+
+Current reviewed status on the normalized `XAUUSD 4H` MT5 sample:
+
+- base bullish `Type C` count = `4`
+- base bearish `Type C` count = `3`
+- bullish rare-case subtype count = `2`
+- bearish rare-case subtype count = `0`
+
+Two bullish rare-case subtype examples have now been manually confirmed against
+the same-source MT5 chart.
+
+So the current repo-safe status is:
+
+- rare
+- real
+- testable
+- not yet doctrine
