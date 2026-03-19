@@ -206,6 +206,48 @@ def has_bearish_c4_after_c3_closure_candidate(c1: Any, c2: Any, c3: Any, c4: Any
     return is_bearish_c3_closure(c1, c2, c3) and c4.high < equilibrium(c3)
 
 
+def has_bullish_c4_after_c3_closure_expansion_quality_candidate(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    c4: Any,
+    *,
+    max_lower_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
+    max_lower_wick_fraction = _validate_wick_fraction(
+        "max_lower_wick_fraction",
+        max_lower_wick_fraction,
+    )
+    _require_positive_range_for("c4", c4)
+    return (
+        has_bullish_c4_after_c3_closure_candidate(c1, c2, c3, c4)
+        and c4.is_bullish
+        and (c4.lower_wick / c4.range_size) <= max_lower_wick_fraction
+    )
+
+
+def has_bearish_c4_after_c3_closure_expansion_quality_candidate(
+    c1: Any,
+    c2: Any,
+    c3: Any,
+    c4: Any,
+    *,
+    max_upper_wick_fraction: Any = 0.25,
+) -> bool:
+    c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
+    max_upper_wick_fraction = _validate_wick_fraction(
+        "max_upper_wick_fraction",
+        max_upper_wick_fraction,
+    )
+    _require_positive_range_for("c4", c4)
+    return (
+        has_bearish_c4_after_c3_closure_candidate(c1, c2, c3, c4)
+        and c4.is_bearish
+        and (c4.upper_wick / c4.range_size) <= max_upper_wick_fraction
+    )
+
+
 def has_bullish_c4_continuation_candidate(c1: Any, c2: Any, c3: Any, c4: Any) -> bool:
     c1, c2, c3, c4 = validate_continuation_inputs(c1, c2, c3, c4)
     return is_valid_bullish_c2_sequence(c1, c2, c3) and c4.low > equilibrium(c3)

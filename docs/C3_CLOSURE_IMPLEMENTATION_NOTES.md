@@ -97,6 +97,26 @@ After a valid Type C `C3 closure`, the current candidate continuation rule is:
 
 This mirrors the already reviewed `EQ(C3)` continuation boundary logic.
 
+## Stricter Type C C4 Quality Layer
+
+A stricter research-only layer can sit on top of the base Type C `C4`
+candidate:
+
+- bullish:
+  - base bullish Type C `C4` candidate
+  - bullish `C4` body
+  - small lower wick by explicit research threshold
+- bearish:
+  - base bearish Type C `C4` candidate
+  - bearish `C4` body
+  - small upper wick by explicit research threshold
+
+This should be treated as:
+
+- research quality filter
+- not replacement doctrine
+- runtime-safe only at `C4` close
+
 ## Edge-Case Rules
 
 The current implementation should reject:

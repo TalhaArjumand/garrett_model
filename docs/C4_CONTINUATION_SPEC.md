@@ -51,6 +51,10 @@ Together, these reviewed statements support:
   exists
 - the active midpoint reference at this layer is `EQ(C3)`
 
+This is the currently locked base continuation boundary.
+Any additional small-wick filter on `C4` should be treated as a stricter
+research-quality layer unless Garrett gives an explicit machine-ready threshold.
+
 ## Inputs
 
 This doctrine unit uses:
@@ -121,6 +125,10 @@ Current code implements:
 Not implemented yet:
 
 - a unified top-level `C4` detector across multiple predecessor branches
+
+Research-only stricter quality support may exist separately in:
+
+- `C4_EXPANSION_QUALITY_RESEARCH.md`
 
 ## Non-goals
 
