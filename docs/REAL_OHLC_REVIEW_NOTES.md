@@ -928,6 +928,134 @@ Interpretation:
 - this is a second new resting bearish `IRL/FVG` candidate on the refreshed
   window
 
+## Confirmed ERL Delta Audit Matches
+
+### New Resting Old High Match 1
+
+- anchors:
+  - `2026-03-18 04:00 +05:00`
+  - `2026-03-18 08:00 +05:00`
+  - `2026-03-18 12:00 +05:00`
+- level: `5016.30`
+- result: `match`
+
+Why it matches:
+
+- middle candle is a confirmed swing high
+  - `5016.30 > 5007.00`
+  - `5016.30 > 4992.14`
+- no later candle in the refreshed 100-bar window trades above `5016.30`
+
+Interpretation:
+
+- this is a valid newly entered resting `old_high`
+- the refreshed ERL inventory is correctly picking up new external highs on the
+  right edge of the window
+
+### New Resting Old High Match 2
+
+- anchors:
+  - `2026-03-18 16:00 +05:00`
+  - `2026-03-18 20:00 +05:00`
+  - `2026-03-19 00:00 +05:00`
+- level: `4899.12`
+- result: `match`
+
+Why it matches:
+
+- middle candle is a confirmed swing high
+- no later candle in the refreshed window trades above `4899.12`
+
+Interpretation:
+
+- this is the second newly entered resting `old_high`
+- the ERL helper layer remains consistent after the rolling-window refresh
+
+### New Resting Old Low Match 1
+
+- anchors:
+  - `2026-03-19 08:00 +05:00`
+  - `2026-03-19 12:00 +05:00`
+  - `2026-03-19 16:00 +05:00`
+- level: `4502.57`
+- result: `match`
+
+Why it matches:
+
+- middle candle is a confirmed swing low
+- no later candle exists yet below `4502.57` in the refreshed window
+
+Interpretation:
+
+- this is a valid newly entered resting `old_low`
+- the new right-edge swing-low inventory is being counted correctly
+
+### State-Change Old High Match 1
+
+- anchors:
+  - `2026-03-17 20:00 +05:00`
+  - `2026-03-18 00:00 +05:00`
+  - `2026-03-18 04:00 +05:00`
+- level: `5015.99`
+- prior state: `resting`
+- new state: `taken`
+- taken at: `2026-03-18 08:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- take candle high:
+  - `5016.30 > 5015.99`
+
+Interpretation:
+
+- the refreshed window correctly flips this `old_high` from resting to taken
+- this confirms the ERL state-transition logic on newly arrived candles
+
+### State-Change Old Low Match 1
+
+- anchors:
+  - `2026-03-16 08:00 +05:00`
+  - `2026-03-16 12:00 +05:00`
+  - `2026-03-16 16:00 +05:00`
+- level: `4970.11`
+- prior state: `resting`
+- new state: `taken`
+- taken at: `2026-03-18 12:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- take candle low:
+  - `4834.17 < 4970.11`
+
+Interpretation:
+
+- this confirms a valid low-side sweep in the refreshed window
+
+### State-Change Old Low Match 2
+
+- anchors:
+  - `2026-03-17 12:00 +05:00`
+  - `2026-03-17 16:00 +05:00`
+  - `2026-03-17 20:00 +05:00`
+- level: `4973.51`
+- prior state: `resting`
+- new state: `taken`
+- taken at: `2026-03-18 12:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- take candle low:
+  - `4834.17 < 4973.51`
+
+Interpretation:
+
+- this confirms the second low-side state transition caused by the same sharp
+  downside move
+- the ERL state model remains faithful on the refreshed MT5 data
+
 ## Confirmed Rare Type C C3 Expansion-Quality Matches
 
 ### Rare Type C C3 Expansion-Quality Match 1
