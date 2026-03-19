@@ -21,9 +21,6 @@ This spec now covers the directly defined framework relationship between:
 
 - `internal to external`
 - `external to internal`
-
-The following term is still present but not yet fully defined here:
-
 - `manipulation range`
 
 ## Core Source-Derived Doctrine
@@ -80,6 +77,15 @@ For the `external to internal` model:
 - watch location / key level is `ERL`
 - expected target is `IRL`
 
+Current reviewed external-to-internal nuance:
+
+- once price reaches an external high or manipulates a range high, price is
+  expected to retrace back into the range
+- the fair value gap / `IRL` becomes the first target
+- after that first target, price may either:
+  - continue from that gap
+  - or fail to reverse there and target the opposing side of the range
+
 ## IRL as Key Level
 
 From the reviewed defining material, `IRL` is directly defined as a fair value
@@ -105,6 +111,19 @@ Current source-derived doctrine statement:
 
 This means the model is not only location-aware but also target-aware before
 the candle-formation layer is applied.
+
+## Manipulation Range
+
+The reviewed defining lecture also presents `manipulation range` as a third
+universal-model branch.
+
+At the current reviewed level:
+
+- a high / low or range low can function as the key level
+- the opposing side of the range or swing high can function as the target
+
+This is strong enough to lock manipulation range as part of the universal-model
+framework, but not yet strong enough to define its final mechanics.
 
 ## Relationship to Candle Sequences
 
@@ -146,6 +165,10 @@ Locked as source-derived doctrine context:
 - in `external -> internal`:
   - watch location = `ERL`
   - target = `IRL`
+- in the reviewed `external -> internal` explanation:
+  - `IRL / FVG` is the first target
+  - failure to reverse from that gap can imply the opposing side of the range
+- `manipulation range` is also part of the reviewed universal-model framework
 
 ## What Is Not Yet Locked
 
@@ -156,7 +179,8 @@ Not yet locked:
 2. how the active `IRL` is selected unambiguously when multiple fair value gaps
    exist
 3. the exact operational definition of `manipulation range`
-4. whether later doctrine adds further qualification rules beyond the current
+4. the exact bullish / bearish mirror wording for manipulation range
+5. whether later doctrine adds further qualification rules beyond the current
    framework mapping
 
 ## Implementation Status
