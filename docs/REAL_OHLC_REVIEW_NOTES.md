@@ -840,6 +840,94 @@ So the current repo-safe statement is:
 - real-data counted
 - but there are no current same-sample MT5 manual examples yet for this path
 
+## Confirmed 2026-03-19 Window Refresh Matches
+
+### Bearish Type A Strict C3 Match 3
+
+- `C1 = 2026-03-18 04:00 +05:00`
+- `C2 = 2026-03-18 08:00 +05:00`
+- `C3 = 2026-03-18 12:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- `C2` swept above `high(C1)`
+  - `5016.30 > 5007.00`
+- `C2` closed back inside full `C1` range
+  - `close(C2) = 4992.12`
+- `EQ(C2) = 4996.735`
+- `high(C3) < EQ(C2)`
+  - `4992.14 < 4996.735`
+- `close(C3) < low(C2)`
+  - `4878.20 < 4977.17`
+- same-side wick on `C3` is small enough for the strict expansion-quality path
+
+Interpretation:
+
+- this new rolling-window bearish `Type A` sequence is valid on the refreshed
+  same-source MT5 sample
+- it also survives the shared expansion-quality filter
+
+### Bearish C4 Match 2
+
+- `C1 = 2026-03-18 04:00 +05:00`
+- `C2 = 2026-03-18 08:00 +05:00`
+- `C3 = 2026-03-18 12:00 +05:00`
+- `C4 = 2026-03-18 16:00 +05:00`
+- result: `match`
+
+Why it matches:
+
+- predecessor `C1 -> C2 -> C3` is already a valid bearish sequence
+- `EQ(C3) = 4913.155`
+- `high(C4) < EQ(C3)`
+  - `4898.97 < 4913.155`
+
+Interpretation:
+
+- the refreshed sample adds one more valid bearish continuation case
+- this supports the recursive continuation logic on the newly expanded window
+
+### Resting Bearish FVG Match 3
+
+- `C1 = 2026-03-19 04:00 +05:00`
+- `C2 = 2026-03-19 08:00 +05:00`
+- `C3 = 2026-03-19 12:00 +05:00`
+- candidate state = `resting`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+  - `4719.84 < 4826.82`
+- zone = `4719.84` to `4826.82`
+- no later reviewed candle in the refreshed sample overlaps that zone
+
+Interpretation:
+
+- this is a new resting bearish `IRL/FVG` candidate on the refreshed MT5
+  window
+
+### Resting Bearish FVG Match 4
+
+- `C1 = 2026-03-19 08:00 +05:00`
+- `C2 = 2026-03-19 12:00 +05:00`
+- `C3 = 2026-03-19 16:00 +05:00`
+- candidate state = `resting`
+- result: `match`
+
+Why it matches:
+
+- `high(C3) < low(C1)`
+  - `4643.14 < 4686.85`
+- zone = `4643.14` to `4686.85`
+- no later reviewed candle in the refreshed sample overlaps that zone
+
+Interpretation:
+
+- this is a second new resting bearish `IRL/FVG` candidate on the refreshed
+  window
+
 ## Confirmed Rare Type C C3 Expansion-Quality Matches
 
 ### Rare Type C C3 Expansion-Quality Match 1
