@@ -9,6 +9,8 @@ from .candles import Candle
 from .erl_proxy import detect_erl_candidates
 from .fvg import detect_fvg_candidates, is_bearish_fvg, is_bullish_fvg
 from .key_level_integration import (
+    count_external_to_internal_type_a_expansion_quality_sequences,
+    count_external_to_internal_type_a_sequences,
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
     count_internal_to_external_type_b_sequences,
@@ -58,6 +60,10 @@ class RealSampleReport:
     bearish_internal_to_external_type_a_count: int
     bullish_internal_to_external_type_a_expansion_quality_count: int
     bearish_internal_to_external_type_a_expansion_quality_count: int
+    bullish_external_to_internal_type_a_count: int
+    bearish_external_to_internal_type_a_count: int
+    bullish_external_to_internal_type_a_expansion_quality_count: int
+    bearish_external_to_internal_type_a_expansion_quality_count: int
     bullish_internal_to_external_type_b_count: int
     bearish_internal_to_external_type_b_count: int
     bullish_internal_to_external_type_c_count: int
@@ -520,9 +526,20 @@ def build_real_sample_report(
         bearish_internal_to_external_type_a,
     ) = count_internal_to_external_type_a_sequences(candles)
     (
+        bullish_external_to_internal_type_a,
+        bearish_external_to_internal_type_a,
+    ) = count_external_to_internal_type_a_sequences(candles)
+    (
         bullish_internal_to_external_type_a_expansion_quality,
         bearish_internal_to_external_type_a_expansion_quality,
     ) = count_internal_to_external_type_a_expansion_quality_sequences(
+        candles,
+        max_wick_fraction=c3_expansion_max_wick_fraction,
+    )
+    (
+        bullish_external_to_internal_type_a_expansion_quality,
+        bearish_external_to_internal_type_a_expansion_quality,
+    ) = count_external_to_internal_type_a_expansion_quality_sequences(
         candles,
         max_wick_fraction=c3_expansion_max_wick_fraction,
     )
@@ -601,6 +618,14 @@ def build_real_sample_report(
         ),
         bearish_internal_to_external_type_a_expansion_quality_count=(
             bearish_internal_to_external_type_a_expansion_quality
+        ),
+        bullish_external_to_internal_type_a_count=bullish_external_to_internal_type_a,
+        bearish_external_to_internal_type_a_count=bearish_external_to_internal_type_a,
+        bullish_external_to_internal_type_a_expansion_quality_count=(
+            bullish_external_to_internal_type_a_expansion_quality
+        ),
+        bearish_external_to_internal_type_a_expansion_quality_count=(
+            bearish_external_to_internal_type_a_expansion_quality
         ),
         bullish_internal_to_external_type_b_count=bullish_internal_to_external_type_b,
         bearish_internal_to_external_type_b_count=bearish_internal_to_external_type_b,

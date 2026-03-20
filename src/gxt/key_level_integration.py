@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any, Iterable, Literal
 
 from .candles import Candle, require_closed
+from .erl_proxy import ERLCandidate, detect_erl_candidates
 from .fvg import FVGCandidate, detect_fvg_candidates
 from .sequence_primitives import (
     is_bearish_c2_reversal_to_expansion,
@@ -113,6 +114,25 @@ class InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate:
     irl_c2_timestamp: datetime
     irl_c3_timestamp: datetime
     irl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
+    sequence_c3_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class ExternalToInternalTypeACandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    erl_kind: str
+    erl_side: str
+    erl_lower_bound: float
+    erl_upper_bound: float
+    erl_anchor_timestamps: tuple[datetime, ...]
+    erl_confirmed_at: datetime
     sequence_c1_timestamp: datetime
     sequence_c2_timestamp: datetime
     sequence_c3_timestamp: datetime
@@ -254,6 +274,91 @@ def _collect_fresh_directional_irls_confirmed_on_c1(
         if not _sequence_preserves_irl_on_closes(irl, c2, *preserve_candles):
             continue
         touching.append((irl, "c2"))
+    return touching
+
+
+def _erl_side_for_direction(direction: Direction) -> Literal["buy_side", "sell_side"]:
+    if direction == "bullish":
+        return "sell_side"
+    return "buy_side"
+
+
+def _collect_active_directional_erls(
+    candles: list[Candle],
+    *,
+    before_index: int,
+    direction: Direction,
+) -> list[ERLCandidate]:
+    if before_index <= 0:
+        return []
+
+    expected_side = _erl_side_for_direction(direction)
+    prior_candidates = detect_erl_candidates(candles[:before_index])
+    return [
+        candidate
+        for candidate in prior_candidates
+        if candidate.side == expected_side and candidate.is_resting
+    ]
+
+
+def _collect_touching_active_directional_erls(
+    candles: list[Candle],
+    *,
+    before_index: int,
+    direction: Direction,
+    c1: Candle,
+    c2: Candle,
+) -> list[tuple[ERLCandidate, KeyLevelTouch]]:
+    touching: list[tuple[ERLCandidate, KeyLevelTouch]] = []
+    for erl in _collect_active_directional_erls(
+        candles,
+        before_index=before_index,
+        direction=direction,
+    ):
+        touch_c1 = _ranges_overlap(
+            candle_low=c1.low,
+            candle_high=c1.high,
+            zone_low=erl.lower_bound,
+            zone_high=erl.upper_bound,
+        )
+        touch_c2 = _ranges_overlap(
+            candle_low=c2.low,
+            candle_high=c2.high,
+            zone_low=erl.lower_bound,
+            zone_high=erl.upper_bound,
+        )
+        touch = _touch_label(touch_c1=touch_c1, touch_c2=touch_c2)
+        if touch is not None:
+            touching.append((erl, touch))
+    return touching
+
+
+def _collect_fresh_directional_erls_confirmed_on_c1(
+    candles: list[Candle],
+    *,
+    c1_index: int,
+    direction: Direction,
+    c2: Candle,
+) -> list[tuple[ERLCandidate, KeyLevelTouch]]:
+    if c1_index < 2:
+        return []
+
+    expected_side = _erl_side_for_direction(direction)
+    c1 = candles[c1_index]
+    touching: list[tuple[ERLCandidate, KeyLevelTouch]] = []
+    for erl in detect_erl_candidates(candles[: c1_index + 1]):
+        if erl.side != expected_side:
+            continue
+        if erl.confirmed_at != c1.timestamp:
+            continue
+        if not _ranges_overlap(
+            candle_low=c2.low,
+            candle_high=c2.high,
+            zone_low=erl.lower_bound,
+            zone_high=erl.upper_bound,
+        ):
+            continue
+        touching.append((erl, "c2"))
     return touching
 
 
@@ -1279,6 +1384,332 @@ def count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences(
     max_wick_fraction: float = 0.25,
 ) -> tuple[int, int]:
     candidates = detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates(
+        candles,
+        max_wick_fraction=max_wick_fraction,
+    )
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def _build_external_type_a_candidate(
+    *,
+    erl: ERLCandidate,
+    c1: Candle,
+    c2: Candle,
+    c3: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+    strict_expansion_quality: bool,
+    fresh_on_c1_close: bool,
+) -> ExternalToInternalTypeACandidate:
+    quality_label = " strict-expansion" if strict_expansion_quality else ""
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
+    return ExternalToInternalTypeACandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        erl_kind=erl.kind,
+        erl_side=erl.side,
+        erl_lower_bound=erl.lower_bound,
+        erl_upper_bound=erl.upper_bound,
+        erl_anchor_timestamps=erl.anchor_timestamps,
+        erl_confirmed_at=erl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        sequence_c3_timestamp=c3.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} external-to-internal Type A{quality_label} sequence "
+            f"formed after a same-bias ERL that {timing_phrase}. The live ERL was "
+            "then touched through C1 or C2, and target-side logic remains "
+            "intentionally excluded from this bridge."
+        ),
+    )
+
+
+def detect_external_to_internal_type_a_candidates(
+    candles: Iterable[Any],
+) -> list[ExternalToInternalTypeACandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[ExternalToInternalTypeACandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = is_valid_bullish_c2_sequence(c1, c2, c3)
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = is_valid_bearish_c2_sequence(c1, c2, c3)
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.erl_confirmed_at,
+            candidate.erl_lower_bound,
+            candidate.erl_upper_bound,
+        ),
+    )
+
+
+def detect_external_to_internal_type_a_expansion_quality_candidates(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> list[ExternalToInternalTypeACandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[ExternalToInternalTypeACandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = is_valid_bullish_c2_sequence_expansion_quality(
+                c1,
+                c2,
+                c3,
+                max_lower_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = is_valid_bearish_c2_sequence_expansion_quality(
+                c1,
+                c2,
+                c3,
+                max_upper_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_a_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.erl_confirmed_at,
+            candidate.erl_lower_bound,
+            candidate.erl_upper_bound,
+        ),
+    )
+
+
+def count_external_to_internal_type_a_sequences(
+    candles: Iterable[Any],
+) -> tuple[int, int]:
+    candidates = detect_external_to_internal_type_a_candidates(candles)
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def count_external_to_internal_type_a_expansion_quality_sequences(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    candidates = detect_external_to_internal_type_a_expansion_quality_candidates(
         candles,
         max_wick_fraction=max_wick_fraction,
     )

@@ -61,6 +61,16 @@ class RealOhlcVerificationTests(unittest.TestCase):
             report.bearish_internal_to_external_type_a_expansion_quality_count,
             0,
         )
+        self.assertGreaterEqual(report.bullish_external_to_internal_type_a_count, 0)
+        self.assertGreaterEqual(report.bearish_external_to_internal_type_a_count, 0)
+        self.assertGreaterEqual(
+            report.bullish_external_to_internal_type_a_expansion_quality_count,
+            0,
+        )
+        self.assertGreaterEqual(
+            report.bearish_external_to_internal_type_a_expansion_quality_count,
+            0,
+        )
         self.assertGreaterEqual(report.bullish_internal_to_external_type_b_count, 0)
         self.assertGreaterEqual(report.bearish_internal_to_external_type_b_count, 0)
         self.assertGreaterEqual(report.bullish_internal_to_external_type_c_count, 0)
@@ -170,6 +180,23 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(report.bearish_internal_to_external_type_a_count, 0)
         self.assertEqual(report.bullish_internal_to_external_type_a_expansion_quality_count, 1)
         self.assertEqual(report.bearish_internal_to_external_type_a_expansion_quality_count, 0)
+
+    def test_build_real_sample_report_tracks_external_to_internal_type_a_counts(self) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 105, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 108, 109, 100, 101),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 101, 115, 101, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 114, 118, 101, 105),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 105, 116, 99, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 109, 120, 108.5, 119),
+        ]
+
+        report = build_real_sample_report(candles)
+
+        self.assertEqual(report.bullish_external_to_internal_type_a_count, 1)
+        self.assertEqual(report.bearish_external_to_internal_type_a_count, 0)
+        self.assertEqual(report.bullish_external_to_internal_type_a_expansion_quality_count, 1)
+        self.assertEqual(report.bearish_external_to_internal_type_a_expansion_quality_count, 0)
 
     def test_build_real_sample_report_tracks_internal_to_external_type_b_counts(self) -> None:
         candles = [

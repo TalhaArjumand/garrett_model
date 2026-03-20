@@ -2211,3 +2211,196 @@ Interpretation:
   - integrated `Type B`
 - the overlap is expected because the predicates are layered, not mutually
   exclusive
+
+## Confirmed Integrated External-to-Internal Type A Review
+
+### Boundary
+
+- this tranche integrates:
+  - `ERL` as key level
+  - `Type A` as confirmation family
+- this tranche explicitly excludes:
+  - target-side `IRL/FVG` logic
+  - selector logic
+  - entry-model logic
+- current implementation uses only:
+  - resting `old_high`
+  - resting `old_low`
+- timing matrix confirmed on chart:
+  - `preexisting_before_c1`: valid
+  - `fresh_on_c1_close`: valid, with `C2` as first eligible touch
+  - `fresh_on_c2_close`: invalid for this tranche
+
+### Confirmed Counts
+
+- canonical `100`-bar verifier window:
+  - `bullish_external_to_internal_type_a_count = 1`
+  - `bearish_external_to_internal_type_a_count = 2`
+  - `bullish_external_to_internal_type_a_expansion_quality_count = 1`
+  - `bearish_external_to_internal_type_a_expansion_quality_count = 1`
+- raw `500`-bar MT5 snapshot:
+  - total integrated `ERL -> Type A` matches: `7`
+  - bullish matches: `2`
+  - bearish matches: `5`
+  - strict `C3` quality matches: `5`
+  - timing split:
+    - `preexisting_before_c1 = 5`
+    - `fresh_on_c1_close = 2`
+    - `fresh_on_c2_close = 0`
+
+### Integrated External-to-Internal Type A 500-Bar Match 1
+
+- classification:
+  - bearish integrated `ERL -> Type A -> strict C3`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `4256.36`
+  - confirmed at:
+    - `2025-12-01 08:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2025-12-01 08:00 +05:00`
+  - `C2 = 2025-12-01 12:00 +05:00`
+  - `C3 = 2025-12-01 16:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 2
+
+- classification:
+  - bearish integrated `ERL -> Type A`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `4630.13`
+  - confirmed at:
+    - `2026-01-12 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-01-13 12:00 +05:00`
+  - `C2 = 2026-01-13 16:00 +05:00`
+  - `C3 = 2026-01-13 20:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 3
+
+- classification:
+  - bullish integrated `ERL -> Type A -> strict C3`
+- active `ERL`:
+  - `old_low`
+  - level:
+    - `4788.86`
+  - confirmed at:
+    - `2026-02-05 08:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-02-05 20:00 +05:00`
+  - `C2 = 2026-02-06 00:00 +05:00`
+  - `C3 = 2026-02-06 04:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 4
+
+- classification:
+  - bearish integrated `ERL -> Type A -> strict C3`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `5119.13`
+  - confirmed at:
+    - `2026-02-11 16:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-02-23 00:00 +05:00`
+  - `C2 = 2026-02-23 04:00 +05:00`
+  - `C3 = 2026-02-23 08:00 +05:00`
+  - touch:
+    - `c1`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 5
+
+- classification:
+  - bullish integrated `ERL -> Type A -> strict C3`
+- active `ERL`:
+  - `old_low`
+  - level:
+    - `5122.39`
+  - confirmed at:
+    - `2026-03-04 12:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-03-04 16:00 +05:00`
+  - `C2 = 2026-03-04 20:00 +05:00`
+  - `C3 = 2026-03-05 00:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 6
+
+- classification:
+  - bearish integrated `ERL -> Type A`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `5038.06`
+  - confirmed at:
+    - `2026-03-16 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-03-17 00:00 +05:00`
+  - `C2 = 2026-03-17 04:00 +05:00`
+  - `C3 = 2026-03-17 08:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type A 500-Bar Match 7
+
+- classification:
+  - bearish integrated `ERL -> Type A -> strict C3`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `5015.99`
+  - confirmed at:
+    - `2026-03-18 04:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2026-03-18 04:00 +05:00`
+  - `C2 = 2026-03-18 08:00 +05:00`
+  - `C3 = 2026-03-18 12:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### External-to-Internal Type A Conclusion
+
+- the ERL `Type A` bridge is chart-validated on the reviewed canonical and raw
+  MT5 samples
+- the timing boundary is now explicit and confirmed:
+  - preexisting `ERL` before `C1`
+  - fresh `ERL` on `C1` close
+- no reviewed match required target-side logic
+- no reviewed match required fresh-on-`C2` `ERL` eligibility
