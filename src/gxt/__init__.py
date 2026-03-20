@@ -32,14 +32,17 @@ from .key_level_integration import (
     InternalToExternalTypeACandidate,
     InternalToExternalTypeBCandidate,
     InternalToExternalTypeCCandidate,
+    InternalToExternalTypeCRareCaseCandidate,
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
     count_internal_to_external_type_b_sequences,
     count_internal_to_external_type_c_sequences,
+    count_internal_to_external_type_c_rare_case_sequences,
     detect_internal_to_external_type_a_candidates,
     detect_internal_to_external_type_a_expansion_quality_candidates,
     detect_internal_to_external_type_b_candidates,
     detect_internal_to_external_type_c_candidates,
+    detect_internal_to_external_type_c_rare_case_candidates,
 )
 from .local_swing import (
     LocalSwingPoint,
@@ -208,6 +211,7 @@ __all__ = [
     "InternalToExternalTypeACandidate",
     "InternalToExternalTypeBCandidate",
     "InternalToExternalTypeCCandidate",
+    "InternalToExternalTypeCRareCaseCandidate",
     "detect_internal_to_external_type_a_candidates",
     "detect_internal_to_external_type_a_expansion_quality_candidates",
     "count_internal_to_external_type_a_sequences",
@@ -216,4 +220,6 @@ __all__ = [
     "count_internal_to_external_type_b_sequences",
     "detect_internal_to_external_type_c_candidates",
     "count_internal_to_external_type_c_sequences",
+    "detect_internal_to_external_type_c_rare_case_candidates",
+    "count_internal_to_external_type_c_rare_case_sequences",
 ]

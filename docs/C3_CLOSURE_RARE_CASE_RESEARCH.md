@@ -71,6 +71,75 @@ Do not use it yet as:
 - a standalone entry family
 - a ranking rule
 
+## IRL Integration Contract
+
+This subtype may be integrated with `IRL / FVG` context, but only as a strict
+research subset of integrated base `Type C`.
+
+### Base prerequisite
+
+An integrated rare-case subtype must first satisfy canonical integrated base
+`Type C`.
+
+So this bridge must not:
+
+- loosen base `Type C`
+- rewrite base timing eligibility
+- replace base counts
+
+### Subtype upgrade
+
+Once integrated base `Type C` is valid, the subtype upgrade is exact:
+
+- bullish:
+  - `close(C2) > high(C1)`
+  - `low(C3) > EQ(C2)`
+- bearish:
+  - `close(C2) < low(C1)`
+  - `high(C3) < EQ(C2)`
+
+### IRL timing
+
+Use the same timing matrix as integrated base `Type C`:
+
+- preexisting resting `IRL` before `C1`: allowed
+- fresh `IRL` confirmed on `C1` close: allowed, with `C2` as first eligible
+  touch
+- fresh `IRL` confirmed on `C2` close: rejected
+
+### IRL validity horizon
+
+The active `IRL` must remain directionally valid through `C3` close.
+
+If `C1`, `C2`, or `C3` closes through and invalidates the `IRL`, the integrated
+rare subtype is dead even if the chart still looks attractive later.
+
+### Exclusion buckets
+
+At minimum, classify near-misses as:
+
+- valid integrated base `Type C`, but not rare subtype
+- rare-subtype-looking sequence, but timing invalid
+- rare-subtype-looking sequence, but `IRL` invalid
+- rare subtype valid, but overlapping another integrated family
+
+### Overlap policy
+
+- overlap with integrated base `Type C`:
+  - yes by definition
+- overlap with integrated `Type B`:
+  - allowed and must be reported explicitly if it appears
+- overlap with rare-subtype `C3` expansion-quality:
+  - allowed and must be reported explicitly if it appears
+
+### Claim boundary
+
+This remains:
+
+- integrated research subtype
+- real-data testable
+- not yet universal doctrine
+
 ## Downstream Continuation Research
 
 The rare subtype can also be checked through the same downstream `C4` logic

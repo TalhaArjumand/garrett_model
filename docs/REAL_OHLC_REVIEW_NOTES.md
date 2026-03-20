@@ -2043,3 +2043,87 @@ Interpretation:
 - so this location preserves both:
   - the faster reversal-to-expansion branch
   - the slower delayed-confirmation branch
+
+## Confirmed Full 500-Bar Integrated Rare Type C Subtype Review
+
+### Review Boundary
+
+- source:
+  - preserved MT5 raw snapshot
+  - `xauusd_4h_mt5_raw_2026_03_19.csv`
+- review scope:
+  - integrated rare `Type C` subtype only
+  - full `500`-bar same-source extraction
+- required boundary:
+  - must first satisfy integrated base `Type C`
+  - same timing matrix as integrated base `Type C`:
+    - preexisting resting `IRL` before `C1`
+    - fresh `IRL` confirmed on `C1` close
+    - fresh `IRL` confirmed on `C2` close rejected
+  - `IRL` must remain valid through `C3` close
+  - this remains research only, not doctrine
+
+### Confirmed Full-Sample Counts
+
+- total integrated rare `Type C` subtype matches:
+  - `1`
+- bullish integrated rare `Type C` subtype matches:
+  - `1`
+- bearish integrated rare `Type C` subtype matches:
+  - `0`
+- current canonical `100`-bar verifier window:
+  - bullish integrated rare `Type C` subtype matches: `0`
+  - bearish integrated rare `Type C` subtype matches: `0`
+
+Interpretation:
+
+- integrated rare `Type C` subtype is real on the broader preserved same-source
+  sample
+- it remains very sparse
+- the only reviewed integrated rare-subtype region also overlaps:
+  - integrated base `Type C`
+  - integrated `Type B`
+
+### Integrated Rare Type C 500-Bar Match 1
+
+- classification:
+  - bullish integrated rare `IRL -> Type C` subtype
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4892.76 -> 4912.94`
+  - confirmed at:
+    - `2026-02-18 08:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2026-02-18 08:00 +05:00`
+  - `C2 = 2026-02-18 12:00 +05:00`
+  - `C3 = 2026-02-18 16:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is created on `C1` close
+- `C2` is first eligible and sweeps below `low(C1)`
+- `C2` does not close back inside the full range of `C1`, so this remains
+  `Type C`, not `Type A`
+- `C2` closes beyond `high(C1)`
+- `EQ(C2) = 4937.70`
+- `low(C3) = 4952.30 > EQ(C2)`
+- `C3` closes strongly over `body_top(C2)`
+
+Interpretation:
+
+- this single reviewed region supports three simultaneous readings:
+  - integrated base `Type C`
+  - integrated rare `Type C` subtype
+  - integrated `Type B`
+- the overlap is not a bug:
+  - base `Type C` holds because `C2` does not close inside the full range of
+    `C1`
+  - rare subtype holds because `C2` closes beyond `high(C1)` and `C3` holds
+    above `EQ(C2)`
+  - integrated `Type B` also holds because `C2` itself is a valid
+    reversal-to-expansion candle
