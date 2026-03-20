@@ -1410,3 +1410,213 @@ Interpretation:
 - this is a valid bearish close-through invalidation under the repo lifecycle
   policy
 - it should no longer be reused as an active bearish `IRL`
+
+## Confirmed Full 500-Bar Integrated Type B Review
+
+### Review Boundary
+
+- source:
+  - preserved MT5 raw snapshot
+  - `xauusd_4h_mt5_raw_2026_03_19.csv`
+- review scope:
+  - integrated `IRL -> Type B`
+  - full `500`-bar same-source extraction
+- required boundary:
+  - `IRL / FVG` must already exist in left-to-right time
+  - it must still be directionally valid for same-bias use
+  - the integrated pair must respect the current close-through invalidation
+    policy
+
+### Confirmed Full-Sample Counts
+
+- total integrated `Type B` matches:
+  - `8`
+- bullish integrated `Type B` matches:
+  - `3`
+- bearish integrated `Type B` matches:
+  - `5`
+
+Interpretation:
+
+- integrated `Type B` is real on the broader same-source sample
+- it remains sparse enough to be selective
+- the current left-to-right lifecycle filter is not overcounting aggressively
+
+### Integrated Type B 500-Bar Match 1
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `4226.13 -> 4229.37`
+  - confirmed at:
+    - `2025-12-02 04:00 +05:00`
+- sequence:
+  - `C1 = 2025-12-02 04:00 +05:00`
+  - `C2 = 2025-12-02 08:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- this is a valid bearish `Type B` where the active bearish `IRL` is touched on
+  `C2`
+- `C2` sweeps above `high(C1)` and then rejects sharply lower with a very small
+  same-side wick
+
+### Integrated Type B 500-Bar Match 2
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `4195.66 -> 4197.85`
+  - confirmed at:
+    - `2025-12-08 20:00 +05:00`
+- sequence:
+  - `C1 = 2025-12-09 00:00 +05:00`
+  - `C2 = 2025-12-09 04:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- both `C1` and `C2` overlap the active bearish `IRL`
+- `C2` then completes the bearish reversal-to-expansion behavior cleanly
+
+### Integrated Type B 500-Bar Match 3
+
+- classification:
+  - bullish integrated `IRL -> Type B`
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4207.01 -> 4223.97`
+  - confirmed at:
+    - `2025-12-11 00:00 +05:00`
+- sequence:
+  - `C1 = 2025-12-11 04:00 +05:00`
+  - `C2 = 2025-12-11 08:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- this is the first confirmed bullish full-sample integrated `Type B`
+- both candles overlap the active bullish `IRL`
+- `C2` sweeps below `low(C1)` and then reclaims upward with a controlled lower
+  wick
+
+### Integrated Type B 500-Bar Match 4
+
+- classification:
+  - bullish integrated `IRL -> Type B`
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4449.04 -> 4474.93`
+  - confirmed at:
+    - `2025-12-23 04:00 +05:00`
+- sequence:
+  - `C1 = 2025-12-23 04:00 +05:00`
+  - `C2 = 2025-12-23 08:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- the relevant touch occurs on `C2`
+- `C2` sweeps below `low(C1)` and recovers bullishly
+- the lower wick remains just inside the current threshold, so this is a valid
+  but less comfortable bullish `Type B`
+
+### Integrated Type B 500-Bar Match 5
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `4421.49 -> 4445.40`
+  - confirmed at:
+    - `2025-12-29 16:00 +05:00`
+- sequence:
+  - `C1 = 2026-01-05 08:00 +05:00`
+  - `C2 = 2026-01-05 12:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- both sequence candles overlap the active bearish `IRL`
+- `C2` sweeps above `high(C1)` and then closes back down cleanly
+
+### Integrated Type B 500-Bar Match 6
+
+- classification:
+  - bullish integrated `IRL -> Type B`
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4892.76 -> 4912.94`
+  - confirmed at:
+    - `2026-02-18 08:00 +05:00`
+- sequence:
+  - `C1 = 2026-02-18 08:00 +05:00`
+  - `C2 = 2026-02-18 12:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- this is another valid bullish integrated `Type B`
+- the key interaction occurs on `C2`
+- `C2` sweeps below `low(C1)` and then expands upward strongly
+
+### Integrated Type B 500-Bar Match 7
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `5112.61 -> 5146.09`
+  - confirmed at:
+    - `2026-03-12 20:00 +05:00`
+- sequence:
+  - `C1 = 2026-03-13 00:00 +05:00`
+  - `C2 = 2026-03-13 04:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- both candles overlap the active bearish `IRL`
+- this is the same region that also supports the slower bearish integrated
+  `Type A`
+- as a faster branch, it remains a valid bearish integrated `Type B`
+
+### Integrated Type B 500-Bar Match 8
+
+- classification:
+  - bearish integrated `IRL -> Type B`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `4898.97 -> 4977.17`
+  - confirmed at:
+    - `2026-03-18 16:00 +05:00`
+- sequence:
+  - `C1 = 2026-03-18 16:00 +05:00`
+  - `C2 = 2026-03-18 20:00 +05:00`
+- result:
+  - `match`
+
+Interpretation:
+
+- the bearish `IRL` is freshly confirmed on `C1` close
+- `C2` then becomes the first eligible candle and forms a valid bearish
+  reversal-to-expansion move
+- this confirms the fresh-on-`C1` eligibility path is working on real MT5 data
