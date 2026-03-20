@@ -1237,6 +1237,131 @@ Interpretation:
 - the corrected integrated Type A bridge now behaves consistently with the
   existing `IRL/FVG` state model and runtime market ordering
 
+### Corrected Raw-500 Integrated Type A Review
+
+Boundary:
+
+- after the fresh-on-`C1` integration fix, integrated `Type A` must allow:
+  - prior same-bias `IRL / FVG` already resting before `C1`
+  - or same-bias `IRL / FVG` confirmed on `C1` close, with `C2` as the first
+    eligible touch
+- the `IRL` must still survive close-through invalidation during the sequence
+
+Confirmed raw `500`-bar MT5 count:
+
+- total integrated `Type A` matches: `4`
+- bullish: `1`
+- bearish: `3`
+- strict `C3` expansion-quality matches: `4`
+
+Interpretation:
+
+- the earlier raw-`500` count of `2` was incomplete
+- the missing cases were not doctrine errors
+- the missing cases were fresh-on-`C1` integration misses
+- the corrected bridge now captures both:
+  - preexisting resting `IRL`s
+  - fresh `IRL`s confirmed on Garrett `C1` close
+
+### Raw-500 Match 1
+
+- direction:
+  - bearish
+- `IRL / FVG`:
+  - `5426.08 -> 5470.82`
+- `IRL` confirmed:
+  - `2026-01-29 20:00 +05:00`
+- sequence:
+  - `C1 = 2026-01-29 20:00 +05:00`
+  - `C2 = 2026-01-30 00:00 +05:00`
+  - `C3 = 2026-01-30 04:00 +05:00`
+- result:
+  - `match`
+  - `strict C3 quality match`
+
+Why it matches:
+
+- the bearish `IRL` is confirmed on `C1` close
+- `C2` is therefore the first eligible touch candle
+- `C2` sweeps above `high(C1)` and closes back inside full `C1` range
+- `C3` expands lower cleanly
+- same-side wick fraction on `C3`:
+  - `0.055955`
+
+### Raw-500 Match 2
+
+- direction:
+  - bearish
+- `IRL / FVG`:
+  - `4970.74 -> 5013.69`
+- `IRL` confirmed:
+  - `2026-02-04 20:00 +05:00`
+- sequence:
+  - `C1 = 2026-02-04 20:00 +05:00`
+  - `C2 = 2026-02-05 00:00 +05:00`
+  - `C3 = 2026-02-05 04:00 +05:00`
+- result:
+  - `match`
+  - `strict C3 quality match`
+
+Why it matches:
+
+- this is the fresh-on-`C1` bearish case found during manual chart review
+- the bearish `IRL` is confirmed on `C1` close
+- `C2` sweeps above `high(C1)`, taps the `IRL`, and closes back inside `C1`
+- `C3` expands lower with a very small same-side wick
+- same-side wick fraction on `C3`:
+  - `0.018640`
+
+### Raw-500 Match 3
+
+- direction:
+  - bullish
+- `IRL / FVG`:
+  - `4712.85 -> 4745.49`
+- `IRL` confirmed:
+  - `2026-02-03 04:00 +05:00`
+- sequence:
+  - `C1 = 2026-02-05 20:00 +05:00`
+  - `C2 = 2026-02-06 00:00 +05:00`
+  - `C3 = 2026-02-06 04:00 +05:00`
+- result:
+  - `match`
+  - `strict C3 quality match`
+
+Why it matches:
+
+- the bullish `IRL` is already resting before `C1`
+- `C2` sweeps below `low(C1)` and closes back inside full `C1` range
+- `C3` holds above `EQ(C2)` and expands higher
+- same-side wick fraction on `C3`:
+  - `0.097323`
+
+### Raw-500 Match 4
+
+- direction:
+  - bearish
+- `IRL / FVG`:
+  - `5112.61 -> 5146.09`
+- `IRL` confirmed:
+  - `2026-03-12 20:00 +05:00`
+- sequence:
+  - `C1 = 2026-03-13 00:00 +05:00`
+  - `C2 = 2026-03-13 04:00 +05:00`
+  - `C3 = 2026-03-13 08:00 +05:00`
+- result:
+  - `match`
+  - `strict C3 quality match`
+
+Why it matches:
+
+- the bearish `IRL` is already resting before `C1`
+- both `C1` and `C2` overlap the active `IRL`
+- `C2` sweeps above `high(C1)` and closes back inside full `C1` range
+- `C3` expands lower cleanly
+- same-side wick fraction on `C3`:
+  - `0.101337`
+
 ## Confirmed FVG Invalidation Lifecycle Review
 
 ### Lifecycle Boundary

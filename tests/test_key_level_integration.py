@@ -100,9 +100,36 @@ class KeyLevelIntegrationTests(unittest.TestCase):
 
         candidates = detect_internal_to_external_type_a_candidates(candles)
 
+        self.assertEqual(len(candidates), 2)
+        self.assertEqual({candidate.direction for candidate in candidates}, {"bearish"})
+        self.assertEqual({candidate.key_level_touch for candidate in candidates}, {"c2"})
+        self.assertEqual(count_internal_to_external_type_a_sequences(candles), (0, 1))
+        self.assertEqual(
+            count_internal_to_external_type_a_expansion_quality_sequences(candles),
+            (0, 1),
+        )
+
+    def test_detect_internal_to_external_type_a_candidates_allows_gap_confirmed_on_c1_close(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=120, high=125, low=115, close=118),
+            self.make_candle(timestamp_hour=4, open=118, high=119, low=100, close=102),
+            self.make_candle(timestamp_hour=8, open=103, high=110, low=95, close=108),
+            self.make_candle(timestamp_hour=12, open=108, high=112, low=94, close=104),
+            self.make_candle(timestamp_hour=16, open=102, high=102, low=85, close=90),
+        ]
+
+        candidates = detect_internal_to_external_type_a_candidates(candles)
+        strict_candidates = detect_internal_to_external_type_a_expansion_quality_candidates(
+            candles
+        )
+
         self.assertEqual(len(candidates), 1)
         self.assertEqual(candidates[0].direction, "bearish")
         self.assertEqual(candidates[0].key_level_touch, "c2")
+        self.assertEqual(candidates[0].irl_confirmed_at, candles[2].timestamp)
+        self.assertEqual(len(strict_candidates), 1)
         self.assertEqual(count_internal_to_external_type_a_sequences(candles), (0, 1))
         self.assertEqual(
             count_internal_to_external_type_a_expansion_quality_sequences(candles),

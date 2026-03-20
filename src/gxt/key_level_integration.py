@@ -167,6 +167,7 @@ def _collect_fresh_directional_irls_confirmed_on_c1(
     c1_index: int,
     direction: Direction,
     c2: Candle,
+    preserve_candles: tuple[Candle, ...] = (),
 ) -> list[tuple[FVGCandidate, KeyLevelTouch]]:
     if c1_index < 2:
         return []
@@ -185,7 +186,7 @@ def _collect_fresh_directional_irls_confirmed_on_c1(
             zone_high=irl.upper_bound,
         ):
             continue
-        if not _sequence_preserves_irl_on_closes(irl, c2):
+        if not _sequence_preserves_irl_on_closes(irl, c2, *preserve_candles):
             continue
         touching.append((irl, "c2"))
     return touching
@@ -298,6 +299,24 @@ def detect_internal_to_external_type_a_candidates(
                         strict_expansion_quality=False,
                     )
                 )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_a_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                    )
+                )
 
         try:
             bearish_sequence = is_valid_bearish_c2_sequence(c1, c2, c3)
@@ -313,6 +332,24 @@ def detect_internal_to_external_type_a_candidates(
             ):
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
+                candidates.append(
+                    _build_type_a_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
@@ -380,6 +417,24 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
                         strict_expansion_quality=True,
                     )
                 )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_a_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                    )
+                )
 
         try:
             bearish_sequence = is_valid_bearish_c2_sequence_expansion_quality(
@@ -400,6 +455,24 @@ def detect_internal_to_external_type_a_expansion_quality_candidates(
             ):
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
+                candidates.append(
+                    _build_type_a_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        strict_expansion_quality=True,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
                 candidates.append(
                     _build_type_a_candidate(
                         irl=irl,
