@@ -14,6 +14,7 @@ from .key_level_integration import (
     count_internal_to_external_type_b_sequences,
     count_internal_to_external_type_c_sequences,
     count_internal_to_external_type_c_rare_case_sequences,
+    count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences,
 )
 from .sequence_primitives import (
     has_bearish_c4_after_c3_closure_candidate,
@@ -63,6 +64,8 @@ class RealSampleReport:
     bearish_internal_to_external_type_c_count: int
     bullish_internal_to_external_type_c_rare_case_count: int
     bearish_internal_to_external_type_c_rare_case_count: int
+    bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count: int
+    bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
@@ -538,6 +541,13 @@ def build_real_sample_report(
         bullish_internal_to_external_type_c_rare_case,
         bearish_internal_to_external_type_c_rare_case,
     ) = count_internal_to_external_type_c_rare_case_sequences(candles)
+    (
+        bullish_internal_to_external_type_c_rare_case_c3_expansion_quality,
+        bearish_internal_to_external_type_c_rare_case_c3_expansion_quality,
+    ) = count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences(
+        candles,
+        max_wick_fraction=c3_expansion_max_wick_fraction,
+    )
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_case_b, bearish_case_b = count_case_b_candidates(
         candles,
@@ -601,6 +611,12 @@ def build_real_sample_report(
         ),
         bearish_internal_to_external_type_c_rare_case_count=(
             bearish_internal_to_external_type_c_rare_case
+        ),
+        bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count=(
+            bullish_internal_to_external_type_c_rare_case_c3_expansion_quality
+        ),
+        bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count=(
+            bearish_internal_to_external_type_c_rare_case_c3_expansion_quality
         ),
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,

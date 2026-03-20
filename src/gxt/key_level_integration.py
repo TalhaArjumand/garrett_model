@@ -17,6 +17,8 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence_expansion_quality,
 )
 from .swing_research import (
+    has_bearish_rare_c3_closure_expansion_quality_candidate,
+    has_bullish_rare_c3_closure_expansion_quality_candidate,
     is_bearish_rare_c3_closure_subtype,
     is_bullish_rare_c3_closure_subtype,
 )
@@ -83,6 +85,25 @@ class InternalToExternalTypeCCandidate:
 
 @dataclass(frozen=True)
 class InternalToExternalTypeCRareCaseCandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    irl_lower_bound: float
+    irl_upper_bound: float
+    irl_c1_timestamp: datetime
+    irl_c2_timestamp: datetime
+    irl_c3_timestamp: datetime
+    irl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
+    sequence_c3_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate:
     symbol: str
     timeframe: str
     direction: Direction
@@ -381,6 +402,46 @@ def _build_type_c_rare_case_candidate(
             f"{direction} IRL/FVG {timing_phrase}. Base integrated Type C held, "
             "the active IRL remained eligible through C3 close, and the stricter "
             "rare-subtype upgrade also passed."
+        ),
+    )
+
+
+def _build_type_c_rare_case_c3_expansion_quality_candidate(
+    *,
+    irl: FVGCandidate,
+    c1: Candle,
+    c2: Candle,
+    c3: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+    fresh_on_c1_close: bool,
+) -> InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate:
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
+    return InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        irl_lower_bound=irl.lower_bound,
+        irl_upper_bound=irl.upper_bound,
+        irl_c1_timestamp=irl.c1_timestamp,
+        irl_c2_timestamp=irl.c2_timestamp,
+        irl_c3_timestamp=irl.c3_timestamp,
+        irl_confirmed_at=irl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        sequence_c3_timestamp=c3.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} rare Type C C3 expansion-quality research subtype "
+            f"formed after a {direction} IRL/FVG {timing_phrase}. Integrated base "
+            "Type C held, integrated rare Type C held, the active IRL remained "
+            "eligible through C3 close, and the stricter C3 quality upgrade also "
+            "passed."
         ),
     )
 
@@ -1068,6 +1129,159 @@ def count_internal_to_external_type_c_rare_case_sequences(
     candles: Iterable[Any],
 ) -> tuple[int, int]:
     candidates = detect_internal_to_external_type_c_rare_case_candidates(candles)
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> list[InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = has_bullish_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_lower_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
+                candidates.append(
+                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = has_bearish_rare_c3_closure_expansion_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_upper_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
+                candidates.append(
+                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.irl_confirmed_at,
+            candidate.irl_lower_bound,
+            candidate.irl_upper_bound,
+        ),
+    )
+
+
+def count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    candidates = detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates(
+        candles,
+        max_wick_fraction=max_wick_fraction,
+    )
     bullish = {
         (
             candidate.sequence_c1_timestamp,

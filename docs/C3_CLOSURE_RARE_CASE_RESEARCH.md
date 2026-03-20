@@ -172,6 +172,67 @@ Interpretation:
 
 This is still research only.
 
+## Rare-Subtype `C3` Expansion-Quality IRL Integration Contract
+
+This layer may also be integrated with `IRL / FVG` context, but only as an
+additive research subset of integrated rare `Type C`.
+
+### Base prerequisite
+
+An integrated rare-subtype `C3` expansion-quality match must first satisfy all
+of these in order:
+
+- integrated base `Type C`
+- integrated rare `Type C` subtype
+- rare-subtype `C3` expansion-quality predicate
+
+So this bridge must not:
+
+- loosen integrated rare `Type C`
+- rewrite its timing matrix
+- mutate base or rare-subtype counts
+
+### Quality upgrade
+
+Once integrated rare `Type C` is valid, the quality upgrade is exact:
+
+- bullish:
+  - `low(C3) > EQ(C2)`
+  - small same-side wick on `C3`
+- bearish:
+  - `high(C3) < EQ(C2)`
+  - small same-side wick on `C3`
+
+### IRL timing
+
+Use the same timing matrix as integrated base and integrated rare `Type C`:
+
+- preexisting resting `IRL` before `C1`: allowed
+- fresh `IRL` confirmed on `C1` close: allowed, with `C2` as first eligible
+  touch
+- fresh `IRL` confirmed on `C2` close: rejected
+
+### IRL validity horizon
+
+The active `IRL` must remain directionally valid through `C3` close.
+
+### Overlap policy
+
+- overlap with integrated base `Type C`:
+  - yes by definition
+- overlap with integrated rare `Type C` subtype:
+  - yes by definition
+- overlap with integrated `Type B`:
+  - allowed and must be reported explicitly if it appears
+
+### Claim boundary
+
+This remains:
+
+- integrated research-quality subtype
+- real-data testable
+- not yet universal doctrine
+
 ### Base rare-subtype `C4` continuation
 
 - valid rare-case `Type C`

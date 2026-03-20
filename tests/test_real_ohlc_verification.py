@@ -67,6 +67,14 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_internal_to_external_type_c_count, 0)
         self.assertGreaterEqual(report.bullish_internal_to_external_type_c_rare_case_count, 0)
         self.assertGreaterEqual(report.bearish_internal_to_external_type_c_rare_case_count, 0)
+        self.assertGreaterEqual(
+            report.bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            0,
+        )
+        self.assertGreaterEqual(
+            report.bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            0,
+        )
         self.assertGreaterEqual(report.bullish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_case_b_candidate_count, 0)
@@ -213,6 +221,31 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(report.bearish_internal_to_external_type_c_count, 0)
         self.assertEqual(report.bullish_internal_to_external_type_c_rare_case_count, 1)
         self.assertEqual(report.bearish_internal_to_external_type_c_rare_case_count, 0)
+
+    def test_build_real_sample_report_tracks_internal_to_external_type_c_rare_case_c3_quality_counts(
+        self,
+    ) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 96, 100, 95, 99),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 99, 105, 98, 104),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 104, 110, 102, 109),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 106, 107, 101, 103),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 103, 112, 99, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 111.5, 118, 110.5, 117),
+        ]
+
+        report = build_real_sample_report(candles)
+
+        self.assertEqual(report.bullish_internal_to_external_type_c_count, 1)
+        self.assertEqual(report.bullish_internal_to_external_type_c_rare_case_count, 1)
+        self.assertEqual(
+            report.bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            1,
+        )
+        self.assertEqual(
+            report.bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            0,
+        )
 
     def test_iter_quads_yields_overlapping_windows(self) -> None:
         candles = [
