@@ -178,6 +178,47 @@ Interpretation:
 - the current stress test supports the path-order hypothesis strongly enough to
   preserve, but not strongly enough to promote into doctrine or code logic
 
+### Integrated Type A stress-test evidence
+
+Evidence class:
+
+- Bucket B
+- H4 morphology-consistent only
+
+Current reviewed stress-test totals on the preserved `500`-bar MT5 raw sample:
+
+- total integrated `Type A` examples:
+  - `2`
+- bullish integrated `Type A` examples:
+  - `1`
+- bearish integrated `Type A` examples:
+  - `1`
+
+Current morphology-support summary:
+
+- `C1` support:
+  - bullish examples:
+    - `1 / 1` morphology-consistent with the current bullish retracement-path
+      hypothesis
+  - bearish examples:
+    - `1 / 1` morphology-consistent with the current bearish retracement-path
+      hypothesis
+- `C2` support:
+  - bullish examples:
+    - `1 / 1` morphology-consistent with the current bullish reversal-path
+      hypothesis
+  - bearish examples:
+    - `1 / 1` morphology-consistent with the current bearish reversal-path
+      hypothesis
+
+Interpretation:
+
+- the current full-sample `Type A` set is small but fully supportive
+- support is again strongest on `C2`, which is important because `C2` sets the
+  closure and the later `EQ(C2)` boundary
+- these examples reinforce the same path-order observation already seen in the
+  integrated `Type B` sample, but they remain H4 morphology-consistent only
+
 ### Reviewed Garrett illustration alignment
 
 The current observation also appears consistent with Garrett's illustrated

@@ -1620,3 +1620,111 @@ Interpretation:
 - `C2` then becomes the first eligible candle and forms a valid bearish
   reversal-to-expansion move
 - this confirms the fresh-on-`C1` eligibility path is working on real MT5 data
+
+## Confirmed Full 500-Bar Integrated Type A Review
+
+### Review Boundary
+
+- source:
+  - preserved MT5 raw snapshot
+  - `xauusd_4h_mt5_raw_2026_03_19.csv`
+- review scope:
+  - integrated `IRL -> Type A`
+  - full `500`-bar same-source extraction
+- required boundary:
+  - `IRL / FVG` must already exist in left-to-right time
+  - it must still be directionally valid for same-bias use
+  - the integrated sequence must respect the current close-through invalidation
+    policy
+  - `C3` must confirm the delayed-expansion path
+
+### Confirmed Full-Sample Counts
+
+- total integrated `Type A` matches:
+  - `2`
+- bullish integrated `Type A` matches:
+  - `1`
+- bearish integrated `Type A` matches:
+  - `1`
+- strict `C3` expansion-quality matches:
+  - `2`
+
+Interpretation:
+
+- integrated `Type A` is real on the broader same-source sample
+- it is much rarer than integrated `Type B`
+- both current full-sample `Type A` examples are also strict `C3`
+  expansion-quality examples
+
+### Integrated Type A 500-Bar Match 1
+
+- classification:
+  - bullish integrated `IRL -> Type A -> strict C3`
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4712.85 -> 4745.49`
+  - confirmed at:
+    - `2026-02-03 04:00 +05:00`
+- sequence:
+  - `C1 = 2026-02-05 20:00 +05:00`
+  - `C2 = 2026-02-06 00:00 +05:00`
+  - `C3 = 2026-02-06 04:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is still resting before the sequence begins
+- the meaningful touch occurs on `C2`
+- `C2` sweeps below `low(C1)`
+- `C2` still closes back inside the full range of `C1`
+- `EQ(C2) = 4724.515`
+- `C3` then holds above `EQ(C2)`
+- `C3` closes above `high(C2)`
+- strict expansion-quality check also passes on `C3`
+
+Interpretation:
+
+- this is a valid full-sample bullish integrated `Type A`
+- it is `Type A` only, not an overlapping `Type B` region
+- it shows the delayed-expansion path clearly:
+  - `C2` supplies the closure
+  - `C3` supplies the expansion
+
+### Integrated Type A 500-Bar Match 2
+
+- classification:
+  - bearish integrated `IRL -> Type A -> strict C3`
+- active `IRL`:
+  - bearish `FVG`
+  - zone:
+    - `5112.61 -> 5146.09`
+  - confirmed at:
+    - `2026-03-12 20:00 +05:00`
+- sequence:
+  - `C1 = 2026-03-13 00:00 +05:00`
+  - `C2 = 2026-03-13 04:00 +05:00`
+  - `C3 = 2026-03-13 08:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bearish `IRL` is still resting before the sequence begins
+- both `C1` and `C2` overlap the active bearish `IRL`
+- `C2` sweeps above `high(C1)`
+- `C2` still closes back inside the full range of `C1`
+- `EQ(C2) = 5113.47`
+- `C3` then holds below `EQ(C2)`
+- `C3` closes below `low(C2)`
+- strict expansion-quality check also passes on `C3`
+
+Interpretation:
+
+- this is a valid full-sample bearish integrated `Type A`
+- this is the only full-sample region that also overlaps with an integrated
+  `Type B`
+- so this location preserves both:
+  - the faster reversal-to-expansion branch
+  - and the slower delayed-expansion branch
