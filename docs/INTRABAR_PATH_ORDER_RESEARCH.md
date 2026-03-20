@@ -136,6 +136,48 @@ Current repo-safe interpretation:
 - these examples are structurally compatible with the path-order hypothesis
 - but unless lower-timeframe confirmation is attached, they belong in Bucket B
 
+### Integrated Type B stress-test evidence
+
+Evidence class:
+
+- Bucket B
+- H4 morphology-consistent only
+
+Current reviewed stress-test totals on the preserved `500`-bar MT5 raw sample:
+
+- total integrated `Type B` examples:
+  - `8`
+- bullish integrated `Type B` examples:
+  - `3`
+- bearish integrated `Type B` examples:
+  - `5`
+
+Current morphology-support summary:
+
+- `C1` support:
+  - bullish examples:
+    - `3 / 3` morphology-consistent with the current bullish retracement-path
+      hypothesis
+  - bearish examples:
+    - `5 / 5` morphology-consistent with the current bearish retracement-path
+      hypothesis
+- `C2` support:
+  - bullish examples:
+    - `3 / 3` morphology-consistent with the current bullish reversal-path
+      hypothesis
+  - bearish examples:
+    - `5 / 5` morphology-consistent with the current bearish reversal-path
+      hypothesis
+
+Interpretation:
+
+- support is strongest on `C2`, which is consistent with Garrett logic because
+  `C2` is the actual reversal-to-expansion candle in `Type B`
+- `C1` also supports the current observation, but this remains morphology-based
+  rather than lower-timeframe-confirmed path evidence
+- the current stress test supports the path-order hypothesis strongly enough to
+  preserve, but not strongly enough to promote into doctrine or code logic
+
 ### Reviewed Garrett illustration alignment
 
 The current observation also appears consistent with Garrett's illustrated
