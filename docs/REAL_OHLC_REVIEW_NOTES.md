@@ -1853,3 +1853,193 @@ Interpretation:
 - so this location preserves both:
   - the faster reversal-to-expansion branch
   - and the slower delayed-expansion branch
+
+## Confirmed Full 500-Bar Integrated Type C Base Review
+
+### Review Boundary
+
+- source:
+  - preserved MT5 raw snapshot
+  - `xauusd_4h_mt5_raw_2026_03_19.csv`
+- review scope:
+  - integrated `IRL -> Type C` base only
+  - full `500`-bar same-source extraction
+- required boundary:
+  - same-bias `IRL / FVG` only
+  - `IRL / FVG` must be live in left-to-right time
+  - allowed timing classes:
+    - preexisting resting before `C1`
+    - fresh on `C1` close, with `C2` as first eligible touch
+  - rejected timing class:
+    - fresh on `C2` close
+  - the `IRL` must remain eligible through `C3` close
+  - this is base `Type C` only:
+    - no rare subtype
+    - no `C3` expansion-quality subtype
+    - no entry model claim
+
+### Confirmed Full-Sample Counts
+
+- total integrated `Type C` base matches:
+  - `4`
+- bullish integrated `Type C` base matches:
+  - `4`
+- bearish integrated `Type C` base matches:
+  - `0`
+- timing split:
+  - preexisting resting `IRL`: `2`
+  - fresh on `C1` close: `2`
+  - fresh on `C2` close: `0`
+- overlap with integrated `Type B`:
+  - `1`
+- current canonical `100`-bar verifier window:
+  - bullish integrated `Type C` base matches: `0`
+  - bearish integrated `Type C` base matches: `0`
+
+Interpretation:
+
+- integrated `Type C` base is real on the broader preserved same-source sample
+- on the current March 19 canonical `100`-bar verifier window, there are no
+  surviving integrated `Type C` base matches
+- the implemented timing matrix is now evidenced on real data:
+  - preexisting resting `IRL`
+  - fresh-on-`C1` `IRL`
+- no real-data support has appeared for fresh-on-`C2` eligibility in this base
+  branch
+
+### Integrated Type C 500-Bar Match 1
+
+- classification:
+  - bullish integrated `IRL -> Type C` base
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4160.38 -> 4172.66`
+  - confirmed at:
+    - `2025-11-28 04:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2025-11-28 04:00 +05:00`
+  - `C2 = 2025-11-28 08:00 +05:00`
+  - `C3 = 2025-11-28 12:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is created on `C1` close
+- `C2` is the first eligible touch candle
+- `C2` sweeps below `low(C1)`
+- `C2` does not produce a valid `Type A` closure
+- `C3` is bullish
+- `C3` holds above `low(C2)`
+- `C3` closes above `body_top(C2)`
+
+Interpretation:
+
+- this confirms the fresh-on-`C1` eligibility path is real for base integrated
+  `Type C`
+- the confirming closure truly arrives on `C3`, not on `C2`
+
+### Integrated Type C 500-Bar Match 2
+
+- classification:
+  - bullish integrated `IRL -> Type C` base
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4442.21 -> 4449.51`
+  - confirmed at:
+    - `2025-12-23 00:00 +05:00`
+  - timing class:
+    - preexisting resting
+- sequence:
+  - `C1 = 2025-12-23 12:00 +05:00`
+  - `C2 = 2025-12-23 16:00 +05:00`
+  - `C3 = 2025-12-23 20:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is already resting before `C1`
+- the relevant touch occurs on `C2`
+- `C2` sweeps below `low(C1)`
+- `C2` does not close back inside the full range of `C1`, so this is not
+  `Type A`
+- `C3` is the first strong bullish closure over `body_top(C2)`
+
+Interpretation:
+
+- this is a clean preexisting-`IRL` integrated `Type C` base example
+- it shows the delayed-confirmation path without needing the fresh-on-`C1`
+  timing class
+
+### Integrated Type C 500-Bar Match 3
+
+- classification:
+  - bullish integrated `IRL -> Type C` base
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `5225.26 -> 5252.09`
+  - confirmed at:
+    - `2026-01-28 08:00 +05:00`
+  - timing class:
+    - preexisting resting
+- sequence:
+  - `C1 = 2026-01-28 12:00 +05:00`
+  - `C2 = 2026-01-28 16:00 +05:00`
+  - `C3 = 2026-01-28 20:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is already resting before `C1`
+- both `C1` and `C2` interact with the active `IRL`
+- `C2` sweeps below `low(C1)`
+- `C2` is not a valid `Type A` closure candle
+- `C3` becomes the first strong bullish confirming closure
+
+Interpretation:
+
+- this is the January 28 region that looked structurally important during
+  stress testing
+- it does not qualify as strict integrated `Type B`, but it does qualify as
+  integrated `Type C` base
+
+### Integrated Type C 500-Bar Match 4
+
+- classification:
+  - bullish integrated `IRL -> Type C` base
+- active `IRL`:
+  - bullish `FVG`
+  - zone:
+    - `4892.76 -> 4912.94`
+  - confirmed at:
+    - `2026-02-18 08:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2026-02-18 08:00 +05:00`
+  - `C2 = 2026-02-18 12:00 +05:00`
+  - `C3 = 2026-02-18 16:00 +05:00`
+- result:
+  - `match`
+
+Why it matches:
+
+- the bullish `IRL` is created on `C1` close
+- `C2` is first eligible and sweeps below `low(C1)`
+- `C2` does not form a valid `Type A` closure
+- `C3` is the first strong bullish closure over `body_top(C2)`
+
+Interpretation:
+
+- this is the only full-sample integrated `Type C` base region that also
+  overlaps with integrated `Type B`
+- so this location preserves both:
+  - the faster reversal-to-expansion branch
+  - the slower delayed-confirmation branch

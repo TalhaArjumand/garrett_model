@@ -8,9 +8,11 @@ from .candles import Candle, require_closed
 from .fvg import FVGCandidate, detect_fvg_candidates
 from .sequence_primitives import (
     is_bearish_c2_reversal_to_expansion,
+    is_bearish_c3_closure,
     is_valid_bearish_c2_sequence,
     is_valid_bearish_c2_sequence_expansion_quality,
     is_bullish_c2_reversal_to_expansion,
+    is_bullish_c3_closure,
     is_valid_bullish_c2_sequence,
     is_valid_bullish_c2_sequence_expansion_quality,
 )
@@ -51,6 +53,25 @@ class InternalToExternalTypeBCandidate:
     irl_confirmed_at: datetime
     sequence_c1_timestamp: datetime
     sequence_c2_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class InternalToExternalTypeCCandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    irl_lower_bound: float
+    irl_upper_bound: float
+    irl_c1_timestamp: datetime
+    irl_c2_timestamp: datetime
+    irl_c3_timestamp: datetime
+    irl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
+    sequence_c3_timestamp: datetime
     key_level_touch: KeyLevelTouch
     decision_time_safe: bool
     reason: str
@@ -259,6 +280,45 @@ def _build_type_b_candidate(
             f"{direction} IRL/FVG {timing_phrase}. The active IRL was then touched "
             "through the allowed sequence candles without a close-through "
             "invalidation."
+        ),
+    )
+
+
+def _build_type_c_candidate(
+    *,
+    irl: FVGCandidate,
+    c1: Candle,
+    c2: Candle,
+    c3: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+    fresh_on_c1_close: bool,
+) -> InternalToExternalTypeCCandidate:
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
+    return InternalToExternalTypeCCandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        irl_lower_bound=irl.lower_bound,
+        irl_upper_bound=irl.upper_bound,
+        irl_c1_timestamp=irl.c1_timestamp,
+        irl_c2_timestamp=irl.c2_timestamp,
+        irl_c3_timestamp=irl.c3_timestamp,
+        irl_confirmed_at=irl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        sequence_c3_timestamp=c3.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} Type C c3-closure sequence formed after a "
+            f"{direction} IRL/FVG {timing_phrase}. The active IRL was touched "
+            "through C1 or C2, remained eligible through C3 close, and the first "
+            "strong confirming closure arrived on C3."
         ),
     )
 
@@ -688,6 +748,142 @@ def count_internal_to_external_type_b_sequences(
         (
             candidate.sequence_c1_timestamp,
             candidate.sequence_c2_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def detect_internal_to_external_type_c_candidates(
+    candles: Iterable[Any],
+) -> list[InternalToExternalTypeCCandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[InternalToExternalTypeCCandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = is_bullish_c3_closure(c1, c2, c3)
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
+                candidates.append(
+                    _build_type_c_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_c_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = is_bearish_c3_closure(c1, c2, c3)
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for irl, touch in _collect_touching_active_directional_irls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
+                    continue
+                candidates.append(
+                    _build_type_c_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for irl, touch in _collect_fresh_directional_irls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+                preserve_candles=(c3,),
+            ):
+                candidates.append(
+                    _build_type_c_candidate(
+                        irl=irl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.irl_confirmed_at,
+            candidate.irl_lower_bound,
+            candidate.irl_upper_bound,
+        ),
+    )
+
+
+def count_internal_to_external_type_c_sequences(
+    candles: Iterable[Any],
+) -> tuple[int, int]:
+    candidates = detect_internal_to_external_type_c_candidates(candles)
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
         )
         for candidate in candidates
         if candidate.direction == "bearish"
