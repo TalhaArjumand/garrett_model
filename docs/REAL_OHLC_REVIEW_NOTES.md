@@ -2404,3 +2404,174 @@ Interpretation:
   - fresh `ERL` on `C1` close
 - no reviewed match required target-side logic
 - no reviewed match required fresh-on-`C2` `ERL` eligibility
+
+## Confirmed Integrated External-to-Internal Type B Review
+
+### Boundary
+
+- this tranche integrates:
+  - `ERL` as key level
+  - `Type B` as confirmation family
+- this tranche explicitly excludes:
+  - target-side `IRL/FVG` logic
+  - selector logic
+  - entry-model logic
+- current implementation uses only:
+  - resting `old_high`
+  - resting `old_low`
+- timing matrix confirmed on chart:
+  - `preexisting_before_c1`: valid
+  - `fresh_on_c1_close`: valid, with `C2` as first eligible touch
+  - `fresh_on_c2_close`: not used for this tranche
+
+### Confirmed Counts
+
+- canonical `100`-bar verifier window:
+  - `bullish_external_to_internal_type_b_count = 0`
+  - `bearish_external_to_internal_type_b_count = 1`
+- raw `500`-bar MT5 snapshot:
+  - total integrated `ERL -> Type B` unique sequences: `6`
+  - bullish matches: `2`
+  - bearish matches: `4`
+  - duplicate ERL pairings before dedupe: `9`
+
+### Integrated External-to-Internal Type B 500-Bar Match 1
+
+- classification:
+  - bearish integrated `ERL -> Type B`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `4155.61`
+  - confirmed at:
+    - `2025-11-25 08:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2025-11-25 12:00 +05:00`
+  - `C2 = 2025-11-25 16:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type B 500-Bar Match 2
+
+- classification:
+  - bearish integrated `ERL -> Type B`
+- active `ERL`:
+  - paired `old_high` levels:
+    - `4230.88`
+    - `4228.81`
+  - confirmed at:
+    - `2025-12-02 20:00 +05:00`
+    - `2025-12-03 08:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2025-12-03 12:00 +05:00`
+  - `C2 = 2025-12-03 16:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+Why the overlap question is resolved:
+
+- this region is a valid integrated `Type B`
+- `C2` is also `Type-A-compatible` because it sweeps above `high(C1)` and closes
+  back inside the full range of `C1`
+- but it is not a completed integrated `Type A` because the next candle does not
+  close below `low(C2)`
+
+### Integrated External-to-Internal Type B 500-Bar Match 3
+
+- classification:
+  - bullish integrated `ERL -> Type B`
+- active `ERL`:
+  - paired `old_low` levels:
+    - `4175.07`
+    - `4176.64`
+  - confirmed at:
+    - `2025-12-04 08:00 +05:00`
+    - `2025-12-08 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2025-12-09 04:00 +05:00`
+  - `C2 = 2025-12-09 08:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type B 500-Bar Match 4
+
+- classification:
+  - bullish integrated `ERL -> Type B`
+- active `ERL`:
+  - `old_low`
+  - level:
+    - `4302.53`
+  - confirmed at:
+    - `2025-12-29 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2025-12-31 04:00 +05:00`
+  - `C2 = 2025-12-31 08:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type B 500-Bar Match 5
+
+- classification:
+  - bearish integrated `ERL -> Type B`
+- active `ERL`:
+  - paired `old_high` levels:
+    - `4468.29`
+    - `4466.37`
+  - confirmed at:
+    - `2026-01-07 20:00 +05:00`
+    - `2026-01-08 04:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-01-08 20:00 +05:00`
+  - `C2 = 2026-01-09 00:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+### Integrated External-to-Internal Type B 500-Bar Match 6
+
+- classification:
+  - bearish integrated `ERL -> Type B`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `5036.17`
+  - confirmed at:
+    - `2026-03-16 12:00 +05:00`
+  - timing class:
+    - fresh on `C1` close
+- sequence:
+  - `C1 = 2026-03-16 12:00 +05:00`
+  - `C2 = 2026-03-16 16:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+### External-to-Internal Type B Conclusion
+
+- the ERL `Type B` bridge is chart-validated on the reviewed canonical and raw
+  MT5 samples
+- the timing boundary is now explicit and confirmed:
+  - preexisting `ERL` before `C1`
+  - fresh `ERL` on `C1` close
+- no reviewed match required target-side logic
+- no reviewed match required fresh-on-`C2` `ERL` eligibility
