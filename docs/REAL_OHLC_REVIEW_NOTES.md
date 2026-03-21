@@ -1902,8 +1902,7 @@ Interpretation:
 - on the current March 19 canonical `100`-bar verifier window, there are no
   surviving integrated `Type C` base matches
 - under active taxonomy, the `2026-02-18 08:00 / 12:00 / 16:00` bullish region
-  should later be reclassified out of strict `Type C` and into `Type B`
-  additive extension when code migration lands
+  is reclassified out of strict `Type C` and into `Type B` additive extension
 - the implemented timing matrix is now evidenced on real data:
   - preexisting resting `IRL`
   - fresh-on-`C1` `IRL`

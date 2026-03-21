@@ -5,6 +5,7 @@ import unittest
 from gxt import (
     ContinuationFrom,
     DomainConfirmedAt,
+    ExtensionKind,
     Family,
     SequenceCandle,
     StageStatus,
@@ -22,6 +23,7 @@ class DomainStageTests(unittest.TestCase):
         self.assertEqual(model.first_tradable_candle, SequenceCandle.C3)
         self.assertEqual(model.continuation_from, ContinuationFrom.C3_CONFIRMED)
         self.assertEqual(model.stage_status, StageStatus.STRUCTURAL_ONLY)
+        self.assertEqual(model.extension_kind, ExtensionKind.NONE)
 
     def test_type_b_stage_blueprint_matches_locked_contract(self) -> None:
         model = build_domain_stage_model("type_b", stage_status="domain_confirmed")
@@ -32,6 +34,7 @@ class DomainStageTests(unittest.TestCase):
         self.assertEqual(model.first_tradable_candle, SequenceCandle.C2)
         self.assertEqual(model.continuation_from, ContinuationFrom.NONE_LOCKED_YET)
         self.assertEqual(model.stage_status, StageStatus.DOMAIN_CONFIRMED)
+        self.assertEqual(model.extension_kind, ExtensionKind.NONE)
 
     def test_type_c_stage_blueprint_matches_locked_contract(self) -> None:
         model = build_domain_stage_model(Family.TYPE_C)
@@ -42,6 +45,7 @@ class DomainStageTests(unittest.TestCase):
         self.assertEqual(model.first_tradable_candle, SequenceCandle.C4)
         self.assertEqual(model.continuation_from, ContinuationFrom.NONE_LOCKED_YET)
         self.assertEqual(model.stage_status, StageStatus.STRUCTURAL_ONLY)
+        self.assertEqual(model.extension_kind, ExtensionKind.NONE)
 
     def test_with_stage_status_preserves_structure(self) -> None:
         model = build_domain_stage_model(Family.TYPE_A)
@@ -53,6 +57,16 @@ class DomainStageTests(unittest.TestCase):
         self.assertEqual(updated.first_tradable_candle, model.first_tradable_candle)
         self.assertEqual(updated.continuation_from, model.continuation_from)
         self.assertEqual(updated.stage_status, StageStatus.FIRST_TRADABLE)
+        self.assertEqual(updated.extension_kind, ExtensionKind.NONE)
+
+    def test_build_domain_stage_model_allows_locked_extension_kind(self) -> None:
+        model = build_domain_stage_model(
+            Family.TYPE_B,
+            extension_kind=ExtensionKind.TYPE_B_ADDITIVE,
+        )
+
+        self.assertEqual(model.family, Family.TYPE_B)
+        self.assertEqual(model.extension_kind, ExtensionKind.TYPE_B_ADDITIVE)
 
     def test_build_domain_stage_model_rejects_unknown_family(self) -> None:
         with self.assertRaisesRegex(ValueError, "unsupported family"):
@@ -63,3 +77,14 @@ class DomainStageTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "unsupported stage_status"):
             model.with_stage_status("ready")
+
+    def test_build_domain_stage_model_rejects_unknown_extension_kind(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unsupported extension_kind"):
+            build_domain_stage_model(Family.TYPE_B, extension_kind="type_d_additive")
+
+    def test_build_domain_stage_model_rejects_type_b_extension_on_non_type_b_family(self) -> None:
+        with self.assertRaisesRegex(ValueError, "only supported for family 'type_b'"):
+            build_domain_stage_model(
+                Family.TYPE_C,
+                extension_kind=ExtensionKind.TYPE_B_ADDITIVE,
+            )

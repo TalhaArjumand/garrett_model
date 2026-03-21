@@ -152,8 +152,8 @@ fields above.
 
 ### `extension_kind`
 
-This is not yet implemented in the current code contract, but it is now the
-locked next taxonomy layer.
+This is now implemented in the current code contract as the locked taxonomy
+layer for `Type B` extensions.
 
 Recommended controlled enum:
 

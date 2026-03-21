@@ -14,10 +14,10 @@ from .key_level_integration import (
     count_external_to_internal_type_b_sequences,
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
+    count_internal_to_external_type_b_additive_extension_c3_quality_sequences,
+    count_internal_to_external_type_b_additive_extension_sequences,
     count_internal_to_external_type_b_sequences,
     count_internal_to_external_type_c_sequences,
-    count_internal_to_external_type_c_rare_case_sequences,
-    count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences,
 )
 from .sequence_primitives import (
     has_bearish_c4_after_c3_closure_candidate,
@@ -36,14 +36,14 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence,
 )
 from .swing_research import (
-    has_bearish_rare_c3_closure_expansion_quality_candidate,
-    has_bearish_c4_after_rare_c3_closure_candidate,
-    has_bearish_c4_after_rare_c3_closure_expansion_quality_candidate,
-    has_bullish_rare_c3_closure_expansion_quality_candidate,
-    has_bullish_c4_after_rare_c3_closure_candidate,
-    has_bullish_c4_after_rare_c3_closure_expansion_quality_candidate,
-    is_bearish_rare_c3_closure_subtype,
-    is_bullish_rare_c3_closure_subtype,
+    has_bearish_type_b_additive_extension_c3_quality_candidate,
+    has_bearish_c4_after_type_b_additive_extension_candidate,
+    has_bearish_c4_after_type_b_additive_extension_expansion_quality_candidate,
+    has_bullish_type_b_additive_extension_c3_quality_candidate,
+    has_bullish_c4_after_type_b_additive_extension_candidate,
+    has_bullish_c4_after_type_b_additive_extension_expansion_quality_candidate,
+    is_bearish_type_b_additive_extension,
+    is_bullish_type_b_additive_extension,
 )
 
 
@@ -69,30 +69,30 @@ class RealSampleReport:
     bearish_external_to_internal_type_b_count: int
     bullish_internal_to_external_type_b_count: int
     bearish_internal_to_external_type_b_count: int
+    bullish_internal_to_external_type_b_additive_extension_count: int
+    bearish_internal_to_external_type_b_additive_extension_count: int
+    bullish_internal_to_external_type_b_additive_extension_c3_quality_count: int
+    bearish_internal_to_external_type_b_additive_extension_c3_quality_count: int
     bullish_internal_to_external_type_c_count: int
     bearish_internal_to_external_type_c_count: int
-    bullish_internal_to_external_type_c_rare_case_count: int
-    bearish_internal_to_external_type_c_rare_case_count: int
-    bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count: int
-    bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
     bearish_case_b_candidate_count: int
     bullish_c3_closure_count: int
     bearish_c3_closure_count: int
-    bullish_c3_closure_rare_case_count: int
-    bearish_c3_closure_rare_case_count: int
-    bullish_c3_closure_rare_case_c3_expansion_quality_count: int
-    bearish_c3_closure_rare_case_c3_expansion_quality_count: int
+    bullish_type_b_additive_extension_count: int
+    bearish_type_b_additive_extension_count: int
+    bullish_type_b_additive_extension_c3_quality_count: int
+    bearish_type_b_additive_extension_c3_quality_count: int
     bullish_c3_closure_c4_candidate_count: int
     bearish_c3_closure_c4_candidate_count: int
     bullish_c3_closure_c4_expansion_quality_count: int
     bearish_c3_closure_c4_expansion_quality_count: int
-    bullish_c3_closure_rare_case_c4_candidate_count: int
-    bearish_c3_closure_rare_case_c4_candidate_count: int
-    bullish_c3_closure_rare_case_c4_expansion_quality_count: int
-    bearish_c3_closure_rare_case_c4_expansion_quality_count: int
+    bullish_type_b_additive_extension_c4_candidate_count: int
+    bearish_type_b_additive_extension_c4_candidate_count: int
+    bullish_type_b_additive_extension_c4_expansion_quality_count: int
+    bearish_type_b_additive_extension_c4_expansion_quality_count: int
     bullish_fvg_count: int
     bearish_fvg_count: int
     fvg_candidate_count: int
@@ -262,30 +262,34 @@ def count_c3_closures(candles: list[Candle]) -> tuple[int, int]:
     bearish = 0
     for c1, c2, c3 in iter_triples(candles):
         try:
-            if is_bullish_c3_closure(c1, c2, c3):
+            if is_bullish_c3_closure(c1, c2, c3) and not is_bullish_type_b_additive_extension(
+                c1, c2, c3
+            ):
                 bullish += 1
-            if is_bearish_c3_closure(c1, c2, c3):
+            if is_bearish_c3_closure(c1, c2, c3) and not is_bearish_type_b_additive_extension(
+                c1, c2, c3
+            ):
                 bearish += 1
         except ValueError:
             continue
     return bullish, bearish
 
 
-def count_c3_closure_rare_cases(candles: list[Candle]) -> tuple[int, int]:
+def count_type_b_additive_extensions(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
     for c1, c2, c3 in iter_triples(candles):
         try:
-            if is_bullish_rare_c3_closure_subtype(c1, c2, c3):
+            if is_bullish_type_b_additive_extension(c1, c2, c3):
                 bullish += 1
-            if is_bearish_rare_c3_closure_subtype(c1, c2, c3):
+            if is_bearish_type_b_additive_extension(c1, c2, c3):
                 bearish += 1
         except ValueError:
             continue
     return bullish, bearish
 
 
-def count_c3_closure_rare_case_c3_expansion_quality_candidates(
+def count_type_b_additive_extension_c3_quality_candidates(
     candles: list[Candle],
     *,
     max_wick_fraction: float = 0.25,
@@ -294,14 +298,14 @@ def count_c3_closure_rare_case_c3_expansion_quality_candidates(
     bearish = 0
     for c1, c2, c3 in iter_triples(candles):
         try:
-            if has_bullish_rare_c3_closure_expansion_quality_candidate(
+            if has_bullish_type_b_additive_extension_c3_quality_candidate(
                 c1,
                 c2,
                 c3,
                 max_lower_wick_fraction=max_wick_fraction,
             ):
                 bullish += 1
-            if has_bearish_rare_c3_closure_expansion_quality_candidate(
+            if has_bearish_type_b_additive_extension_c3_quality_candidate(
                 c1,
                 c2,
                 c3,
@@ -357,21 +361,21 @@ def count_c3_closure_c4_expansion_quality_candidates(
     return bullish, bearish
 
 
-def count_c3_closure_rare_case_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
+def count_type_b_additive_extension_c4_candidates(candles: list[Candle]) -> tuple[int, int]:
     bullish = 0
     bearish = 0
     for c1, c2, c3, c4 in iter_quads(candles):
         try:
-            if has_bullish_c4_after_rare_c3_closure_candidate(c1, c2, c3, c4):
+            if has_bullish_c4_after_type_b_additive_extension_candidate(c1, c2, c3, c4):
                 bullish += 1
-            if has_bearish_c4_after_rare_c3_closure_candidate(c1, c2, c3, c4):
+            if has_bearish_c4_after_type_b_additive_extension_candidate(c1, c2, c3, c4):
                 bearish += 1
         except ValueError:
             continue
     return bullish, bearish
 
 
-def count_c3_closure_rare_case_c4_expansion_quality_candidates(
+def count_type_b_additive_extension_c4_expansion_quality_candidates(
     candles: list[Candle],
     *,
     max_wick_fraction: float = 0.25,
@@ -380,7 +384,7 @@ def count_c3_closure_rare_case_c4_expansion_quality_candidates(
     bearish = 0
     for c1, c2, c3, c4 in iter_quads(candles):
         try:
-            if has_bullish_c4_after_rare_c3_closure_expansion_quality_candidate(
+            if has_bullish_c4_after_type_b_additive_extension_expansion_quality_candidate(
                 c1,
                 c2,
                 c3,
@@ -388,7 +392,7 @@ def count_c3_closure_rare_case_c4_expansion_quality_candidates(
                 max_lower_wick_fraction=max_wick_fraction,
             ):
                 bullish += 1
-            if has_bearish_c4_after_rare_c3_closure_expansion_quality_candidate(
+            if has_bearish_c4_after_type_b_additive_extension_expansion_quality_candidate(
                 c1,
                 c2,
                 c3,
@@ -561,31 +565,34 @@ def build_real_sample_report(
         max_wick_fraction=case_b_max_wick_fraction,
     )
     (
-        bullish_internal_to_external_type_c,
-        bearish_internal_to_external_type_c,
-    ) = count_internal_to_external_type_c_sequences(candles)
+        bullish_internal_to_external_type_b_additive_extension,
+        bearish_internal_to_external_type_b_additive_extension,
+    ) = count_internal_to_external_type_b_additive_extension_sequences(candles)
     (
-        bullish_internal_to_external_type_c_rare_case,
-        bearish_internal_to_external_type_c_rare_case,
-    ) = count_internal_to_external_type_c_rare_case_sequences(candles)
-    (
-        bullish_internal_to_external_type_c_rare_case_c3_expansion_quality,
-        bearish_internal_to_external_type_c_rare_case_c3_expansion_quality,
-    ) = count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences(
+        bullish_internal_to_external_type_b_additive_extension_c3_quality,
+        bearish_internal_to_external_type_b_additive_extension_c3_quality,
+    ) = count_internal_to_external_type_b_additive_extension_c3_quality_sequences(
         candles,
         max_wick_fraction=c3_expansion_max_wick_fraction,
     )
+    (
+        bullish_internal_to_external_type_c,
+        bearish_internal_to_external_type_c,
+    ) = count_internal_to_external_type_c_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_case_b, bearish_case_b = count_case_b_candidates(
         candles,
         max_wick_fraction=case_b_max_wick_fraction,
     )
     bullish_c3_closure, bearish_c3_closure = count_c3_closures(candles)
-    bullish_c3_closure_rare, bearish_c3_closure_rare = count_c3_closure_rare_cases(candles)
     (
-        bullish_c3_closure_rare_c3_expansion_quality,
-        bearish_c3_closure_rare_c3_expansion_quality,
-    ) = count_c3_closure_rare_case_c3_expansion_quality_candidates(
+        bullish_type_b_additive_extension,
+        bearish_type_b_additive_extension,
+    ) = count_type_b_additive_extensions(candles)
+    (
+        bullish_type_b_additive_extension_c3_quality,
+        bearish_type_b_additive_extension_c3_quality,
+    ) = count_type_b_additive_extension_c3_quality_candidates(
         candles,
         max_wick_fraction=c3_expansion_max_wick_fraction,
     )
@@ -598,13 +605,13 @@ def build_real_sample_report(
         max_wick_fraction=c4_expansion_max_wick_fraction,
     )
     (
-        bullish_c3_rare_c4,
-        bearish_c3_rare_c4,
-    ) = count_c3_closure_rare_case_c4_candidates(candles)
+        bullish_type_b_additive_extension_c4,
+        bearish_type_b_additive_extension_c4,
+    ) = count_type_b_additive_extension_c4_candidates(candles)
     (
-        bullish_c3_rare_c4_expansion_quality,
-        bearish_c3_rare_c4_expansion_quality,
-    ) = count_c3_closure_rare_case_c4_expansion_quality_candidates(
+        bullish_type_b_additive_extension_c4_expansion_quality,
+        bearish_type_b_additive_extension_c4_expansion_quality,
+    ) = count_type_b_additive_extension_c4_expansion_quality_candidates(
         candles,
         max_wick_fraction=c4_expansion_max_wick_fraction,
     )
@@ -641,45 +648,49 @@ def build_real_sample_report(
         bearish_external_to_internal_type_b_count=bearish_external_to_internal_type_b,
         bullish_internal_to_external_type_b_count=bullish_internal_to_external_type_b,
         bearish_internal_to_external_type_b_count=bearish_internal_to_external_type_b,
+        bullish_internal_to_external_type_b_additive_extension_count=(
+            bullish_internal_to_external_type_b_additive_extension
+        ),
+        bearish_internal_to_external_type_b_additive_extension_count=(
+            bearish_internal_to_external_type_b_additive_extension
+        ),
+        bullish_internal_to_external_type_b_additive_extension_c3_quality_count=(
+            bullish_internal_to_external_type_b_additive_extension_c3_quality
+        ),
+        bearish_internal_to_external_type_b_additive_extension_c3_quality_count=(
+            bearish_internal_to_external_type_b_additive_extension_c3_quality
+        ),
         bullish_internal_to_external_type_c_count=bullish_internal_to_external_type_c,
         bearish_internal_to_external_type_c_count=bearish_internal_to_external_type_c,
-        bullish_internal_to_external_type_c_rare_case_count=(
-            bullish_internal_to_external_type_c_rare_case
-        ),
-        bearish_internal_to_external_type_c_rare_case_count=(
-            bearish_internal_to_external_type_c_rare_case
-        ),
-        bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count=(
-            bullish_internal_to_external_type_c_rare_case_c3_expansion_quality
-        ),
-        bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count=(
-            bearish_internal_to_external_type_c_rare_case_c3_expansion_quality
-        ),
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
         bullish_case_b_candidate_count=bullish_case_b,
         bearish_case_b_candidate_count=bearish_case_b,
         bullish_c3_closure_count=bullish_c3_closure,
         bearish_c3_closure_count=bearish_c3_closure,
-        bullish_c3_closure_rare_case_count=bullish_c3_closure_rare,
-        bearish_c3_closure_rare_case_count=bearish_c3_closure_rare,
-        bullish_c3_closure_rare_case_c3_expansion_quality_count=(
-            bullish_c3_closure_rare_c3_expansion_quality
+        bullish_type_b_additive_extension_count=bullish_type_b_additive_extension,
+        bearish_type_b_additive_extension_count=bearish_type_b_additive_extension,
+        bullish_type_b_additive_extension_c3_quality_count=(
+            bullish_type_b_additive_extension_c3_quality
         ),
-        bearish_c3_closure_rare_case_c3_expansion_quality_count=(
-            bearish_c3_closure_rare_c3_expansion_quality
+        bearish_type_b_additive_extension_c3_quality_count=(
+            bearish_type_b_additive_extension_c3_quality
         ),
         bullish_c3_closure_c4_candidate_count=bullish_c3_closure_c4,
         bearish_c3_closure_c4_candidate_count=bearish_c3_closure_c4,
         bullish_c3_closure_c4_expansion_quality_count=bullish_c3_c4_expansion_quality,
         bearish_c3_closure_c4_expansion_quality_count=bearish_c3_c4_expansion_quality,
-        bullish_c3_closure_rare_case_c4_candidate_count=bullish_c3_rare_c4,
-        bearish_c3_closure_rare_case_c4_candidate_count=bearish_c3_rare_c4,
-        bullish_c3_closure_rare_case_c4_expansion_quality_count=(
-            bullish_c3_rare_c4_expansion_quality
+        bullish_type_b_additive_extension_c4_candidate_count=(
+            bullish_type_b_additive_extension_c4
         ),
-        bearish_c3_closure_rare_case_c4_expansion_quality_count=(
-            bearish_c3_rare_c4_expansion_quality
+        bearish_type_b_additive_extension_c4_candidate_count=(
+            bearish_type_b_additive_extension_c4
+        ),
+        bullish_type_b_additive_extension_c4_expansion_quality_count=(
+            bullish_type_b_additive_extension_c4_expansion_quality
+        ),
+        bearish_type_b_additive_extension_c4_expansion_quality_count=(
+            bearish_type_b_additive_extension_c4_expansion_quality
         ),
         bullish_fvg_count=bullish_fvg,
         bearish_fvg_count=bearish_fvg,

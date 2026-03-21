@@ -18,10 +18,10 @@ from .sequence_primitives import (
     is_valid_bullish_c2_sequence_expansion_quality,
 )
 from .swing_research import (
-    has_bearish_rare_c3_closure_expansion_quality_candidate,
-    has_bullish_rare_c3_closure_expansion_quality_candidate,
-    is_bearish_rare_c3_closure_subtype,
-    is_bullish_rare_c3_closure_subtype,
+    has_bearish_type_b_additive_extension_c3_quality_candidate,
+    has_bullish_type_b_additive_extension_c3_quality_candidate,
+    is_bearish_type_b_additive_extension,
+    is_bullish_type_b_additive_extension,
 )
 
 Direction = Literal["bullish", "bearish"]
@@ -85,7 +85,7 @@ class InternalToExternalTypeCCandidate:
 
 
 @dataclass(frozen=True)
-class InternalToExternalTypeCRareCaseCandidate:
+class InternalToExternalTypeBAdditiveExtensionCandidate:
     symbol: str
     timeframe: str
     direction: Direction
@@ -104,7 +104,7 @@ class InternalToExternalTypeCRareCaseCandidate:
 
 
 @dataclass(frozen=True)
-class InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate:
+class InternalToExternalTypeBAdditiveExtensionC3QualityCandidate:
     symbol: str
     timeframe: str
     direction: Direction
@@ -490,7 +490,7 @@ def _build_type_c_candidate(
     )
 
 
-def _build_type_c_rare_case_candidate(
+def _build_type_b_additive_extension_candidate(
     *,
     irl: FVGCandidate,
     c1: Candle,
@@ -499,13 +499,13 @@ def _build_type_c_rare_case_candidate(
     direction: Direction,
     touch: KeyLevelTouch,
     fresh_on_c1_close: bool,
-) -> InternalToExternalTypeCRareCaseCandidate:
+) -> InternalToExternalTypeBAdditiveExtensionCandidate:
     timing_phrase = (
         "was confirmed on C1 close and became eligible from C2 onward"
         if fresh_on_c1_close
         else "was confirmed and still resting before sequence C1"
     )
-    return InternalToExternalTypeCRareCaseCandidate(
+    return InternalToExternalTypeBAdditiveExtensionCandidate(
         symbol=c1.symbol,
         timeframe=c1.timeframe,
         direction=direction,
@@ -521,15 +521,15 @@ def _build_type_c_rare_case_candidate(
         key_level_touch=touch,
         decision_time_safe=True,
         reason=(
-            f"Valid {direction} rare Type C research subtype formed after a "
-            f"{direction} IRL/FVG {timing_phrase}. Base integrated Type C held, "
-            "the active IRL remained eligible through C3 close, and the stricter "
-            "rare-subtype upgrade also passed."
+            f"Valid {direction} Type B additive extension formed after a "
+            f"{direction} IRL/FVG {timing_phrase}. Base integrated Type B held, "
+            "the active IRL remained eligible through C3 close, and the additive "
+            "C3 trade trigger also passed."
         ),
     )
 
 
-def _build_type_c_rare_case_c3_expansion_quality_candidate(
+def _build_type_b_additive_extension_c3_quality_candidate(
     *,
     irl: FVGCandidate,
     c1: Candle,
@@ -538,13 +538,13 @@ def _build_type_c_rare_case_c3_expansion_quality_candidate(
     direction: Direction,
     touch: KeyLevelTouch,
     fresh_on_c1_close: bool,
-) -> InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate:
+) -> InternalToExternalTypeBAdditiveExtensionC3QualityCandidate:
     timing_phrase = (
         "was confirmed on C1 close and became eligible from C2 onward"
         if fresh_on_c1_close
         else "was confirmed and still resting before sequence C1"
     )
-    return InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate(
+    return InternalToExternalTypeBAdditiveExtensionC3QualityCandidate(
         symbol=c1.symbol,
         timeframe=c1.timeframe,
         direction=direction,
@@ -560,11 +560,11 @@ def _build_type_c_rare_case_c3_expansion_quality_candidate(
         key_level_touch=touch,
         decision_time_safe=True,
         reason=(
-            f"Valid {direction} rare Type C C3 expansion-quality research subtype "
+            f"Valid {direction} Type B additive extension C3-quality subtype "
             f"formed after a {direction} IRL/FVG {timing_phrase}. Integrated base "
-            "Type C held, integrated rare Type C held, the active IRL remained "
-            "eligible through C3 close, and the stricter C3 quality upgrade also "
-            "passed."
+            "Type B held, integrated Type B additive extension held, the active "
+            "IRL remained eligible through C3 close, and the stricter C3 quality "
+            "upgrade also passed."
         ),
     )
 
@@ -1016,7 +1016,7 @@ def detect_internal_to_external_type_c_candidates(
             bullish_sequence = is_bullish_c3_closure(c1, c2, c3)
         except ValueError:
             bullish_sequence = False
-        if bullish_sequence:
+        if bullish_sequence and not is_bullish_type_b_additive_extension(c1, c2, c3):
             for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
@@ -1060,7 +1060,7 @@ def detect_internal_to_external_type_c_candidates(
             bearish_sequence = is_bearish_c3_closure(c1, c2, c3)
         except ValueError:
             bearish_sequence = False
-        if bearish_sequence:
+        if bearish_sequence and not is_bearish_type_b_additive_extension(c1, c2, c3):
             for irl, touch in _collect_touching_active_directional_irls(
                 validated,
                 before_index=idx,
@@ -1137,19 +1137,19 @@ def count_internal_to_external_type_c_sequences(
     return len(bullish), len(bearish)
 
 
-def detect_internal_to_external_type_c_rare_case_candidates(
+def detect_internal_to_external_type_b_additive_extension_candidates(
     candles: Iterable[Any],
-) -> list[InternalToExternalTypeCRareCaseCandidate]:
+) -> list[InternalToExternalTypeBAdditiveExtensionCandidate]:
     validated = _validate_series(candles)
     if len(validated) < 3:
         return []
 
-    candidates: list[InternalToExternalTypeCRareCaseCandidate] = []
+    candidates: list[InternalToExternalTypeBAdditiveExtensionCandidate] = []
     for idx in range(len(validated) - 2):
         c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
 
         try:
-            bullish_sequence = is_bullish_rare_c3_closure_subtype(c1, c2, c3)
+            bullish_sequence = is_bullish_type_b_additive_extension(c1, c2, c3)
         except ValueError:
             bullish_sequence = False
         if bullish_sequence:
@@ -1163,7 +1163,7 @@ def detect_internal_to_external_type_c_rare_case_candidates(
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
                 candidates.append(
-                    _build_type_c_rare_case_candidate(
+                    _build_type_b_additive_extension_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1181,7 +1181,7 @@ def detect_internal_to_external_type_c_rare_case_candidates(
                 preserve_candles=(c3,),
             ):
                 candidates.append(
-                    _build_type_c_rare_case_candidate(
+                    _build_type_b_additive_extension_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1193,7 +1193,7 @@ def detect_internal_to_external_type_c_rare_case_candidates(
                 )
 
         try:
-            bearish_sequence = is_bearish_rare_c3_closure_subtype(c1, c2, c3)
+            bearish_sequence = is_bearish_type_b_additive_extension(c1, c2, c3)
         except ValueError:
             bearish_sequence = False
         if bearish_sequence:
@@ -1207,7 +1207,7 @@ def detect_internal_to_external_type_c_rare_case_candidates(
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
                 candidates.append(
-                    _build_type_c_rare_case_candidate(
+                    _build_type_b_additive_extension_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1225,7 +1225,7 @@ def detect_internal_to_external_type_c_rare_case_candidates(
                 preserve_candles=(c3,),
             ):
                 candidates.append(
-                    _build_type_c_rare_case_candidate(
+                    _build_type_b_additive_extension_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1248,10 +1248,10 @@ def detect_internal_to_external_type_c_rare_case_candidates(
     )
 
 
-def count_internal_to_external_type_c_rare_case_sequences(
+def count_internal_to_external_type_b_additive_extension_sequences(
     candles: Iterable[Any],
 ) -> tuple[int, int]:
-    candidates = detect_internal_to_external_type_c_rare_case_candidates(candles)
+    candidates = detect_internal_to_external_type_b_additive_extension_candidates(candles)
     bullish = {
         (
             candidate.sequence_c1_timestamp,
@@ -1273,21 +1273,21 @@ def count_internal_to_external_type_c_rare_case_sequences(
     return len(bullish), len(bearish)
 
 
-def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates(
+def detect_internal_to_external_type_b_additive_extension_c3_quality_candidates(
     candles: Iterable[Any],
     *,
     max_wick_fraction: float = 0.25,
-) -> list[InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate]:
+) -> list[InternalToExternalTypeBAdditiveExtensionC3QualityCandidate]:
     validated = _validate_series(candles)
     if len(validated) < 3:
         return []
 
-    candidates: list[InternalToExternalTypeCRareCaseC3ExpansionQualityCandidate] = []
+    candidates: list[InternalToExternalTypeBAdditiveExtensionC3QualityCandidate] = []
     for idx in range(len(validated) - 2):
         c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
 
         try:
-            bullish_sequence = has_bullish_rare_c3_closure_expansion_quality_candidate(
+            bullish_sequence = has_bullish_type_b_additive_extension_c3_quality_candidate(
                 c1,
                 c2,
                 c3,
@@ -1306,7 +1306,7 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
                 candidates.append(
-                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                    _build_type_b_additive_extension_c3_quality_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1324,7 +1324,7 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
                 preserve_candles=(c3,),
             ):
                 candidates.append(
-                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                    _build_type_b_additive_extension_c3_quality_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1336,7 +1336,7 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
                 )
 
         try:
-            bearish_sequence = has_bearish_rare_c3_closure_expansion_quality_candidate(
+            bearish_sequence = has_bearish_type_b_additive_extension_c3_quality_candidate(
                 c1,
                 c2,
                 c3,
@@ -1355,7 +1355,7 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
                 if not _sequence_preserves_irl_on_closes(irl, c1, c2, c3):
                     continue
                 candidates.append(
-                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                    _build_type_b_additive_extension_c3_quality_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1373,7 +1373,7 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
                 preserve_candles=(c3,),
             ):
                 candidates.append(
-                    _build_type_c_rare_case_c3_expansion_quality_candidate(
+                    _build_type_b_additive_extension_c3_quality_candidate(
                         irl=irl,
                         c1=c1,
                         c2=c2,
@@ -1396,12 +1396,12 @@ def detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates
     )
 
 
-def count_internal_to_external_type_c_rare_case_c3_expansion_quality_sequences(
+def count_internal_to_external_type_b_additive_extension_c3_quality_sequences(
     candles: Iterable[Any],
     *,
     max_wick_fraction: float = 0.25,
 ) -> tuple[int, int]:
-    candidates = detect_internal_to_external_type_c_rare_case_c3_expansion_quality_candidates(
+    candidates = detect_internal_to_external_type_b_additive_extension_c3_quality_candidates(
         candles,
         max_wick_fraction=max_wick_fraction,
     )

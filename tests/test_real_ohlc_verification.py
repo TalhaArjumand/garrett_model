@@ -6,10 +6,6 @@ from pathlib import Path
 from gxt.candles import Candle, utc_datetime
 from gxt.real_ohlc import (
     build_real_sample_report,
-    count_c3_closure_rare_cases,
-    count_c3_closure_rare_case_c3_expansion_quality_candidates,
-    count_c3_closure_rare_case_c4_candidates,
-    count_c3_closure_rare_case_c4_expansion_quality_candidates,
     count_c3_closure_c4_candidates,
     count_c3_closure_c4_expansion_quality_candidates,
     count_c3_closures,
@@ -18,6 +14,10 @@ from gxt.real_ohlc import (
     count_fvg_candidates,
     count_erl_candidates,
     count_fvgs,
+    count_type_b_additive_extensions,
+    count_type_b_additive_extension_c3_quality_candidates,
+    count_type_b_additive_extension_c4_candidates,
+    count_type_b_additive_extension_c4_expansion_quality_candidates,
     count_valid_sequences,
     count_valid_sequences_expansion_quality,
     iter_pairs,
@@ -75,46 +75,46 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertGreaterEqual(report.bearish_external_to_internal_type_b_count, 0)
         self.assertGreaterEqual(report.bullish_internal_to_external_type_b_count, 0)
         self.assertGreaterEqual(report.bearish_internal_to_external_type_b_count, 0)
+        self.assertGreaterEqual(report.bullish_internal_to_external_type_b_additive_extension_count, 0)
+        self.assertGreaterEqual(report.bearish_internal_to_external_type_b_additive_extension_count, 0)
+        self.assertGreaterEqual(
+            report.bullish_internal_to_external_type_b_additive_extension_c3_quality_count,
+            0,
+        )
+        self.assertGreaterEqual(
+            report.bearish_internal_to_external_type_b_additive_extension_c3_quality_count,
+            0,
+        )
         self.assertGreaterEqual(report.bullish_internal_to_external_type_c_count, 0)
         self.assertGreaterEqual(report.bearish_internal_to_external_type_c_count, 0)
-        self.assertGreaterEqual(report.bullish_internal_to_external_type_c_rare_case_count, 0)
-        self.assertGreaterEqual(report.bearish_internal_to_external_type_c_rare_case_count, 0)
-        self.assertGreaterEqual(
-            report.bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
-            0,
-        )
-        self.assertGreaterEqual(
-            report.bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
-            0,
-        )
         self.assertGreaterEqual(report.bullish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_case_b_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_case_b_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_c3_closure_count, 0)
         self.assertGreaterEqual(report.bearish_c3_closure_count, 0)
-        self.assertGreaterEqual(report.bullish_c3_closure_rare_case_count, 0)
-        self.assertGreaterEqual(report.bearish_c3_closure_rare_case_count, 0)
+        self.assertGreaterEqual(report.bullish_type_b_additive_extension_count, 0)
+        self.assertGreaterEqual(report.bearish_type_b_additive_extension_count, 0)
         self.assertGreaterEqual(
-            report.bullish_c3_closure_rare_case_c3_expansion_quality_count,
+            report.bullish_type_b_additive_extension_c3_quality_count,
             0,
         )
         self.assertGreaterEqual(
-            report.bearish_c3_closure_rare_case_c3_expansion_quality_count,
+            report.bearish_type_b_additive_extension_c3_quality_count,
             0,
         )
         self.assertGreaterEqual(report.bullish_c3_closure_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bearish_c3_closure_c4_candidate_count, 0)
         self.assertGreaterEqual(report.bullish_c3_closure_c4_expansion_quality_count, 0)
         self.assertGreaterEqual(report.bearish_c3_closure_c4_expansion_quality_count, 0)
-        self.assertGreaterEqual(report.bullish_c3_closure_rare_case_c4_candidate_count, 0)
-        self.assertGreaterEqual(report.bearish_c3_closure_rare_case_c4_candidate_count, 0)
+        self.assertGreaterEqual(report.bullish_type_b_additive_extension_c4_candidate_count, 0)
+        self.assertGreaterEqual(report.bearish_type_b_additive_extension_c4_candidate_count, 0)
         self.assertGreaterEqual(
-            report.bullish_c3_closure_rare_case_c4_expansion_quality_count,
+            report.bullish_type_b_additive_extension_c4_expansion_quality_count,
             0,
         )
         self.assertGreaterEqual(
-            report.bearish_c3_closure_rare_case_c4_expansion_quality_count,
+            report.bearish_type_b_additive_extension_c4_expansion_quality_count,
             0,
         )
         self.assertGreaterEqual(report.bullish_fvg_count, 0)
@@ -245,7 +245,7 @@ class RealOhlcVerificationTests(unittest.TestCase):
         self.assertEqual(report.bullish_internal_to_external_type_c_count, 1)
         self.assertEqual(report.bearish_internal_to_external_type_c_count, 0)
 
-    def test_build_real_sample_report_tracks_internal_to_external_type_c_rare_case_counts(
+    def test_build_real_sample_report_tracks_internal_to_external_type_b_additive_extension_counts(
         self,
     ) -> None:
         candles = [
@@ -253,39 +253,42 @@ class RealOhlcVerificationTests(unittest.TestCase):
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 99, 105, 98, 104),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 104, 110, 102, 109),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 106, 107, 101, 103),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 103, 112, 99, 111),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 111, 118, 106, 117),
-        ]
-
-        report = build_real_sample_report(candles)
-
-        self.assertEqual(report.bullish_internal_to_external_type_c_count, 1)
-        self.assertEqual(report.bearish_internal_to_external_type_c_count, 0)
-        self.assertEqual(report.bullish_internal_to_external_type_c_rare_case_count, 1)
-        self.assertEqual(report.bearish_internal_to_external_type_c_rare_case_count, 0)
-
-    def test_build_real_sample_report_tracks_internal_to_external_type_c_rare_case_c3_quality_counts(
-        self,
-    ) -> None:
-        candles = [
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 96, 100, 95, 99),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 99, 105, 98, 104),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 104, 110, 102, 109),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 106, 107, 101, 103),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 103, 112, 99, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 100.5, 112, 99, 111),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 111.5, 118, 110.5, 117),
         ]
 
         report = build_real_sample_report(candles)
 
-        self.assertEqual(report.bullish_internal_to_external_type_c_count, 1)
-        self.assertEqual(report.bullish_internal_to_external_type_c_rare_case_count, 1)
+        self.assertEqual(report.bullish_internal_to_external_type_c_count, 0)
+        self.assertEqual(report.bearish_internal_to_external_type_c_count, 0)
+        self.assertEqual(report.bullish_internal_to_external_type_b_additive_extension_count, 1)
+        self.assertEqual(report.bearish_internal_to_external_type_b_additive_extension_count, 0)
+
+    def test_build_real_sample_report_tracks_internal_to_external_type_b_additive_extension_c3_quality_counts(
+        self,
+    ) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 96, 100, 95, 99),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 99, 105, 98, 104),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 104, 110, 102, 109),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 106, 107, 101, 103),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 100.5, 112, 99, 111),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 111.5, 118, 110.5, 117),
+        ]
+
+        report = build_real_sample_report(candles)
+
+        self.assertEqual(report.bullish_internal_to_external_type_c_count, 0)
         self.assertEqual(
-            report.bullish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            report.bullish_internal_to_external_type_b_additive_extension_count,
             1,
         )
         self.assertEqual(
-            report.bearish_internal_to_external_type_c_rare_case_c3_expansion_quality_count,
+            report.bullish_internal_to_external_type_b_additive_extension_c3_quality_count,
+            1,
+        )
+        self.assertEqual(
+            report.bearish_internal_to_external_type_b_additive_extension_c3_quality_count,
             0,
         )
 
@@ -401,66 +404,66 @@ class RealOhlcVerificationTests(unittest.TestCase):
         bullish, bearish = count_c3_closure_c4_expansion_quality_candidates(candles)
         self.assertEqual((bullish, bearish), (1, 1))
 
-    def test_count_c3_closure_rare_cases_counts_bullish_and_bearish_windows(self) -> None:
+    def test_count_type_b_additive_extensions_counts_bullish_and_bearish_windows(self) -> None:
         candles = [
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 92, 114),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 105, 118),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 100, 110, 98, 108),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 108, 116, 94, 96),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 96, 101, 90, 92),
-        ]
-
-        bullish, bearish = count_c3_closure_rare_cases(candles)
-        self.assertEqual((bullish, bearish), (1, 1))
-
-    def test_count_c3_closure_rare_case_c3_expansion_quality_candidates_counts_bullish_and_bearish_windows(
-        self,
-    ) -> None:
-        candles = [
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 92, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 99.5, 114),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 113, 118),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 100, 110, 98, 108),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 108, 116, 94, 96),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 110, 110.5, 94, 96),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 96, 97, 90, 92),
         ]
 
-        bullish, bearish = count_c3_closure_rare_case_c3_expansion_quality_candidates(candles)
+        bullish, bearish = count_type_b_additive_extensions(candles)
         self.assertEqual((bullish, bearish), (1, 1))
 
-    def test_count_c3_closure_rare_case_c4_candidates_counts_bullish_and_bearish_windows(
+    def test_count_type_b_additive_extension_c3_quality_candidates_counts_bullish_and_bearish_windows(
         self,
     ) -> None:
         candles = [
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 92, 114),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 105, 118),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 118, 125, 114, 124),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 99.5, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 113, 118),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 100, 110, 98, 108),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 110, 110.5, 94, 96),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 96, 97, 90, 92),
+        ]
+
+        bullish, bearish = count_type_b_additive_extension_c3_quality_candidates(candles)
+        self.assertEqual((bullish, bearish), (1, 1))
+
+    def test_count_type_b_additive_extension_c4_candidates_counts_bullish_and_bearish_windows(
+        self,
+    ) -> None:
+        candles = [
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 99.5, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 113, 118),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 118, 125, 117, 124),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 100, 110, 98, 108),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 108, 116, 94, 96),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 110, 110.5, 94, 96),
             Candle("XAUUSD", utc_datetime(2026, 3, 15, 0), "4H", 96, 101, 90, 92),
             Candle("XAUUSD", utc_datetime(2026, 3, 15, 4), "4H", 92, 94, 85, 86),
         ]
 
-        bullish, bearish = count_c3_closure_rare_case_c4_candidates(candles)
+        bullish, bearish = count_type_b_additive_extension_c4_candidates(candles)
         self.assertEqual((bullish, bearish), (1, 1))
 
-    def test_count_c3_closure_rare_case_c4_expansion_quality_candidates_counts_bullish_and_bearish_windows(
+    def test_count_type_b_additive_extension_c4_expansion_quality_candidates_counts_bullish_and_bearish_windows(
         self,
     ) -> None:
         candles = [
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 0), "4H", 110, 112, 100, 102),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 92, 114),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 105, 118),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 4), "4H", 100, 116, 99.5, 114),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 8), "4H", 114, 120, 113, 118),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 12), "4H", 118, 125, 117, 124),
             Candle("XAUUSD", utc_datetime(2026, 3, 14, 16), "4H", 100, 110, 98, 108),
-            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 108, 116, 94, 96),
+            Candle("XAUUSD", utc_datetime(2026, 3, 14, 20), "4H", 110, 110.5, 94, 96),
             Candle("XAUUSD", utc_datetime(2026, 3, 15, 0), "4H", 96, 101, 90, 92),
             Candle("XAUUSD", utc_datetime(2026, 3, 15, 4), "4H", 92, 93, 85, 86),
         ]
 
-        bullish, bearish = count_c3_closure_rare_case_c4_expansion_quality_candidates(candles)
+        bullish, bearish = count_type_b_additive_extension_c4_expansion_quality_candidates(candles)
         self.assertEqual((bullish, bearish), (1, 1))
 
     def test_count_fvgs_counts_bullish_and_bearish_baseline_gaps(self) -> None:
