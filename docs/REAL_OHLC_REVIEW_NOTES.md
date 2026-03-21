@@ -2585,3 +2585,112 @@ Why the overlap question is resolved:
   - the first tradable candle is `C2`
 - no reviewed match required target-side logic
 - no reviewed match required fresh-on-`C2` `ERL` eligibility
+
+## Confirmed Canonical External-to-Internal Type C Review
+
+### Review Boundary
+
+- scope:
+  - strict integrated `ERL -> Type C`
+- strict family exclusions:
+  - valid `Type A` cases excluded
+  - valid `Type B` base cases excluded
+  - valid `Type B additive extension` cases excluded
+- stage boundary:
+  - `domain_confirmed_at = C3_close`
+  - `first_tradable_candle = C4`
+- target-side logic:
+  - excluded
+
+### Current Real-Data Counts
+
+- canonical `100`-bar window:
+  - bullish strict integrated `ERL -> Type C`:
+    - `1`
+  - bearish strict integrated `ERL -> Type C`:
+    - `1`
+- preserved MT5 raw `500`-bar snapshot:
+  - bullish strict integrated `ERL -> Type C`:
+    - `5`
+  - bearish strict integrated `ERL -> Type C`:
+    - `5`
+
+Interpretation:
+
+- the strict `ERL -> Type C` bridge is real on both the canonical and preserved
+  MT5 windows
+- no surviving strict case requires `C3` to be tradable
+- the broader raw sample still needs full chart review before it should be
+  treated as chart-validated end to end
+
+### Integrated External-to-Internal Type C Canonical Match 1
+
+- classification:
+  - bearish strict integrated `ERL -> Type C`
+- active `ERL`:
+  - `old_high`
+  - level:
+    - `5192.83`
+  - confirmed at:
+    - `2026-02-26 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-02-27 00:00 +05:00`
+  - `C2 = 2026-02-27 04:00 +05:00`
+  - `C3 = 2026-02-27 08:00 +05:00`
+  - touch:
+    - `both`
+- result:
+  - `match`
+
+Interpretation:
+
+- the bearish `ERL` is already resting before `C1`
+- `C2` interacts with the ERL and the sequence resolves through the delayed
+  strict `Type C` path
+- the first tradable candle remains `C4`, not `C3`
+
+### Integrated External-to-Internal Type C Canonical Match 2
+
+- classification:
+  - bullish strict integrated `ERL -> Type C`
+- active `ERL`:
+  - `old_low`
+  - level:
+    - `5061.04`
+  - confirmed at:
+    - `2026-03-09 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2026-03-12 16:00 +05:00`
+  - `C2 = 2026-03-12 20:00 +05:00`
+  - `C3 = 2026-03-13 00:00 +05:00`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+Interpretation:
+
+- this is the bullish strict `ERL -> Type C` mirror of the same delayed family
+  behavior
+- the stage mapping is again confirmed:
+  - `C3` confirms the domain
+  - `C4` is the first tradable candle
+
+### External-to-Internal Type C Canonical Conclusion
+
+- the canonical strict `ERL -> Type C` anchor set is chart-validated
+- both reviewed canonical examples passed manual chart review
+- reviewed timing class so far:
+  - preexisting `ERL` before `C1`
+- reviewed touch variants so far:
+  - `c2`
+  - `both`
+- strict stage mapping held in the reviewed set:
+  - `domain_confirmed_at = C3_close`
+  - `first_tradable_candle = C4`
+- no reviewed match required target-side logic
+- no reviewed match required fresh-on-`C2` `ERL` eligibility
