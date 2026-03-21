@@ -59,10 +59,23 @@ the reviewed swing-formation family:
 
 - Type A strict `C3`
 - Type B strict `C2`
+- Type B additive extension `C3` quality
 - Type C strict `C4`
-- rare Type C strict `C4`
 
 That layer is mechanical and reusable, but it is not locked doctrine.
+
+Historical references to:
+
+- `rare Type C`
+- `rare Type C C3 quality`
+
+are now provenance notes only.
+Active taxonomy treats those structures as:
+
+- `Type B additive extension`
+- `Type B additive extension C3 quality`
+
+So strict `Type C` remains the `C4`-tradable branch.
 
 ## Execution Flow
 

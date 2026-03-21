@@ -86,6 +86,16 @@ In the second currently reviewed case:
 
 So in this compressed case, reversal and expansion occur in `C2` itself.
 
+Historical references to:
+
+- `rare Type C`
+- `rare Type C C3 quality`
+
+are now treated as provenance notes only.
+Under active taxonomy, those stronger body-close branches live as a
+research-only `Type B additive extension`, not as a fourth family and not as
+strict `Type C`.
+
 ### Type C - C3 Closure
 
 In the third currently reviewed case:

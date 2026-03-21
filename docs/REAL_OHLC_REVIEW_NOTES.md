@@ -695,12 +695,12 @@ Interpretation:
   - bearish bias aligns with reaction from `old_highs`
 - the top-ranked bearish `ERL` is a nearby, fresh, resting swing high
 
-## Confirmed Rare Type C Research Matches
+## Confirmed Type B Additive Extension Research Matches
 
-### Rare Type C Match 1
+### Type B Additive Extension Match 1
 
 - classification:
-  - research-only rare bullish `Type C` subtype
+  - research-only bullish `Type B additive extension`
 - `C1 = 2026-02-24 20:00 +05:00`
 - `C2 = 2026-02-25 00:00 +05:00`
 - `C3 = 2026-02-25 04:00 +05:00`
@@ -723,18 +723,18 @@ Why it matches:
 
 Interpretation:
 
-- this is a strong bullish `Type C` subtype on real MT5 data
-- it is stronger than base `Type C`, but still belongs in the research layer
+- this is a strong bullish `Type B` extension on real MT5 data
+- historical `rare Type C` wording for this structure is now provenance only
 - current status is:
-  - rare
+  - reclassified
   - real
   - testable
   - not yet doctrine
 
-### Rare Type C Match 2
+### Type B Additive Extension Match 2
 
 - classification:
-  - research-only rare bullish `Type C` subtype
+  - research-only bullish `Type B additive extension`
 - `C1 = 2026-02-27 08:00 +05:00`
 - `C2 = 2026-02-27 12:00 +05:00`
 - `C3 = 2026-02-27 16:00 +05:00`
@@ -757,8 +757,8 @@ Why it matches:
 
 Interpretation:
 
-- this is a second manually confirmed bullish rare-case `Type C` subtype
-- the subtype is not a synthetic artifact because it survives:
+- this is a second manually confirmed bullish `Type B additive extension`
+- the extension is not a synthetic artifact because it survives:
   - real MT5 export
   - code detection
   - manual chart review
@@ -1874,8 +1874,8 @@ Interpretation:
     - fresh on `C2` close
   - the `IRL` must remain eligible through `C3` close
   - this is base `Type C` only:
-    - no rare subtype
-    - no `C3` expansion-quality subtype
+    - no `Type B additive extension`
+    - no `Type B additive extension C3 quality`
     - no entry model claim
 
 ### Confirmed Full-Sample Counts
@@ -1901,6 +1901,9 @@ Interpretation:
 - integrated `Type C` base is real on the broader preserved same-source sample
 - on the current March 19 canonical `100`-bar verifier window, there are no
   surviving integrated `Type C` base matches
+- under active taxonomy, the `2026-02-18 08:00 / 12:00 / 16:00` bullish region
+  should later be reclassified out of strict `Type C` and into `Type B`
+  additive extension when code migration lands
 - the implemented timing matrix is now evidenced on real data:
   - preexisting resting `IRL`
   - fresh-on-`C1` `IRL`
@@ -2038,13 +2041,15 @@ Why it matches:
 
 Interpretation:
 
-- this is the only full-sample integrated `Type C` base region that also
+- this is the only historical implementation `Type C` base region that also
   overlaps with integrated `Type B`
-- so this location preserves both:
-  - the faster reversal-to-expansion branch
-  - the slower delayed-confirmation branch
+- under active taxonomy, this region should be reclassified as:
+  - integrated `Type B additive extension`
+  - and, under the stricter filter:
+    - integrated `Type B additive extension C3 quality`
+- so strict live `Type C` should exclude this case after code migration
 
-## Confirmed Full 500-Bar Integrated Rare Type C Subtype Review
+## Confirmed Full 500-Bar Integrated Type B Additive Extension Review
 
 ### Review Boundary
 
@@ -2052,42 +2057,43 @@ Interpretation:
   - preserved MT5 raw snapshot
   - `xauusd_4h_mt5_raw_2026_03_19.csv`
 - review scope:
-  - integrated rare `Type C` subtype only
+  - integrated `Type B additive extension` only
   - full `500`-bar same-source extraction
 - required boundary:
-  - must first satisfy integrated base `Type C`
-  - same timing matrix as integrated base `Type C`:
+  - must first satisfy integrated base `Type B`
+  - same timing matrix as integrated base `Type B`:
     - preexisting resting `IRL` before `C1`
     - fresh `IRL` confirmed on `C1` close
     - fresh `IRL` confirmed on `C2` close rejected
   - `IRL` must remain valid through `C3` close
   - this remains research only, not doctrine
+  - historical references to `rare Type C` in this section are provenance only
 
 ### Confirmed Full-Sample Counts
 
-- total integrated rare `Type C` subtype matches:
+- total integrated `Type B additive extension` matches:
   - `1`
-- bullish integrated rare `Type C` subtype matches:
+- bullish integrated `Type B additive extension` matches:
   - `1`
-- bearish integrated rare `Type C` subtype matches:
+- bearish integrated `Type B additive extension` matches:
   - `0`
 - current canonical `100`-bar verifier window:
-  - bullish integrated rare `Type C` subtype matches: `0`
-  - bearish integrated rare `Type C` subtype matches: `0`
+  - bullish integrated `Type B additive extension` matches: `0`
+  - bearish integrated `Type B additive extension` matches: `0`
 
 Interpretation:
 
-- integrated rare `Type C` subtype is real on the broader preserved same-source
-  sample
+- integrated `Type B additive extension` is real on the broader preserved
+  same-source sample
 - it remains very sparse
-- the only reviewed integrated rare-subtype region also overlaps:
-  - integrated base `Type C`
+- the only reviewed integrated extension region also overlaps:
   - integrated `Type B`
+  - historical implementation base `Type C`
 
-### Integrated Rare Type C 500-Bar Match 1
+### Integrated Type B Additive Extension 500-Bar Match 1
 
 - classification:
-  - bullish integrated rare `IRL -> Type C` subtype
+  - bullish integrated `IRL -> Type B additive extension`
 - active `IRL`:
   - bullish `FVG`
   - zone:
@@ -2106,29 +2112,21 @@ Interpretation:
 Why it matches:
 
 - the bullish `IRL` is created on `C1` close
-- `C2` is first eligible and sweeps below `low(C1)`
-- `C2` does not close back inside the full range of `C1`, so this remains
-  `Type C`, not `Type A`
-- `C2` closes beyond `high(C1)`
+- integrated base `Type B` already holds on `C2`
+- `C2` closes beyond `body_top(C1)`
 - `EQ(C2) = 4937.70`
 - `low(C3) = 4952.30 > EQ(C2)`
 - `C3` closes strongly over `body_top(C2)`
 
 Interpretation:
 
-- this single reviewed region supports three simultaneous readings:
-  - integrated base `Type C`
-  - integrated rare `Type C` subtype
+- this single reviewed region supports:
   - integrated `Type B`
-- the overlap is not a bug:
-  - base `Type C` holds because `C2` does not close inside the full range of
-    `C1`
-  - rare subtype holds because `C2` closes beyond `high(C1)` and `C3` holds
-    above `EQ(C2)`
-  - integrated `Type B` also holds because `C2` itself is a valid
-    reversal-to-expansion candle
+  - integrated `Type B additive extension`
+- historical `rare Type C` wording for this case is now provenance only
+- strict `Type C` should not own this `C3`-tradable branch
 
-## Confirmed Full 500-Bar Integrated Rare Type C C3 Quality Review
+## Confirmed Full 500-Bar Integrated Type B Additive Extension C3 Quality Review
 
 ### Review Boundary
 
@@ -2136,13 +2134,13 @@ Interpretation:
   - preserved MT5 raw snapshot
   - `xauusd_4h_mt5_raw_2026_03_19.csv`
 - review scope:
-  - integrated rare `Type C` `C3` expansion-quality subtype only
+  - integrated `Type B additive extension C3 quality` only
   - full `500`-bar same-source extraction
 - required boundary:
-  - must first satisfy integrated base `Type C`
-  - must then satisfy integrated rare `Type C` subtype
-  - must then satisfy rare `Type C` `C3` expansion-quality
-  - same timing matrix as integrated base and integrated rare `Type C`:
+  - must first satisfy integrated base `Type B`
+  - must then satisfy integrated `Type B additive extension`
+  - must then satisfy additive-extension `C3` quality
+  - same timing matrix as integrated base and integrated additive `Type B`:
     - preexisting resting `IRL` before `C1`
     - fresh `IRL` confirmed on `C1` close
     - fresh `IRL` confirmed on `C2` close rejected
@@ -2151,30 +2149,29 @@ Interpretation:
 
 ### Confirmed Full-Sample Counts
 
-- total integrated rare `Type C` `C3` expansion-quality matches:
+- total integrated `Type B additive extension C3 quality` matches:
   - `1`
-- bullish integrated rare `Type C` `C3` expansion-quality matches:
+- bullish integrated `Type B additive extension C3 quality` matches:
   - `1`
-- bearish integrated rare `Type C` `C3` expansion-quality matches:
+- bearish integrated `Type B additive extension C3 quality` matches:
   - `0`
 - current canonical `100`-bar verifier window:
-  - bullish integrated rare `Type C` `C3` expansion-quality matches: `0`
-  - bearish integrated rare `Type C` `C3` expansion-quality matches: `0`
+  - bullish integrated `Type B additive extension C3 quality` matches: `0`
+  - bearish integrated `Type B additive extension C3 quality` matches: `0`
 
 Interpretation:
 
-- integrated rare `Type C` `C3` expansion-quality is real on the broader
+- integrated `Type B additive extension C3 quality` is real on the broader
   preserved same-source sample
 - it remains extremely sparse
 - the only reviewed region also overlaps:
-  - integrated base `Type C`
-  - integrated rare `Type C`
   - integrated `Type B`
+  - integrated `Type B additive extension`
 
-### Integrated Rare Type C C3 Quality 500-Bar Match 1
+### Integrated Type B Additive Extension C3 Quality 500-Bar Match 1
 
 - classification:
-  - bullish integrated rare `IRL -> Type C -> C3` expansion-quality subtype
+  - bullish integrated `IRL -> Type B additive extension C3 quality`
 - active `IRL`:
   - bullish `FVG`
   - zone:
@@ -2193,10 +2190,8 @@ Interpretation:
 Why it matches:
 
 - the bullish `IRL` is created on `C1` close
-- `C2` is first eligible and sweeps below `low(C1)`
-- `C2` does not close back inside the full range of `C1`, so this remains
-  `Type C`, not `Type A`
-- `C2` closes beyond `high(C1)`, so the rare subtype condition holds
+- integrated base `Type B` already holds on `C2`
+- `C2` closes beyond `body_top(C1)`, so the additive-extension condition holds
 - `EQ(C2) = 4937.70`
 - `low(C3) = 4952.30 > EQ(C2)`
 - `C3` same-side wick fraction `= 0.037415`
@@ -2204,13 +2199,11 @@ Why it matches:
 
 Interpretation:
 
-- this single reviewed region supports four simultaneous readings:
-  - integrated base `Type C`
-  - integrated rare `Type C` subtype
-  - integrated rare `Type C` `C3` expansion-quality subtype
+- this single reviewed region supports:
   - integrated `Type B`
-- the overlap is expected because the predicates are layered, not mutually
-  exclusive
+  - integrated `Type B additive extension`
+  - integrated `Type B additive extension C3 quality`
+- historical rare-Type-C wording for this region is now provenance only
 
 ## Confirmed Integrated External-to-Internal Type A Review
 

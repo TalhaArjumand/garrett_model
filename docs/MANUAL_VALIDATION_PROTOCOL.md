@@ -78,8 +78,8 @@ Manual validation should currently cover two layers:
 - `IRL -> Type A`
 - `IRL -> Type B`
 - `IRL -> base Type C`
-- `IRL -> rare Type C`
-- `IRL -> rare Type C C3 quality`
+- `IRL -> Type B additive extension`
+- `IRL -> Type B additive extension C3 quality`
 - `ERL -> Type A`
 - `ERL -> Type B`
 
@@ -95,6 +95,11 @@ Manual validation should currently cover two layers:
 - `Type C`
   - domain confirmed on `C3` close
   - first tradable candle = `C4`
+
+Strict `Type C` excludes:
+
+- `type_b_additive`
+- `type_b_additive_c3_quality`
 
 ## Source Files
 
@@ -375,8 +380,8 @@ If the same region supports multiple predicates, record it.
 Examples:
 
 - `Type B` plus `Type A pending after C2`
-- base `Type C` plus rare subtype
-- rare `Type C` plus `Type B`
+- base `Type B` plus `Type B additive extension`
+- `Type B additive extension` plus `Type B additive extension C3 quality`
 
 Do not force a winner.
 

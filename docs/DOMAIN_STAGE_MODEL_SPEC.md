@@ -39,6 +39,18 @@ It does **not** yet attach:
 
 Those belong in later key-level-context and execution-model layers.
 
+Historical references to:
+
+- `rare Type C`
+- `rare Type C C3 quality`
+
+are now provenance notes only.
+Active taxonomy keeps only:
+
+- `type_a`
+- `type_b`
+- `type_c`
+
 ## Hard Distinction
 
 Structural integration match is **not** the same object as a tradable-stage
@@ -67,6 +79,10 @@ The family-general contract should carry explicit fields for:
 - `stage_status`
 
 These fields should not be left implicit.
+
+The next taxonomy layer should also add:
+
+- `extension_kind`
 
 ## Field Definitions
 
@@ -134,6 +150,19 @@ Recommended controlled enum:
 This field is a normalized stage summary, not a replacement for the structural
 fields above.
 
+### `extension_kind`
+
+This is not yet implemented in the current code contract, but it is now the
+locked next taxonomy layer.
+
+Recommended controlled enum:
+
+- `none`
+- `type_b_additive`
+- `type_b_additive_c3_quality`
+
+This keeps active taxonomy clean without inventing a fourth family.
+
 ## Family Mapping
 
 ### Type A
@@ -173,6 +202,8 @@ Stage mapping:
 Operational meaning:
 
 - the first trade domain and the family domain collapse into `C2`
+- a later `C3` trade can exist only as a separate extension layer, not as a
+  new family
 
 ### Type C
 
@@ -194,6 +225,9 @@ Operational meaning:
 - `C3` is the closure / formation candle
 - `C4` is the first tradable candle
 - `Type C` should not be flattened into “trade `C3`”
+- strict `Type C` excludes:
+  - `type_b_additive`
+  - `type_b_additive_c3_quality`
 
 ## Stage Progression
 
@@ -254,5 +288,6 @@ The next architecture layer should attach:
 - key-level context
 - timing eligibility
 - overlap state
+- extension taxonomy
 
 on top of this family-general contract.
