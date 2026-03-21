@@ -2399,9 +2399,19 @@ Interpretation:
 
 - the ERL `Type A` bridge is chart-validated on the reviewed canonical and raw
   MT5 samples
+- all reviewed `ERL -> Type A` examples passed manual chart review
 - the timing boundary is now explicit and confirmed:
   - preexisting `ERL` before `C1`
   - fresh `ERL` on `C1` close
+- reviewed touch variants also passed:
+  - `c1`
+  - `c2`
+  - `both`
+- reviewed bullish and bearish examples both passed
+- manual stage validation also passed on the reviewed `ERL -> Type A` set:
+  - `Type A` domain becomes valid on `C2` close
+  - the first tradable candle is `C3`
+  - `C4` is continuation-only after full `C3` confirmation
 - no reviewed match required target-side logic
 - no reviewed match required fresh-on-`C2` `ERL` eligibility
 
@@ -2570,8 +2580,16 @@ Why the overlap question is resolved:
 
 - the ERL `Type B` bridge is chart-validated on the reviewed canonical and raw
   MT5 samples
+- all reviewed `ERL -> Type B` examples passed manual chart review
 - the timing boundary is now explicit and confirmed:
   - preexisting `ERL` before `C1`
   - fresh `ERL` on `C1` close
+- reviewed touch variants also passed:
+  - `c2`
+  - `both`
+- reviewed bullish and bearish examples both passed
+- manual stage validation also passed on the reviewed `ERL -> Type B` set:
+  - `Type B` domain becomes valid on `C2`
+  - the first tradable candle is `C2`
 - no reviewed match required target-side logic
 - no reviewed match required fresh-on-`C2` `ERL` eligibility
