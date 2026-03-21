@@ -1,4 +1,13 @@
 from .candles import Candle, require_closed, utc_datetime
+from .domain_stage import (
+    ContinuationFrom,
+    DomainConfirmedAt,
+    DomainStageModel,
+    Family,
+    SequenceCandle,
+    StageStatus,
+    build_domain_stage_model,
+)
 from .erl_proxy import (
     ERLCandidate,
     ERLProxy,
@@ -130,6 +139,13 @@ __all__ = [
     "Candle",
     "require_closed",
     "utc_datetime",
+    "Family",
+    "SequenceCandle",
+    "DomainConfirmedAt",
+    "ContinuationFrom",
+    "StageStatus",
+    "DomainStageModel",
+    "build_domain_stage_model",
     "LocalSwingPoint",
     "validate_local_swing_inputs",
     "is_local_swing_high",

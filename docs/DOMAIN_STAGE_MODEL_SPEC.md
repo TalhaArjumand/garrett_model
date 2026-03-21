@@ -94,6 +94,7 @@ next stage.
 
 Current reviewed values:
 
+- `c2`
 - `c2_close`
 - `c3_close`
 
