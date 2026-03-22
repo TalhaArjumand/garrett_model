@@ -2715,3 +2715,170 @@ Interpretation:
   - `first_tradable_candle = C4`
 - no reviewed match required target-side logic
 - no reviewed match required fresh-on-`C2` `ERL` eligibility
+
+## Confirmed External-to-Internal Type B Additive Extension Review
+
+### Review Boundary
+
+- scope:
+  - integrated `ERL -> Type B additive extension`
+- family boundary:
+  - base integrated `ERL -> Type B` must already be true
+  - this remains inside `Type B`
+  - this does not create a new family
+- additive extension trigger:
+  - bullish:
+    - `close(C2) > body_top(C1)`
+  - bearish:
+    - `close(C2) < body_bottom(C1)`
+  - then `C3` must respect `EQ(C2)`
+- stage boundary:
+  - base `Type B` trade candle remains `C2`
+  - additive extension makes `C3` tradable
+- explicit exclusion:
+  - `Type B additive extension C3 quality` is not implied by the base extension
+- target-side logic:
+  - excluded
+
+### Current Real-Data Counts
+
+- canonical `100`-bar window:
+  - bullish integrated `ERL -> Type B additive extension`:
+    - `0`
+  - bearish integrated `ERL -> Type B additive extension`:
+    - `0`
+- preserved MT5 raw `500`-bar snapshot:
+  - total pairings:
+    - `2`
+  - total unique sequences:
+    - `1`
+  - bullish integrated `ERL -> Type B additive extension`:
+    - `1`
+  - bearish integrated `ERL -> Type B additive extension`:
+    - `0`
+  - timing split:
+    - preexisting before `C1`: `2`
+    - fresh on `C1` close: `0`
+    - fresh on `C2` close: `0`
+  - touch split:
+    - `c2`: `2`
+
+Interpretation:
+
+- the base integrated `ERL -> Type B additive extension` branch is real on the
+  preserved MT5 raw window
+- there is no canonical anchor in the current `100`-bar verifier window
+- the preserved raw window gives one clean bullish unique sequence paired to
+  two preexisting same-bias `old_low` ERLs
+
+### Integrated External-to-Internal Type B Additive Extension Raw Match 1
+
+- classification:
+  - bullish integrated `ERL -> Type B additive extension`
+- active `ERLs`:
+  - `old_low`
+  - levels:
+    - `4175.07`
+    - `4176.64`
+  - confirmed at:
+    - `2025-12-04 08:00 +05:00`
+    - `2025-12-08 20:00 +05:00`
+  - timing class:
+    - preexisting before `C1`
+- sequence:
+  - `C1 = 2025-12-09 04:00 +05:00`
+    - `4196.09 / 4198.77 / 4178.18 / 4179.75`
+  - `C2 = 2025-12-09 08:00 +05:00`
+    - `4179.85 / 4213.24 / 4170.27 / 4202.97`
+  - `C3 = 2025-12-09 12:00 +05:00`
+    - `4203.29 / 4208.36 / 4195.91 / 4201.21`
+  - touch:
+    - `c2`
+- result:
+  - `match`
+
+Checks:
+
+- base bullish integrated `ERL -> Type B` is already valid
+- `body_top(C1) = 4196.09`
+- `close(C2) = 4202.97 > 4196.09`
+- `EQ(C2) = 4191.755`
+- `low(C3) = 4195.91 > 4191.755`
+
+Interpretation:
+
+- this is a clean base-only integrated `ERL -> Type B additive extension`
+  example
+- the stronger `C2` close-through-body regime is true
+- `C3` respects `EQ(C2)`, so `C3` becomes tradable as the additive extension
+- the family identity remains `Type B`
+
+### External-to-Internal Type B Additive Extension Raw Match 1 Quality Exclusion
+
+- stricter subtype tested:
+  - integrated `ERL -> Type B additive extension C3 quality`
+- `C3` same-side wick fraction:
+  - `0.4072289156626332`
+- current threshold:
+  - `0.25`
+- result:
+  - `excluded`
+
+Interpretation:
+
+- this reviewed anchor validates the base additive extension only
+- it does not qualify for the stricter `C3` quality subtype
+- that makes it a useful calibration example because it cleanly separates:
+  - base extension truth
+  - stricter `C3` quality truth
+
+### External-to-Internal Type B Additive Extension Conclusion
+
+- the first manually reviewed integrated `ERL -> Type B additive extension`
+  anchor passed chart review
+- reviewed timing class so far:
+  - preexisting `ERL` before `C1`
+- reviewed touch variants so far:
+  - `c2`
+- reviewed direction so far:
+  - bullish
+- reviewed stage mapping held:
+  - base `Type B` trade candle = `C2`
+  - additive extension makes `C3` tradable
+- the reviewed anchor is intentionally not a `C3` quality pass
+
+## External-to-Internal Type B Additive Extension C3 Quality Status
+
+### Current Real-Data Counts
+
+- canonical `100`-bar window:
+  - bullish integrated `ERL -> Type B additive extension C3 quality`:
+    - `0`
+  - bearish integrated `ERL -> Type B additive extension C3 quality`:
+    - `0`
+- preserved MT5 raw `500`-bar snapshot:
+  - bullish integrated `ERL -> Type B additive extension C3 quality`:
+    - `0`
+  - bearish integrated `ERL -> Type B additive extension C3 quality`:
+    - `0`
+
+Interpretation:
+
+- integrated `ERL -> Type B additive extension C3 quality` is implemented and
+  test-verified
+- the current reviewed canonical and preserved raw windows contain zero
+  real-data matches
+- therefore this branch is:
+  - implementation-verified
+  - not yet chart-anchored
+
+### Evidence Boundary
+
+- implementation status:
+  - complete
+- test status:
+  - green
+- manual status:
+  - pending future real-data anchor
+- evidence status:
+  - zero-match in the current reviewed windows

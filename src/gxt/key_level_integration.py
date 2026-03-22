@@ -160,6 +160,44 @@ class ExternalToInternalTypeBCandidate:
 
 
 @dataclass(frozen=True)
+class ExternalToInternalTypeBAdditiveExtensionCandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    erl_kind: str
+    erl_side: str
+    erl_lower_bound: float
+    erl_upper_bound: float
+    erl_anchor_timestamps: tuple[datetime, ...]
+    erl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
+    sequence_c3_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate:
+    symbol: str
+    timeframe: str
+    direction: Direction
+    erl_kind: str
+    erl_side: str
+    erl_lower_bound: float
+    erl_upper_bound: float
+    erl_anchor_timestamps: tuple[datetime, ...]
+    erl_confirmed_at: datetime
+    sequence_c1_timestamp: datetime
+    sequence_c2_timestamp: datetime
+    sequence_c3_timestamp: datetime
+    key_level_touch: KeyLevelTouch
+    decision_time_safe: bool
+    reason: str
+
+
+@dataclass(frozen=True)
 class ExternalToInternalTypeCCandidate:
     symbol: str
     timeframe: str
@@ -1808,6 +1846,87 @@ def _build_external_type_b_candidate(
     )
 
 
+def _build_external_type_b_additive_extension_candidate(
+    *,
+    erl: ERLCandidate,
+    c1: Candle,
+    c2: Candle,
+    c3: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+    fresh_on_c1_close: bool,
+) -> ExternalToInternalTypeBAdditiveExtensionCandidate:
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
+    return ExternalToInternalTypeBAdditiveExtensionCandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        erl_kind=erl.kind,
+        erl_side=erl.side,
+        erl_lower_bound=erl.lower_bound,
+        erl_upper_bound=erl.upper_bound,
+        erl_anchor_timestamps=erl.anchor_timestamps,
+        erl_confirmed_at=erl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        sequence_c3_timestamp=c3.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} external-to-internal Type B additive extension "
+            f"formed after a same-bias ERL that {timing_phrase}. Base integrated "
+            "Type B held, the stronger C2 body-close regime also passed, and C3 "
+            "respected EQ(C2) while target-side logic remains intentionally "
+            "excluded from this bridge."
+        ),
+    )
+
+
+def _build_external_type_b_additive_extension_c3_quality_candidate(
+    *,
+    erl: ERLCandidate,
+    c1: Candle,
+    c2: Candle,
+    c3: Candle,
+    direction: Direction,
+    touch: KeyLevelTouch,
+    fresh_on_c1_close: bool,
+) -> ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate:
+    timing_phrase = (
+        "was confirmed on C1 close and became eligible from C2 onward"
+        if fresh_on_c1_close
+        else "was confirmed and still resting before sequence C1"
+    )
+    return ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate(
+        symbol=c1.symbol,
+        timeframe=c1.timeframe,
+        direction=direction,
+        erl_kind=erl.kind,
+        erl_side=erl.side,
+        erl_lower_bound=erl.lower_bound,
+        erl_upper_bound=erl.upper_bound,
+        erl_anchor_timestamps=erl.anchor_timestamps,
+        erl_confirmed_at=erl.confirmed_at,
+        sequence_c1_timestamp=c1.timestamp,
+        sequence_c2_timestamp=c2.timestamp,
+        sequence_c3_timestamp=c3.timestamp,
+        key_level_touch=touch,
+        decision_time_safe=True,
+        reason=(
+            f"Valid {direction} external-to-internal Type B additive extension "
+            f"C3-quality subtype formed after a same-bias ERL that "
+            f"{timing_phrase}. Base integrated Type B held, integrated Type B "
+            "additive extension held, and the stricter C3 quality upgrade also "
+            "passed while target-side logic remains intentionally excluded from "
+            "this bridge."
+        ),
+    )
+
+
 def _build_external_type_c_candidate(
     *,
     erl: ERLCandidate,
@@ -1980,6 +2099,283 @@ def count_external_to_internal_type_b_sequences(
         (
             candidate.sequence_c1_timestamp,
             candidate.sequence_c2_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def detect_external_to_internal_type_b_additive_extension_candidates(
+    candles: Iterable[Any],
+) -> list[ExternalToInternalTypeBAdditiveExtensionCandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[ExternalToInternalTypeBAdditiveExtensionCandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = is_bullish_type_b_additive_extension(c1, c2, c3)
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = is_bearish_type_b_additive_extension(c1, c2, c3)
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.erl_confirmed_at,
+            candidate.erl_lower_bound,
+            candidate.erl_upper_bound,
+        ),
+    )
+
+
+def count_external_to_internal_type_b_additive_extension_sequences(
+    candles: Iterable[Any],
+) -> tuple[int, int]:
+    candidates = detect_external_to_internal_type_b_additive_extension_candidates(candles)
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bearish"
+    }
+    return len(bullish), len(bearish)
+
+
+def detect_external_to_internal_type_b_additive_extension_c3_quality_candidates(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> list[ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate]:
+    validated = _validate_series(candles)
+    if len(validated) < 3:
+        return []
+
+    candidates: list[ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate] = []
+    for idx in range(len(validated) - 2):
+        c1, c2, c3 = validated[idx], validated[idx + 1], validated[idx + 2]
+
+        try:
+            bullish_sequence = has_bullish_type_b_additive_extension_c3_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_lower_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bullish_sequence = False
+        if bullish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bullish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_c3_quality_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bullish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_c3_quality_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bullish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+        try:
+            bearish_sequence = has_bearish_type_b_additive_extension_c3_quality_candidate(
+                c1,
+                c2,
+                c3,
+                max_upper_wick_fraction=max_wick_fraction,
+            )
+        except ValueError:
+            bearish_sequence = False
+        if bearish_sequence:
+            for erl, touch in _collect_touching_active_directional_erls(
+                validated,
+                before_index=idx,
+                direction="bearish",
+                c1=c1,
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_c3_quality_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=False,
+                    )
+                )
+            for erl, touch in _collect_fresh_directional_erls_confirmed_on_c1(
+                validated,
+                c1_index=idx,
+                direction="bearish",
+                c2=c2,
+            ):
+                candidates.append(
+                    _build_external_type_b_additive_extension_c3_quality_candidate(
+                        erl=erl,
+                        c1=c1,
+                        c2=c2,
+                        c3=c3,
+                        direction="bearish",
+                        touch=touch,
+                        fresh_on_c1_close=True,
+                    )
+                )
+
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            candidate.sequence_c1_timestamp,
+            candidate.direction,
+            candidate.erl_confirmed_at,
+            candidate.erl_lower_bound,
+            candidate.erl_upper_bound,
+        ),
+    )
+
+
+def count_external_to_internal_type_b_additive_extension_c3_quality_sequences(
+    candles: Iterable[Any],
+    *,
+    max_wick_fraction: float = 0.25,
+) -> tuple[int, int]:
+    candidates = detect_external_to_internal_type_b_additive_extension_c3_quality_candidates(
+        candles,
+        max_wick_fraction=max_wick_fraction,
+    )
+    bullish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
+        )
+        for candidate in candidates
+        if candidate.direction == "bullish"
+    }
+    bearish = {
+        (
+            candidate.sequence_c1_timestamp,
+            candidate.sequence_c2_timestamp,
+            candidate.sequence_c3_timestamp,
         )
         for candidate in candidates
         if candidate.direction == "bearish"
