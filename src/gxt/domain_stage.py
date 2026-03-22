@@ -8,6 +8,7 @@ class Family(str, Enum):
     TYPE_A = "type_a"
     TYPE_B = "type_b"
     TYPE_C = "type_c"
+    TYPE_D = "type_d"
 
 
 class SequenceCandle(str, Enum):
@@ -111,6 +112,15 @@ _DOMAIN_STAGE_BLUEPRINTS: dict[Family, DomainStageModel] = {
     ),
     Family.TYPE_C: DomainStageModel(
         family=Family.TYPE_C,
+        domain_candle=SequenceCandle.C3,
+        domain_confirmed_at=DomainConfirmedAt.C3_CLOSE,
+        first_tradable_candle=SequenceCandle.C4,
+        continuation_from=ContinuationFrom.NONE_LOCKED_YET,
+        stage_status=StageStatus.STRUCTURAL_ONLY,
+        extension_kind=ExtensionKind.NONE,
+    ),
+    Family.TYPE_D: DomainStageModel(
+        family=Family.TYPE_D,
         domain_candle=SequenceCandle.C3,
         domain_confirmed_at=DomainConfirmedAt.C3_CLOSE,
         first_tradable_candle=SequenceCandle.C4,

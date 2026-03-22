@@ -47,6 +47,17 @@ class DomainStageTests(unittest.TestCase):
         self.assertEqual(model.stage_status, StageStatus.STRUCTURAL_ONLY)
         self.assertEqual(model.extension_kind, ExtensionKind.NONE)
 
+    def test_type_d_stage_blueprint_matches_locked_contract(self) -> None:
+        model = build_domain_stage_model(Family.TYPE_D)
+
+        self.assertEqual(model.family, Family.TYPE_D)
+        self.assertEqual(model.domain_candle, SequenceCandle.C3)
+        self.assertEqual(model.domain_confirmed_at, DomainConfirmedAt.C3_CLOSE)
+        self.assertEqual(model.first_tradable_candle, SequenceCandle.C4)
+        self.assertEqual(model.continuation_from, ContinuationFrom.NONE_LOCKED_YET)
+        self.assertEqual(model.stage_status, StageStatus.STRUCTURAL_ONLY)
+        self.assertEqual(model.extension_kind, ExtensionKind.NONE)
+
     def test_with_stage_status_preserves_structure(self) -> None:
         model = build_domain_stage_model(Family.TYPE_A)
         updated = model.with_stage_status(StageStatus.FIRST_TRADABLE)
@@ -70,7 +81,7 @@ class DomainStageTests(unittest.TestCase):
 
     def test_build_domain_stage_model_rejects_unknown_family(self) -> None:
         with self.assertRaisesRegex(ValueError, "unsupported family"):
-            build_domain_stage_model("type_d")
+            build_domain_stage_model("type_z")
 
     def test_with_stage_status_rejects_unknown_stage_status(self) -> None:
         model = build_domain_stage_model(Family.TYPE_B)

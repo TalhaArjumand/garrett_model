@@ -50,6 +50,7 @@ Active taxonomy keeps only:
 - `type_a`
 - `type_b`
 - `type_c`
+- `type_d`
 
 ## Hard Distinction
 
@@ -93,6 +94,7 @@ Allowed values:
 - `type_a`
 - `type_b`
 - `type_c`
+- `type_d`
 
 ### `domain_candle`
 
@@ -229,6 +231,33 @@ Operational meaning:
   - `type_b_additive`
   - `type_b_additive_c3_quality`
 
+### Type D
+
+Structural reading:
+
+- `C2` creates the swing-relevant disturbance
+- `C3` is a strict inside/setup candle within `C2`
+- `Type D` is excluded from:
+  - `Type A`
+  - `Type B`
+  - `Type B additive extension`
+  - strict `Type C`
+
+Stage mapping:
+
+- `family = type_d`
+- `domain_candle = c3`
+- `domain_confirmed_at = c3_close`
+- `first_tradable_candle = c4`
+- `continuation_from = none_locked_yet`
+
+Operational meaning:
+
+- `C3` is not the confirming closure candle of strict `Type C`
+- `C3` is the contained setup candle
+- `C4` is the first tradable candle
+- current implementation scope is family-only, not `IRL/ERL` integration
+
 ## Stage Progression
 
 Current reviewed stage progression by family:
@@ -238,6 +267,8 @@ Current reviewed stage progression by family:
 - `Type B`
   - `structural_only -> domain_confirmed -> first_tradable`
 - `Type C`
+  - `structural_only -> domain_confirmed -> first_tradable`
+- `Type D`
   - `structural_only -> domain_confirmed -> first_tradable`
 
 This is a family-general state model, not a full execution engine.

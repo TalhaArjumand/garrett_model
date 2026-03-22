@@ -347,6 +347,19 @@ Before commit/push, confirm:
 - docs and code match
 - tests cover the new boundary
 
+### Protocol 8: New Families Are Family-First
+
+When a genuinely new family candidate appears:
+
+1. freeze the structure
+2. implement the family primitive
+3. lock the family-general stage contract
+4. test exclusions from existing families
+5. only then consider `IRL` / `ERL` integration
+
+Do not start by integrating a new family into key-level context before the
+family itself is stable.
+
 ## Short Operating Rule
 
 For every new unit:
@@ -364,6 +377,7 @@ Family:
 - `type_a`
 - `type_b`
 - `type_c`
+- `type_d`
 
 Extension kind:
 
