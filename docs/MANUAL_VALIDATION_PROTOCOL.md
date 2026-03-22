@@ -49,6 +49,51 @@ Begin with:
 - the already extracted structural matches
 - the locked family/stage contract
 
+## Live Review Order
+
+Use this exact left-to-right review order:
+
+1. Key level first
+
+- scan left to right
+- extract `IRL` / `ERL` only from prior candles
+- record:
+  - level / zone
+  - `confirmed_at`
+  - state
+
+2. Touch second
+
+- do not ask family before a live key level is touched
+- once touched, open the candidate sequence windows
+
+3. Family third
+
+- test only around that live touch:
+  - `Type A`
+  - `Type B`
+  - `Type B additive extension`
+  - strict `Type C`
+
+4. Stage fourth
+
+- after family is known, assign:
+  - `domain_confirmed_at`
+  - `first_tradable_candle`
+  - continuation stage
+
+## Refresh Boundary Warning
+
+A refresh-delta scan must never be used as a full-day left-to-right
+conclusion.
+
+Keep these separate:
+
+- refresh-delta scan:
+  - what changed because of the newly added candles
+- full-day audit:
+  - what liquidity and family structure exists across the whole reviewed day
+
 ## First Manual Test
 
 The first manual test is:
