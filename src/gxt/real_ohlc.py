@@ -21,6 +21,7 @@ from .key_level_integration import (
     count_internal_to_external_type_b_additive_extension_sequences,
     count_internal_to_external_type_b_sequences,
     count_internal_to_external_type_c_sequences,
+    count_internal_to_external_type_d_sequences,
 )
 from .sequence_primitives import (
     has_bearish_c4_after_c3_closure_candidate,
@@ -84,6 +85,8 @@ class RealSampleReport:
     bearish_internal_to_external_type_b_additive_extension_c3_quality_count: int
     bullish_internal_to_external_type_c_count: int
     bearish_internal_to_external_type_c_count: int
+    bullish_internal_to_external_type_d_count: int
+    bearish_internal_to_external_type_d_count: int
     bullish_c4_candidate_count: int
     bearish_c4_candidate_count: int
     bullish_case_b_candidate_count: int
@@ -606,6 +609,10 @@ def build_real_sample_report(
         bullish_internal_to_external_type_c,
         bearish_internal_to_external_type_c,
     ) = count_internal_to_external_type_c_sequences(candles)
+    (
+        bullish_internal_to_external_type_d,
+        bearish_internal_to_external_type_d,
+    ) = count_internal_to_external_type_d_sequences(candles)
     bullish_c4, bearish_c4 = count_c4_candidates(candles)
     bullish_case_b, bearish_case_b = count_case_b_candidates(
         candles,
@@ -703,6 +710,8 @@ def build_real_sample_report(
         ),
         bullish_internal_to_external_type_c_count=bullish_internal_to_external_type_c,
         bearish_internal_to_external_type_c_count=bearish_internal_to_external_type_c,
+        bullish_internal_to_external_type_d_count=bullish_internal_to_external_type_d,
+        bearish_internal_to_external_type_d_count=bearish_internal_to_external_type_d,
         bullish_c4_candidate_count=bullish_c4,
         bearish_c4_candidate_count=bearish_c4,
         bullish_case_b_candidate_count=bullish_case_b,

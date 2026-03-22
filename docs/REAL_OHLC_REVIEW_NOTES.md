@@ -942,6 +942,50 @@ Interpretation:
 - bearish `Type D`: `match`
 - bearish `C4` after `Type D`: `match`
 
+## IRL -> Type D Integrated Manual Anchor
+
+Current reviewed status on preserved raw `MT5 XAUUSD 4H` data:
+
+- first integrated `IRL -> Type D` anchor: `passed`
+
+Important boundary:
+
+- this is an integrated `IRL -> Type D` anchor
+- target is still excluded
+- selector is still excluded
+- stage mapping remains:
+  - `domain_confirmed_at = C3_close`
+  - `first_tradable_candle = C4`
+
+### Bullish IRL -> Type D Anchor 1
+
+- `IRL = 4100.39 -> 4122.46`
+- `confirmed_at = 2025-11-25 00:00 +05:00`
+- `key_level_touch = c2`
+- `C1 = 2025-11-25 04:00 +05:00`
+  - `4134.59 / 4155.61 / 4132.89 / 4150.95`
+- `C2 = 2025-11-25 08:00 +05:00`
+  - `4150.93 / 4151.96 / 4109.01 / 4128.46`
+- `C3 = 2025-11-25 12:00 +05:00`
+  - `4128.41 / 4150.88 / 4115.99 / 4147.87`
+
+Why it matches:
+
+- the bullish `IRL` already exists before `C1`
+- first eligible touch occurs on `C2`
+- the active `IRL` remains preserved through `C3` close
+- the sequence is valid bullish `Type D`
+- it is not:
+  - `Type A`
+  - `Type B`
+  - `Type B additive extension`
+  - strict `Type C`
+
+Interpretation:
+
+- bullish `IRL -> Type D`: `match`
+- first integrated raw-sample anchor for this branch: `confirmed`
+
 ## Confirmed 2026-03-19 Window Refresh Matches
 
 ### Bearish Type A Strict C3 Match 3

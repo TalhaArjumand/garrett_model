@@ -58,6 +58,7 @@ from .key_level_integration import (
     detect_external_to_internal_type_c_candidates,
     InternalToExternalTypeACandidate,
     InternalToExternalTypeBCandidate,
+    InternalToExternalTypeDCandidate,
     InternalToExternalTypeCCandidate,
     InternalToExternalTypeBAdditiveExtensionCandidate,
     InternalToExternalTypeBAdditiveExtensionC3QualityCandidate,
@@ -67,12 +68,14 @@ from .key_level_integration import (
     count_internal_to_external_type_b_additive_extension_sequences,
     count_internal_to_external_type_b_sequences,
     count_internal_to_external_type_c_sequences,
+    count_internal_to_external_type_d_sequences,
     detect_internal_to_external_type_a_candidates,
     detect_internal_to_external_type_a_expansion_quality_candidates,
     detect_internal_to_external_type_b_additive_extension_c3_quality_candidates,
     detect_internal_to_external_type_b_additive_extension_candidates,
     detect_internal_to_external_type_b_candidates,
     detect_internal_to_external_type_c_candidates,
+    detect_internal_to_external_type_d_candidates,
 )
 from .local_swing import (
     LocalSwingPoint,
@@ -261,6 +264,7 @@ __all__ = [
     "ExternalToInternalTypeBAdditiveExtensionC3QualityCandidate",
     "ExternalToInternalTypeCCandidate",
     "InternalToExternalTypeBCandidate",
+    "InternalToExternalTypeDCandidate",
     "InternalToExternalTypeCCandidate",
     "InternalToExternalTypeBAdditiveExtensionCandidate",
     "InternalToExternalTypeBAdditiveExtensionC3QualityCandidate",
@@ -288,4 +292,6 @@ __all__ = [
     "count_internal_to_external_type_b_additive_extension_c3_quality_sequences",
     "detect_internal_to_external_type_c_candidates",
     "count_internal_to_external_type_c_sequences",
+    "detect_internal_to_external_type_d_candidates",
+    "count_internal_to_external_type_d_sequences",
 ]

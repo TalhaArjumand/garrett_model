@@ -346,37 +346,38 @@ Interpretation:
 
 - one `6H` source-tethered research anchor
 - three manually confirmed `4H` family-only anchors
+- live `IRL -> Type D` integration code
+- active `IRL -> Type D` report counting
 
 The boundary is still:
 
 - family primitive implemented
 - stage mapping implemented
-- no live `IRL` / `ERL` integration yet
-- no active report counting yet
+- `IRL -> Type D` implemented
+- `ERL -> Type D` not implemented
+- one manual integrated `IRL -> Type D` chart anchor recorded
 
 ## Promotion Conditions
 
-Do not promote this candidate into live integrated taxonomy until all of the
-following are done:
+The remaining promotion boundary is now:
 
-1. capture the actual source example on `6H`
-2. verify the exact candle structure on exported data
-3. confirm the bullish and bearish rules are exact
-4. confirm separation from:
+1. confirm the integrated branch on preserved real exports
+2. extend the manual anchor set beyond the first preserved raw reference
+3. decide separately whether `ERL -> Type D` deserves implementation
+4. keep separation from:
    - `Type A`
    - `Type B`
    - `Type B additive extension`
    - strict `Type C`
-5. test it on preserved real exports
-6. confirm that the candidate is stable enough to deserve live taxonomy
 
 ## Safe Current Statement
 
 The safe current statement is:
 
-- `Type D` is a plausible fourth swing-family candidate in the framework
+- `Type D` is implemented as a family primitive with live `IRL` integration
+- `ERL -> Type D` remains unimplemented
 
 Do not currently state:
 
-- that it is already integrated under `IRL` / `ERL`
+- that it is already integrated under both `IRL` and `ERL`
 - that it is proven exhaustive with `A / B / C`
