@@ -11,12 +11,14 @@ from gxt.key_level_integration import (
     count_external_to_internal_type_b_additive_extension_sequences,
     count_external_to_internal_type_b_sequences,
     count_external_to_internal_type_c_sequences,
+    count_external_to_internal_type_d_sequences,
     detect_external_to_internal_type_a_candidates,
     detect_external_to_internal_type_a_expansion_quality_candidates,
     detect_external_to_internal_type_b_additive_extension_c3_quality_candidates,
     detect_external_to_internal_type_b_additive_extension_candidates,
     detect_external_to_internal_type_b_candidates,
     detect_external_to_internal_type_c_candidates,
+    detect_external_to_internal_type_d_candidates,
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
     count_internal_to_external_type_b_additive_extension_c3_quality_sequences,
@@ -36,6 +38,7 @@ from gxt.sequence_primitives import is_bullish_c3_closure
 from gxt.swing_research import (
     has_bullish_type_b_additive_extension_c3_quality_candidate,
     is_bearish_type_b_additive_extension,
+    is_bullish_type_d,
     is_bullish_type_b_additive_extension,
 )
 
@@ -782,6 +785,76 @@ class KeyLevelIntegrationTests(unittest.TestCase):
         self.assertEqual(count_external_to_internal_type_b_sequences(candles), (1, 0))
         self.assertTrue(is_bullish_type_b_additive_extension(candles[3], candles[4], candles[5]))
         self.assertEqual(count_external_to_internal_type_c_sequences(candles), (0, 0))
+
+    def test_detect_external_to_internal_type_d_candidates_returns_bullish_pairings_and_dedupes_counts(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=110, high=112, low=105, close=108),
+            self.make_candle(timestamp_hour=4, open=108, high=109, low=100, close=101),
+            self.make_candle(timestamp_hour=8, open=101, high=115, low=101, close=114),
+            self.make_candle(timestamp_hour=12, open=114, high=118, low=101, close=105),
+            self.make_candle(timestamp_hour=16, open=105, high=110, low=99, close=100.5),
+            self.make_candle(timestamp_hour=20, open=101, high=109, low=100, close=104),
+        ]
+
+        candidates = detect_external_to_internal_type_d_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0].direction, "bullish")
+        self.assertEqual(candidates[0].erl_kind, "old_low")
+        self.assertEqual(candidates[0].key_level_touch, "c2")
+        self.assertEqual(count_external_to_internal_type_d_sequences(candles), (1, 0))
+        self.assertEqual(count_external_to_internal_type_c_sequences(candles), (0, 0))
+
+    def test_detect_external_to_internal_type_d_candidates_allows_erl_confirmed_on_c1_close(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=110, high=112, low=105, close=108),
+            self.make_candle(timestamp_hour=4, open=108, high=109, low=100, close=101),
+            self.make_candle(timestamp_hour=8, open=101, high=115, low=101, close=114),
+            self.make_candle(timestamp_hour=12, open=114, high=118, low=99, close=100.5),
+            self.make_candle(timestamp_hour=16, open=101, high=109, low=100, close=104),
+        ]
+
+        candidates = detect_external_to_internal_type_d_candidates(candles)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0].direction, "bullish")
+        self.assertEqual(candidates[0].key_level_touch, "c2")
+        self.assertEqual(candidates[0].erl_confirmed_at, candles[2].timestamp)
+        self.assertEqual(count_external_to_internal_type_d_sequences(candles), (1, 0))
+
+    def test_detect_external_to_internal_type_d_candidates_ignores_fresh_erl_confirmed_on_c2_close(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=110, high=112, low=105, close=108),
+            self.make_candle(timestamp_hour=4, open=108, high=109, low=101, close=102),
+            self.make_candle(timestamp_hour=8, open=103, high=114, low=100, close=100.5),
+            self.make_candle(timestamp_hour=12, open=101, high=110, low=101, close=102.5),
+        ]
+
+        self.assertTrue(is_bullish_type_d(candles[1], candles[2], candles[3]))
+        self.assertEqual(detect_external_to_internal_type_d_candidates(candles), [])
+        self.assertEqual(count_external_to_internal_type_d_sequences(candles), (0, 0))
+
+    def test_detect_external_to_internal_type_d_candidates_rejects_overlap_with_strict_type_c(
+        self,
+    ) -> None:
+        candles = [
+            self.make_candle(timestamp_hour=0, open=110, high=112, low=105, close=108),
+            self.make_candle(timestamp_hour=4, open=108, high=109, low=100, close=101),
+            self.make_candle(timestamp_hour=8, open=101, high=115, low=101, close=114),
+            self.make_candle(timestamp_hour=12, open=114, high=118, low=101, close=105),
+            self.make_candle(timestamp_hour=16, open=105, high=106, low=99, close=100),
+            self.make_candle(timestamp_hour=20, open=101, high=120, low=100.5, close=119),
+        ]
+
+        self.assertEqual(detect_external_to_internal_type_d_candidates(candles), [])
+        self.assertEqual(count_external_to_internal_type_d_sequences(candles), (0, 0))
+        self.assertEqual(count_external_to_internal_type_c_sequences(candles), (1, 0))
 
     def test_detect_internal_to_external_type_b_candidates_returns_bullish_pairings_and_dedupes_counts(
         self,

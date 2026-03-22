@@ -348,14 +348,17 @@ Interpretation:
 - three manually confirmed `4H` family-only anchors
 - live `IRL -> Type D` integration code
 - active `IRL -> Type D` report counting
+- live `ERL -> Type D` integration code
+- active `ERL -> Type D` report counting
 
 The boundary is still:
 
 - family primitive implemented
 - stage mapping implemented
 - `IRL -> Type D` implemented
-- `ERL -> Type D` not implemented
+- `ERL -> Type D` implemented
 - one manual integrated `IRL -> Type D` chart anchor recorded
+- one manual integrated `ERL -> Type D` chart anchor recorded
 
 ## Promotion Conditions
 
@@ -363,8 +366,7 @@ The remaining promotion boundary is now:
 
 1. confirm the integrated branch on preserved real exports
 2. extend the manual anchor set beyond the first preserved raw reference
-3. decide separately whether `ERL -> Type D` deserves implementation
-4. keep separation from:
+3. keep separation from:
    - `Type A`
    - `Type B`
    - `Type B additive extension`
@@ -374,10 +376,9 @@ The remaining promotion boundary is now:
 
 The safe current statement is:
 
-- `Type D` is implemented as a family primitive with live `IRL` integration
-- `ERL -> Type D` remains unimplemented
+- `Type D` is implemented as a family primitive with live `IRL` and `ERL` integration
+- both integrated branches now have an initial manual chart anchor
 
 Do not currently state:
 
-- that it is already integrated under both `IRL` and `ERL`
 - that it is proven exhaustive with `A / B / C`

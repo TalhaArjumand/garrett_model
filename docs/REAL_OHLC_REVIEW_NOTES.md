@@ -986,6 +986,53 @@ Interpretation:
 - bullish `IRL -> Type D`: `match`
 - first integrated raw-sample anchor for this branch: `confirmed`
 
+## ERL -> Type D Integrated Manual Anchor
+
+Current reviewed status on canonical `MT5 XAUUSD 4H` data:
+
+- first integrated `ERL -> Type D` anchor: `passed`
+
+Important boundary:
+
+- this is an integrated `ERL -> Type D` anchor
+- target is still excluded
+- selector is still excluded
+- stage mapping remains:
+  - `domain_confirmed_at = C3_close`
+  - `first_tradable_candle = C4`
+
+### Bullish ERL -> Type D Anchor 1
+
+- `ERL old_low = 5149.28`
+- `confirmed_at = 2026-03-11 16:00 +05:00`
+- `key_level_touch = c2`
+- `C1 = 2026-03-11 20:00 +05:00`
+  - `5169.86 / 5183.58 / 5169.25 / 5175.35`
+- `C2 = 2026-03-12 00:00 +05:00`
+  - `5178.97 / 5183.57 / 5125.61 / 5168.58`
+- `C3 = 2026-03-12 04:00 +05:00`
+  - `5168.58 / 5175.17 / 5137.19 / 5154.58`
+- `C4 = 2026-03-12 08:00 +05:00`
+  - `5154.57 / 5190.36 / 5147.24 / 5188.23`
+
+Why it matches:
+
+- the bullish `ERL old_low` already exists before `C1`
+- first eligible touch occurs on `C2`
+- the sequence is valid bullish `Type D`
+- it is not:
+  - `Type A`
+  - `Type B`
+  - `Type B additive extension`
+  - strict `Type C`
+- `C3` is strictly inside `C2`
+- `C4.low > EQ(C3)`
+
+Interpretation:
+
+- bullish `ERL -> Type D`: `match`
+- first integrated canonical anchor for this branch: `confirmed`
+
 ## Confirmed 2026-03-19 Window Refresh Matches
 
 ### Bearish Type A Strict C3 Match 3

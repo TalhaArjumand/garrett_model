@@ -15,6 +15,7 @@ from .key_level_integration import (
     count_external_to_internal_type_b_additive_extension_sequences,
     count_external_to_internal_type_b_sequences,
     count_external_to_internal_type_c_sequences,
+    count_external_to_internal_type_d_sequences,
     count_internal_to_external_type_a_expansion_quality_sequences,
     count_internal_to_external_type_a_sequences,
     count_internal_to_external_type_b_additive_extension_c3_quality_sequences,
@@ -77,6 +78,8 @@ class RealSampleReport:
     bearish_external_to_internal_type_b_additive_extension_c3_quality_count: int
     bullish_external_to_internal_type_c_count: int
     bearish_external_to_internal_type_c_count: int
+    bullish_external_to_internal_type_d_count: int
+    bearish_external_to_internal_type_d_count: int
     bullish_internal_to_external_type_b_count: int
     bearish_internal_to_external_type_b_count: int
     bullish_internal_to_external_type_b_additive_extension_count: int
@@ -588,6 +591,13 @@ def build_real_sample_report(
         max_wick_fraction=case_b_max_wick_fraction,
     )
     (
+        bullish_external_to_internal_type_d,
+        bearish_external_to_internal_type_d,
+    ) = count_external_to_internal_type_d_sequences(
+        candles,
+        max_wick_fraction=case_b_max_wick_fraction,
+    )
+    (
         bullish_internal_to_external_type_b,
         bearish_internal_to_external_type_b,
     ) = count_internal_to_external_type_b_sequences(
@@ -694,6 +704,8 @@ def build_real_sample_report(
         ),
         bullish_external_to_internal_type_c_count=bullish_external_to_internal_type_c,
         bearish_external_to_internal_type_c_count=bearish_external_to_internal_type_c,
+        bullish_external_to_internal_type_d_count=bullish_external_to_internal_type_d,
+        bearish_external_to_internal_type_d_count=bearish_external_to_internal_type_d,
         bullish_internal_to_external_type_b_count=bullish_internal_to_external_type_b,
         bearish_internal_to_external_type_b_count=bearish_internal_to_external_type_b,
         bullish_internal_to_external_type_b_additive_extension_count=(
