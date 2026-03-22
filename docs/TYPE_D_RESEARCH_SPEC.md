@@ -233,6 +233,127 @@ It supports:
 
 It does not yet justify live `IRL` / `ERL` integration by itself.
 
+## 4H Manual Family Anchors
+
+The `Type D` family primitive is now also manually anchored on the same-source
+MT5 `XAUUSD 4H` sample.
+
+These are family-only anchors:
+
+- no `IRL` / `ERL` integration claim
+- no target claim
+- no selector claim
+
+### 4H Bearish Anchor 1
+
+- `C1 = 2026-03-02 04:00 +05:00`
+  - `5325.04 / 5367.23 / 5316.79 / 5366.11`
+- `C2 = 2026-03-02 08:00 +05:00`
+  - `5366.11 / 5419.26 / 5363.50 / 5392.09`
+- `C3 = 2026-03-02 12:00 +05:00`
+  - `5392.18 / 5416.72 / 5375.51 / 5393.94`
+- `C4 = 2026-03-02 16:00 +05:00`
+  - `5393.94 / 5395.27 / 5260.77 / 5306.86`
+
+Why it is `Type D`:
+
+- `C2.high > C1.high`
+- not `Type A`
+- not `Type B`
+- not `Type B additive extension`
+- not strict `Type C`
+- `C3` is strictly inside `C2`
+  - `5416.72 < 5419.26`
+  - `5375.51 > 5363.50`
+
+Operative level:
+
+- `EQ(C3) = (5416.72 + 5375.51) / 2 = 5396.115`
+- `C4.high = 5395.27 < 5396.115`
+
+Interpretation:
+
+- bearish `Type D`: `match`
+- bearish `C4` after `Type D`: `match`
+
+### 4H Bullish Anchor 1
+
+- `C1 = 2026-03-02 12:00 +05:00`
+  - `5392.18 / 5416.72 / 5375.51 / 5393.94`
+- `C2 = 2026-03-02 16:00 +05:00`
+  - `5393.94 / 5395.27 / 5260.77 / 5306.86`
+- `C3 = 2026-03-02 20:00 +05:00`
+  - `5306.91 / 5346.37 / 5289.61 / 5321.06`
+- `C4 = 2026-03-03 00:00 +05:00`
+  - `5321.06 / 5379.88 / 5321.06 / 5339.35`
+
+Why it is `Type D`:
+
+- `C2.low < C1.low`
+- not `Type A`
+- not `Type B`
+- not `Type B additive extension`
+- not strict `Type C`
+- `C3` is strictly inside `C2`
+  - `5346.37 < 5395.27`
+  - `5289.61 > 5260.77`
+
+Operative level:
+
+- `EQ(C3) = (5346.37 + 5289.61) / 2 = 5317.99`
+- `C4.low = 5321.06 > 5317.99`
+
+Interpretation:
+
+- bullish `Type D`: `match`
+- bullish `C4` after `Type D`: `match`
+
+### 4H Bearish Anchor 2
+
+- `C1 = 2026-03-05 20:00 +05:00`
+  - `5062.93 / 5094.80 / 5050.88 / 5081.55`
+- `C2 = 2026-03-06 00:00 +05:00`
+  - `5081.57 / 5143.94 / 5066.50 / 5134.76`
+- `C3 = 2026-03-06 04:00 +05:00`
+  - `5134.75 / 5141.53 / 5114.39 / 5117.40`
+- `C4 = 2026-03-06 08:00 +05:00`
+  - `5117.40 / 5123.25 / 5083.39 / 5085.80`
+
+Why it is `Type D`:
+
+- `C2.high > C1.high`
+- not `Type A`
+- not `Type B`
+- not `Type B additive extension`
+- not strict `Type C`
+- `C3` is strictly inside `C2`
+  - `5141.53 < 5143.94`
+  - `5114.39 > 5066.50`
+
+Operative level:
+
+- `EQ(C3) = (5141.53 + 5114.39) / 2 = 5127.96`
+- `C4.high = 5123.25 < 5127.96`
+
+Interpretation:
+
+- bearish `Type D`: `match`
+- bearish `C4` after `Type D`: `match`
+
+### Current Evidence Status
+
+`Type D` is now supported by:
+
+- one `6H` source-tethered research anchor
+- three manually confirmed `4H` family-only anchors
+
+The boundary is still:
+
+- family primitive implemented
+- stage mapping implemented
+- no live `IRL` / `ERL` integration yet
+- no active report counting yet
+
 ## Promotion Conditions
 
 Do not promote this candidate into live integrated taxonomy until all of the
