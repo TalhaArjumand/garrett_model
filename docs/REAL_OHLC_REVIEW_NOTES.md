@@ -2204,6 +2204,27 @@ Interpretation:
   - integrated `Type B additive extension C3 quality`
 - historical rare-Type-C wording for this region is now provenance only
 
+### Integrated Type B Additive Extension Manual Stage Validation
+
+- reviewed manually on chart:
+  - the integrated `IRL -> Type B additive extension` anchor passed
+  - the integrated `IRL -> Type B additive extension C3 quality` anchor passed
+- reviewed region:
+  - bullish `IRL = 4892.76 -> 4912.94`
+  - `C1 = 2026-02-18 08:00 +05:00`
+  - `C2 = 2026-02-18 12:00 +05:00`
+  - `C3 = 2026-02-18 16:00 +05:00`
+- confirmed stage reading:
+  - base `Type B` trade candle remains `C2`
+  - additive extension makes `C3` tradable
+  - `C3` quality is a stricter refinement inside that same additive branch
+
+Interpretation:
+
+- the integrated additive-extension branch is now manually anchored on chart
+- this branch remains inside live `Type B` taxonomy
+- strict `Type C` remains excluded from this `C3`-tradable structure
+
 ## Confirmed Integrated External-to-Internal Type A Review
 
 ### Boundary
