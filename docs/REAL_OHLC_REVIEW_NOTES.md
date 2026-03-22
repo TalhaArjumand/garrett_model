@@ -2882,3 +2882,279 @@ Interpretation:
   - pending future real-data anchor
 - evidence status:
   - zero-match in the current reviewed windows
+
+## March 19-20 Refresh Audit Boundary Correction
+
+### What Was Actually Tested
+
+There were two different scans, and they must not be treated as the same
+thing.
+
+1. Refresh-delta scan
+
+- purpose:
+  - identify what changed after promoting the new MT5 export
+- boundary used:
+  - newly added canonical candles from:
+    - `2026-03-19 20:00 +05:00`
+    - through `2026-03-20 20:00 +05:00`
+- what it was meant to answer:
+  - which liquidity objects were newly created, newly reached, newly
+    invalidated, or newly taken because of the added Friday candles
+
+2. March 19-20 family scan
+
+- purpose:
+  - check whether integrated family windows existed on March 19-20 inside the
+    refreshed canonical `100`-bar verifier file
+- boundary used:
+  - consecutive integrated family windows whose sequence timestamps fell on or
+    after `2026-03-19 00:00 +05:00`
+- what it was meant to answer:
+  - whether any in-window integrated `Type A`, `Type B`, `Type B additive
+    extension`, or strict `Type C` candidate formed on those dates
+
+### Leakage / Boundary Problem
+
+The interpretive mistake was:
+
+- treating the refresh-delta scan as if it were a full March 19 day audit
+
+That is wrong because the refresh-delta scan intentionally starts at:
+
+- `2026-03-19 20:00 +05:00`
+
+So it naturally omits earlier March 19 liquidity objects that were already
+inside the canonical verifier window.
+
+### Corrected March 19 Liquidity Inventory
+
+When March 19 is audited as a full day rather than only as the newly added
+refresh delta, the canonical verifier window does contain the following
+liquidity objects:
+
+- `ERL old_high 4899.12`
+  - confirmed:
+    - `2026-03-19 00:00 +05:00`
+  - state:
+    - resting
+- `ERL old_low 4805.23`
+  - confirmed:
+    - `2026-03-19 04:00 +05:00`
+  - taken:
+    - `2026-03-19 08:00 +05:00`
+- bearish `IRL 4719.84 -> 4826.82`
+  - confirmed:
+    - `2026-03-19 12:00 +05:00`
+  - reached later:
+    - `2026-03-20 04:00 +05:00`
+- bearish `IRL 4649.16 -> 4686.85`
+  - confirmed:
+    - `2026-03-19 16:00 +05:00`
+  - reached:
+    - `2026-03-19 20:00 +05:00`
+  - invalidated:
+    - `2026-03-20 04:00 +05:00`
+
+Friday-only liquidity additions then continue with:
+
+- `ERL old_high 4735.84`
+  - confirmed:
+    - `2026-03-20 08:00 +05:00`
+  - state:
+    - resting
+- bearish `IRL 4622.58 -> 4659.88`
+  - confirmed:
+    - `2026-03-20 16:00 +05:00`
+  - state:
+    - resting
+- bearish `IRL 4578.35 -> 4612.66`
+  - confirmed:
+    - `2026-03-20 20:00 +05:00`
+  - state:
+    - resting
+- `ERL old_low 4502.57`
+  - confirmed:
+    - `2026-03-19 16:00 +05:00`
+  - taken:
+    - `2026-03-20 20:00 +05:00`
+
+### Correct Interpretation
+
+The corrected statement is:
+
+- the refresh-delta scan showed no new integrated family event caused by the
+  newly added Friday candles in the canonical `100`-bar window
+- that does **not** mean March 19 had no liquidity objects
+- it only means:
+  - the newly added Friday candles did not introduce a new in-window
+    integrated family count change
+
+### Procedural Rule Going Forward
+
+For day-based audits, do not collapse these two questions into one:
+
+1. What changed because of the new refresh delta?
+2. What liquidity and family structure exists across the full audited day?
+
+The correct order is:
+
+- first separate:
+  - refresh-delta scan
+  - full day audit
+- then inventory liquidity left-to-right across the full day
+- then test family windows
+- then state explicitly whether the conclusion is:
+  - delta-only
+  - or full-day
+
+This avoids left-edge / scope leakage in future manual reviews.
+
+## March 19-20 Left-To-Right Manual Protocol Walk
+
+This review block confirms that the repo protocol and the manual chart read
+are aligned when March 19-20 is processed as a left-to-right live-market
+sequence.
+
+The process used was:
+
+1. key level first
+2. interaction second
+3. family windows third
+4. family decision fourth
+5. stage only if a family exists
+
+### Example 1: ERL old_low 4805.23
+
+Key level:
+
+- `ERL old_low 4805.23`
+- confirmed at:
+  - `2026-03-19 04:00 +05:00`
+- first interaction:
+  - `taken_at = 2026-03-19 08:00 +05:00`
+
+Eligible sequence:
+
+- `C1 = 2026-03-19 04:00 +05:00`
+- `C2 = 2026-03-19 08:00 +05:00`
+- `C3 = 2026-03-19 12:00 +05:00`
+
+Result:
+
+- family:
+  - `none`
+
+Reason:
+
+- bullish `Type A` fails because `C2` closes below full `C1` range
+- bullish `Type B` fails because `C2` is not a bullish reversal-expansion
+  candle
+- `Type B additive extension` fails because base `Type B` is false
+- strict bullish `Type C` fails because `C3` is bearish continuation, not the
+  first bullish confirming closure
+
+### Example 2: Bearish IRL 4719.84 -> 4826.82
+
+Key level:
+
+- bearish `IRL 4719.84 -> 4826.82`
+- confirmed at:
+  - `2026-03-19 12:00 +05:00`
+- first interaction:
+  - `reached_at = 2026-03-20 04:00 +05:00`
+
+Eligible windows:
+
+1. `2026-03-20 00:00 / 04:00 / 08:00 +05:00`
+2. `2026-03-20 04:00 / 08:00 / 12:00 +05:00`
+
+Result:
+
+- family:
+  - `none`
+
+Reason:
+
+- first window enters bearish `Type A` domain because `C2` closes back inside
+  full `C1` range, but full `Type A` does not complete on `C3`
+- second window fails immediately because `C2` does not sweep `high(C1)`
+- no valid `Type B`, `Type B additive extension`, or strict `Type C` survives
+
+### Example 3: Bearish IRL 4649.16 -> 4686.85
+
+Key level:
+
+- bearish `IRL 4649.16 -> 4686.85`
+- confirmed at:
+  - `2026-03-19 16:00 +05:00`
+- first interaction:
+  - `reached_at = 2026-03-19 20:00 +05:00`
+- later invalidation:
+  - `invalidated_at = 2026-03-20 04:00 +05:00`
+
+Eligible windows:
+
+1. `2026-03-19 16:00 / 20:00 / 2026-03-20 00:00 +05:00`
+2. `2026-03-19 20:00 / 2026-03-20 00:00 / 04:00 +05:00`
+
+Result:
+
+- family:
+  - `none`
+
+Reason:
+
+- first window enters bearish `Type A` domain but does not complete
+- second window fails because the sequence continues bullish and then
+  invalidates the bearish `IRL`
+- no valid `Type B`, `Type B additive extension`, or strict `Type C` forms
+
+### Example 4: Bullish IRL 4663.38 -> 4670.19
+
+Key level:
+
+- bullish `IRL 4663.38 -> 4670.19`
+- confirmed at:
+  - `2026-03-20 04:00 +05:00`
+- first interaction:
+  - `reached_at = 2026-03-20 08:00 +05:00`
+- later invalidation:
+  - `invalidated_at = 2026-03-20 12:00 +05:00`
+
+Eligibility:
+
+- this is a fresh-on-`C1` case, so first eligible interaction starts at `C2`
+
+Eligible sequence:
+
+- `C1 = 2026-03-20 04:00 +05:00`
+- `C2 = 2026-03-20 08:00 +05:00`
+- `C3 = 2026-03-20 12:00 +05:00`
+
+Result:
+
+- family:
+  - `none`
+
+Reason:
+
+- bullish `Type A` fails because `C2` closes below full `C1` range
+- bullish `Type B` fails because `C2` is bearish
+- `Type B additive extension` fails because base `Type B` is false
+- strict bullish `Type C` fails because `C3` is bearish and invalidates the
+  `IRL`
+
+### Current Alignment Conclusion
+
+For the March 19-20 reviewed interactions so far:
+
+- key-level extraction and state tracking match the chart
+- candidate windows were opened only after real interaction
+- family decisions were made only after the interaction windows were known
+- the reviewed interactions produced:
+  - valid liquidity events
+  - but `family = none`
+
+This is an important confirmation that the current repo protocol resembles
+live-market behavior rather than forcing family structure where none exists.

@@ -19,6 +19,22 @@ This is a process and architecture document. It is not doctrine.
 
 Never let analogy replace structure, and never let structure replace stage.
 
+## Runtime Realism Rule
+
+All research, review, and implementation must simulate real-life market
+behavior.
+
+That means:
+
+- read price left to right
+- use only candles that would already be visible at that moment
+- extract key levels only from prior confirmed structure
+- update key-level state only when a later candle actually reaches, takes, or
+  invalidates it
+- open family windows only after a live key level is touched
+- do not use refresh deltas, later candles, or retrospective knowledge as a
+  substitute for live-sequence interpretation
+
 ## Approach Mistakes
 
 ### 1. Integration Boundary Was Assumed From Analogy
@@ -200,6 +216,19 @@ For any new branch or claim:
 4. stress test fourth
 5. manual anchor fifth
 
+### F. Real-Market Simulation Must Be Explicit
+
+If the repo process does not resemble how the market would be seen in live
+time, the process is wrong even if the later chart looks coherent.
+
+Always ask:
+
+- what key level was already live at this moment
+- what state was it in
+- what was the first actual interaction
+- what family windows were truly eligible from that interaction
+- what would have been knowable before the next candle printed
+
 ## Future-Proof Protocol
 
 ### Protocol 1: Before Any New Integration
@@ -258,6 +287,11 @@ Never:
 
 - classify family first
 - then search backward for liquidity
+
+And never:
+
+- use later candles to justify an earlier key-level or family conclusion
+- compress a multi-step live read into a single hindsight summary
 
 ### Protocol 4: Window Testing Rule
 

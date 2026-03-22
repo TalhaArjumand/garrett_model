@@ -49,6 +49,19 @@ Begin with:
 - the already extracted structural matches
 - the locked family/stage contract
 
+## Real-Market Simulation Rule
+
+Manual review must simulate live-market behavior.
+
+That means:
+
+- read candles left to right
+- use only what was already confirmed by prior candles
+- extract key levels before family
+- wait for a real touch before opening family windows
+- assign family before assigning stage
+- never use hindsight to force an earlier family label
+
 ## Live Review Order
 
 Use this exact left-to-right review order:
